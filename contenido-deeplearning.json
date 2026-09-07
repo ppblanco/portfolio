@@ -1,0 +1,416 @@
+{
+  "_leeme": "Todo el texto de trabajos/deep-learning.html sale de aquí. Edita y vuelve a ejecutar herramientas/hacer-caso.py.",
+  "meta": {
+    "titulo_pestana": "Predicción de demanda con redes recurrentes · Pedro Pérez Blanco",
+    "descripcion": "Cuatro arquitecturas recurrentes comparadas contra una media móvil para predecir demanda diaria. El LSTM gana, pero por un margen que conviene no exagerar.",
+    "dominio": "pedro-perez-data.netlify.app"
+  },
+  "volver": {
+    "texto": "Todos los trabajos",
+    "href": "../index.html#trabajo"
+  },
+  "hero": {
+    "tipo": "animada",
+    "categoria": "Deep learning · Series temporales",
+    "titulo": "Predicción de demanda con redes recurrentes",
+    "sub": "Cinco años de ventas diarias, cuatro arquitecturas recurrentes y una media móvil de siete días haciendo de línea de base. La pregunta no era cuál gana, sino si alguna gana lo suficiente como para que compense su complejidad.",
+    "datos": [
+      {
+        "k": "Papel",
+        "v": "Equipo de tres · trabajo conjunto"
+      },
+      {
+        "k": "Autores",
+        "v": "Marcos Fernández · Pedro Pérez · Alfredo Martín"
+      },
+      {
+        "k": "Año",
+        "v": "2026 · MUBA, ICADE"
+      },
+      {
+        "k": "Herramientas",
+        "v": "Python · TensorFlow · Keras · pandas"
+      }
+    ],
+    "cifras": [
+      {
+        "valor": "56",
+        "pie": "entrenamientos"
+      },
+      {
+        "valor": "20,95%",
+        "pie": "de MAPE del mejor modelo"
+      },
+      {
+        "valor": "274",
+        "pie": "días de test"
+      }
+    ],
+    "video": {
+      "src": "../medios/video/deep-learning.mp4",
+      "poster": "../medios/video/deep-learning-poster.jpg"
+    }
+  },
+  "rail": [
+    {
+      "texto": "El problema",
+      "ancla": "s-problema"
+    },
+    {
+      "texto": "La partición",
+      "ancla": "s-particion"
+    },
+    {
+      "texto": "Las arquitecturas",
+      "ancla": "s-modelos"
+    },
+    {
+      "texto": "Los resultados",
+      "ancla": "s-resultados"
+    },
+    {
+      "texto": "Lo que no prueba",
+      "ancla": "s-limites"
+    }
+  ],
+  "secciones": [
+    {
+      "id": "s-problema",
+      "etiqueta": "El problema",
+      "eyebrow": "El problema",
+      "titulo_antes": "Predecir mañana",
+      "titulo_acento": "sin mirar mañana",
+      "titulo_despues": ".",
+      "lead": "Una serie temporal impone dos reglas que no existen en un problema tabular corriente. La partición no puede ser aleatoria, porque mezclar días mete el futuro dentro del entrenamiento. Y el conjunto de test se toca una sola vez, al final.",
+      "parrafos": [
+        "La serie se convierte en un problema supervisado por ventanas deslizantes: las ventas de los últimos w días predicen las del siguiente. Se probaron ventanas de 7, 30 y 90 días.",
+        "El escalado se ajusta solo con el tramo de entrenamiento. Ajustarlo sobre la serie completa filtraría el rango futuro hacia el pasado, que es una fuga silenciosa y muy fácil de cometer."
+      ],
+      "ledger": [
+        {
+          "clave": "Datos",
+          "valor": "913.000 filas, 2013 – 2017"
+        },
+        {
+          "clave": "Serie modelada",
+          "valor": "Una combinación tienda-producto"
+        },
+        {
+          "clave": "Ventanas probadas",
+          "valor": "7, 30 y 90 días"
+        },
+        {
+          "clave": "Horizonte",
+          "valor": "Un día",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "flujo",
+        "datos": [
+          {
+            "etiqueta": "Serie|diaria"
+          },
+          {
+            "etiqueta": "Ventana|deslizante"
+          },
+          {
+            "etiqueta": "Red|recurrente"
+          },
+          {
+            "etiqueta": "Mañana",
+            "pie": "El escalado se aprende solo|con el pasado."
+          }
+        ]
+      },
+      "figcaption": "De la serie a la predicción del día siguiente.",
+      "sr": "Diagrama: la serie diaria se corta en ventanas deslizantes, entran en una red recurrente y sale la predicción del día siguiente.",
+      "composicion": "invertido"
+    },
+    {
+      "id": "s-particion",
+      "etiqueta": "La partición",
+      "eyebrow": "La partición",
+      "titulo_antes": "El test se toca",
+      "titulo_acento": "una sola vez",
+      "titulo_despues": ".",
+      "lead": "70 % de los días para entrenar, 15 % para validar y 15 % —274 días— para test. En orden cronológico, sin barajar. Todos los modelos y la línea de base se miden sobre exactamente los mismos 274 días, que es lo que hace comparable la tabla final.",
+      "parrafos": [
+        "La elección de arquitectura e hiperparámetros se hace mirando validación, nunca test. Si el test participa en la decisión deja de ser una estimación honesta y se convierte en otro conjunto de entrenamiento con más pasos.",
+        "Todos los modelos usan EarlyStopping sobre la pérdida de validación, así que el número de épocas lo decide la propia validación en lugar de fijarse a ojo."
+      ],
+      "ledger": [
+        {
+          "clave": "Entrenamiento",
+          "valor": "Primer 70 % de los días"
+        },
+        {
+          "clave": "Validación",
+          "valor": "Siguiente 15 %"
+        },
+        {
+          "clave": "Test",
+          "valor": "Último 15 % · 274 días",
+          "destacada": true
+        },
+        {
+          "clave": "Criterio de parada",
+          "valor": "EarlyStopping en validación"
+        }
+      ],
+      "grafico": {
+        "tipo": "secuencia",
+        "datos": [
+          {
+            "etiqueta": "Entrenamiento",
+            "parte": 0.7,
+            "pie": "70% de los días"
+          },
+          {
+            "etiqueta": "Val.",
+            "parte": 0.15,
+            "pie": "15%"
+          },
+          {
+            "etiqueta": "Test",
+            "parte": 0.15,
+            "pie": "15%"
+          }
+        ]
+      },
+      "figcaption": "La ventana recorre la serie: el modelo nunca ve el total, ve un tramo que avanza. Y avanza siempre hacia el futuro.",
+      "sr": "Una serie temporal dividida en tres tramos consecutivos: entrenamiento con el 70% de los días, validación con el 15% y test con el 15%, que son 274 días. Encima, una ventana deslizante recorre la serie de izquierda a derecha. La onda dibujada ilustra la forma de una serie con estacionalidad; no son las ventas reales.",
+      "composicion": "ancho"
+    },
+    {
+      "id": "s-modelos",
+      "etiqueta": "Las arquitecturas",
+      "eyebrow": "Las arquitecturas",
+      "titulo_antes": "Cuatro redes y",
+      "titulo_acento": "una media móvil",
+      "titulo_despues": ".",
+      "lead": "SimpleRNN, LSTM, GRU y Bidirectional LSTM, contra una media móvil de siete días. La media móvil no es un adorno: si una red recurrente no la supera, no está aportando nada.",
+      "parrafos": [
+        "La búsqueda de hiperparámetros fue en dos fases y siempre midiendo sobre validación. Primero una rejilla de arquitectura —tres ventanas por tres activaciones, nueve combinaciones por modelo, 36 entrenamientos—. Después el tamaño de lote, cuatro valores sobre la mejor configuración de cada uno, 16 entrenamientos más.",
+        "Con los cuatro finales son 56 entrenamientos en total. Los tres modelos con puerta eligieron ventana de 7 días; solo SimpleRNN se quedó con 90."
+      ],
+      "ledger": [
+        {
+          "clave": "SimpleRNN",
+          "valor": "Ventana 90 · LeakyReLU · lote 128"
+        },
+        {
+          "clave": "LSTM",
+          "valor": "Ventana 7 · relu · lote 16",
+          "destacada": true
+        },
+        {
+          "clave": "GRU",
+          "valor": "Ventana 7 · relu · lote 32"
+        },
+        {
+          "clave": "Bi-LSTM",
+          "valor": "Ventana 7 · relu · lote 128"
+        },
+        {
+          "clave": "Línea de base",
+          "valor": "Media móvil de 7 días"
+        }
+      ],
+      "grafico": {
+        "tipo": "escalones",
+        "datos": [
+          {
+            "valor": "36",
+            "etiqueta": "de rejilla",
+            "parte": 0.9
+          },
+          {
+            "valor": "16",
+            "etiqueta": "de tamaño de lote",
+            "parte": 0.4
+          },
+          {
+            "valor": "4",
+            "etiqueta": "finales",
+            "parte": 0.12
+          }
+        ]
+      },
+      "figcaption": "56 entrenamientos, todos decididos con validación.",
+      "sr": "Escalones: 36 entrenamientos de rejilla, 16 de tamaño de lote y 4 finales.",
+      "composicion": "dividido"
+    },
+    {
+      "id": "s-resultados",
+      "etiqueta": "Los resultados",
+      "eyebrow": "Los resultados",
+      "titulo_antes": "Las puertas sirven.",
+      "titulo_acento": "La recurrencia simple no",
+      "titulo_despues": ".",
+      "lead": "LSTM, GRU y Bi-LSTM baten a la media móvil. SimpleRNN no: con un MAE de 5,125 queda por debajo de los 4,867 de la línea de base. Es el resultado más limpio del trabajo, porque es exactamente lo que se espera de estas arquitecturas.",
+      "parrafos": [
+        "El mejor es el LSTM, con un MAE de 4,550 sobre los 274 días de test. La mejora sobre la línea de base son 0,32 unidades, sobre una venta media de 23,9: algo más del uno por ciento.",
+        "Su ventaja sobre el Bi-LSTM es de 0,037 unidades, un 0,15 % de la venta media. Con una sola semilla por configuración, una diferencia así no basta para declarar un ganador: haría falta repetir cada entrenamiento varias veces y comparar distribuciones. El trabajo lo dice en vez de proclamar un vencedor.",
+        "Conviene además leer las dos métricas por separado. El MAPE divide por el valor real, así que baja cuando la serie tiene más volumen aunque el modelo no haya mejorado; por eso el MAPE de test sale mejor que el de validación en los cuatro. El MAE está en unidades vendidas y no depende del nivel de la serie: es la métrica sobre la que se sostienen las conclusiones."
+      ],
+      "ledger": [
+        {
+          "clave": "LSTM",
+          "valor": "MAPE 20,95 % · MAE 4,550",
+          "destacada": true
+        },
+        {
+          "clave": "GRU",
+          "valor": "MAPE 21,42 % · MAE 4,622"
+        },
+        {
+          "clave": "Bi-LSTM",
+          "valor": "MAPE 21,70 % · MAE 4,587"
+        },
+        {
+          "clave": "SimpleRNN",
+          "valor": "MAPE 23,13 % · MAE 5,125"
+        },
+        {
+          "clave": "Media móvil (7 días)",
+          "valor": "MAPE 23,30 % · MAE 4,867"
+        }
+      ],
+      "grafico": {
+        "tipo": "barras",
+        "datos": [
+          {
+            "valor": 4.55,
+            "texto": "4,55",
+            "etiqueta": "LSTM",
+            "destacada": true
+          },
+          {
+            "valor": 4.587,
+            "texto": "4,59",
+            "etiqueta": "Bi-LSTM"
+          },
+          {
+            "valor": 4.867,
+            "texto": "4,87",
+            "etiqueta": "Base"
+          },
+          {
+            "valor": 5.125,
+            "texto": "5,13",
+            "etiqueta": "RNN"
+          }
+        ]
+      },
+      "figcaption": "MAE en test, sobre los mismos 274 días. Más bajo es mejor. El GRU queda entre el Bi-LSTM y la línea de base.",
+      "sr": "Barras del error absoluto medio en test: LSTM 4,550; Bi-LSTM 4,587; GRU 4,622; media móvil 4,867; SimpleRNN 5,125. La media móvil es la línea de base.",
+      "composicion": "centrado"
+    },
+    {
+      "id": "s-limites",
+      "etiqueta": "Lo que no prueba",
+      "eyebrow": "Los límites",
+      "titulo_antes": "Una semilla",
+      "titulo_acento": "no decide un ganador",
+      "titulo_despues": ".",
+      "lead": "La limitación principal es de método: cada configuración se entrenó una sola vez. Eso basta para separar a SimpleRNN del resto, pero no para distinguir al LSTM del Bi-LSTM.",
+      "parrafos": [
+        "El trabajo modela una única serie tienda-producto. Los resultados valen para ella; no se han validado sobre las 500 series del dataset.",
+        "El horizonte es de un día. Una planificación de inventario real necesita predecir semanas, y eso es un problema distinto y más duro.",
+        "Y no hay variables externas: ni festivos, ni promociones, ni precio. En demanda minorista suelen explicar buena parte de la variación."
+      ],
+      "ledger": [
+        {
+          "clave": "Repeticiones por configuración",
+          "valor": "Una"
+        },
+        {
+          "clave": "Series modeladas",
+          "valor": "Una de 500"
+        },
+        {
+          "clave": "Horizonte",
+          "valor": "Un día"
+        },
+        {
+          "clave": "Variables externas",
+          "valor": "Ninguna"
+        }
+      ],
+      "grafico": {
+        "tipo": "veredictos",
+        "datos": [
+          {
+            "si": true,
+            "etiqueta": "La partición es|cronológica"
+          },
+          {
+            "si": true,
+            "etiqueta": "El modelo se elige|con validación"
+          },
+          {
+            "si": false,
+            "etiqueta": "La diferencia entre LSTM|y Bi-LSTM es sólida"
+          },
+          {
+            "si": false,
+            "etiqueta": "Los resultados valen|para las 500 series"
+          }
+        ]
+      },
+      "figcaption": "Lo que el trabajo sostiene y lo que no.",
+      "sr": "Veredictos: la partición es cronológica, sí; el modelo se elige con validación, sí; la diferencia entre LSTM y Bi-LSTM es sólida, no; los resultados valen para las 500 series, no.",
+      "composicion": "editorial"
+    }
+  ],
+  "cierre": {
+    "eyebrow": "El trabajo",
+    "titulo_antes": "Fue un trabajo",
+    "titulo_acento": "de tres",
+    "titulo_despues": ".",
+    "parrafos": [
+      "Proyecto conjunto de Marcos Fernández, Pedro Pérez y Alfredo Martín para la asignatura de Deep Learning del máster. Los archivos del proyecto no documentan un reparto de tareas, así que no se atribuye ninguna parte concreta a un autor.",
+      "La conclusión que más me interesa del trabajo no es cuál gana, sino que se puede decir «esta diferencia es demasiado pequeña para afirmar nada» y que eso también es un resultado."
+    ],
+    "botones": [
+      {
+        "texto": "Ver el código en GitHub",
+        "href": "https://github.com/ppblanco/retail-demand-forecasting-rnn",
+        "nueva_pestana": true
+      },
+      {
+        "texto": "Escríbeme",
+        "href": "mailto:pedro.perez.blanco@outlook.es"
+      }
+    ],
+    "informe": {
+      "titulo": "Predicción de demanda · Presentación",
+      "tipo": "PDF",
+      "alt": "Primera página de la presentación del trabajo de deep learning sobre predicción de demanda con redes recurrentes.",
+      "cta": "Ver la presentación",
+      "descargar": "Descargar presentación",
+      "ampliar": "Abrir en pantalla completa",
+      "descarga": "deep-learning-presentacion.pdf",
+      "archivo": "deep-learning-presentacion.pdf",
+      "portada": "../medios/informes/deep-learning-portada.jpg",
+      "paginas": 16,
+      "peso": "1,2 MB",
+      "octetos": 1307038,
+      "ancho": 1001,
+      "alto": 563
+    }
+  },
+  "siguiente": {
+    "rotulo": "Siguiente trabajo",
+    "titulo": "Letterboxd · De qué habla quien reseña cine",
+    "href": "letterboxd.html"
+  },
+  "paleta": {
+    "_porque": "azul 202-217°, el 44% del vídeo: la señal que avanza",
+    "senal": "#5C93DC",
+    "senal_viva": "#83B0E9",
+    "senal_tenue": "rgba(92,147,220,.14)",
+    "senal_linea": "rgba(92,147,220,.34)"
+  }
+}

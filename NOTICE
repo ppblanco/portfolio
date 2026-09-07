@@ -1,0 +1,27 @@
+NOTICE — rights over this repository
+===================================
+
+This repository is published WITHOUT a licence, which under copyright law
+means all rights are reserved. That is deliberate.
+
+The repository is not only source code. It contains:
+
+  * the design and the written content of a personal portfolio;
+  * photographs, video and portrait imagery;
+  * PDF reports from academic projects, three of them jointly authored with
+    other people;
+  * third-party material appearing inside those reports.
+
+A permissive software licence such as MIT would grant reuse rights over all
+of that, and I am not in a position to grant rights over my co-authors' work
+or over third-party material.
+
+If you want to reuse a technique, a generator or a piece of the CSS, ask and
+it will almost certainly be a yes. What is not on offer is copying the
+portfolio wholesale.
+
+Fonts
+-----
+Barlow and Barlow Condensed, and IBM Plex Mono, are used under the SIL Open
+Font License. Their licences are those of their respective authors and are
+not affected by the above.

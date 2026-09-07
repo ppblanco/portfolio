@@ -1,0 +1,403 @@
+{
+  "_leeme": "Todo el texto de trabajos/apuestas.html sale de aquí. Edita y ejecuta 'python herramientas/hacer-caso.py'. No edites el HTML a mano: se sobrescribe entero. TODAS las cifras salen del cuaderno original (originales/notebooks/Trabajo Programación/EDA Ganar a la casa de apuestas.ipynb). Si cambias una aquí, cámbiala también allí o la página dejará de coincidir con su propio código.",
+  "meta": {
+    "titulo_pestana": "Ganar a la casa de apuestas · Pedro Pérez Blanco",
+    "descripcion": "Análisis de 11.794 partidos ATP en busca de un factor que la casa subestime. El patrón existe; la estrategia pierde dinero: la casa se queda un 5,46 %.",
+    "dominio": "pedro-perez-data.netlify.app"
+  },
+  "volver": {
+    "texto": "Todos los trabajos",
+    "href": "../index.html#trabajo"
+  },
+  "hero": {
+    "tipo": "animada",
+    "video": {
+      "src": "../medios/video/apuestas.mp4",
+      "poster": "../medios/video/apuestas-poster.jpg"
+    },
+    "categoria": "Análisis exploratorio · Simulación",
+    "titulo": "Ganar a la casa de apuestas",
+    "sub": "11.794 partidos ATP de cinco temporadas, cruzados con las fichas de los jugadores y con las cuotas de las casas. La pregunta era si hay algún factor —altura, mano, edad— que el mercado esté subestimando. La respuesta corta: uno de los tres patrones existe, y aun así apostar con él pierde dinero.",
+    "datos": [
+      {
+        "k": "Papel",
+        "v": "Autor · trabajo individual"
+      },
+      {
+        "k": "Asignatura",
+        "v": "Programación para el análisis de datos"
+      },
+      {
+        "k": "Año",
+        "v": "2026 · MUBA, ICADE"
+      },
+      {
+        "k": "Herramientas",
+        "v": "Python · pandas · NumPy · Plotly"
+      }
+    ],
+    "cifras": [
+      {
+        "valor": "11.794",
+        "pie": "partidos analizados"
+      },
+      {
+        "valor": "56,96%",
+        "pie": "gana el más alto en hierba"
+      },
+      {
+        "valor": "−4,54%",
+        "pie": "de ROI apostando al favorito"
+      }
+    ]
+  },
+  "rail": [
+    {
+      "texto": "La pregunta",
+      "ancla": "s-pregunta"
+    },
+    {
+      "texto": "Los datos",
+      "ancla": "s-datos"
+    },
+    {
+      "texto": "Tres corazonadas",
+      "ancla": "s-hipotesis"
+    },
+    {
+      "texto": "La simulación",
+      "ancla": "s-simulacion"
+    },
+    {
+      "texto": "Lo que no prueba",
+      "ancla": "s-limites"
+    }
+  ],
+  "secciones": [
+    {
+      "id": "s-pregunta",
+      "etiqueta": "La pregunta",
+      "eyebrow": "La pregunta",
+      "titulo_antes": "¿Se le escapa algo",
+      "titulo_acento": "al mercado",
+      "titulo_despues": "?",
+      "lead": "Una cuota no es una predicción: es un precio, y lleva dentro todo lo que el mercado ya sabe. La única forma de ganarle es encontrar algo que el precio todavía no recoja. Eso es lo que fui a buscar: un factor físico —la altura, la mano, la edad— con el que el mercado no estuviera contando.",
+      "parrafos": [
+        "El planteamiento importa porque decide el listón. No basta con encontrar un patrón: hay que encontrar uno que además sobreviva a pagar la cuota. Son dos preguntas distintas y casi todo el mundo se queda en la primera.",
+        "Por eso el trabajo no termina en el análisis exploratorio. Termina simulando las apuestas, que es donde se ve si el patrón vale algo o solo es bonito."
+      ],
+      "ledger": [
+        {
+          "clave": "Periodo",
+          "valor": "ATP, 2020 – 2024"
+        },
+        {
+          "clave": "Pregunta",
+          "valor": "¿Hay un factor infravalorado?"
+        },
+        {
+          "clave": "Prueba de fuego",
+          "valor": "El ROI, no el porcentaje",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "flujo",
+        "datos": [
+          {
+            "etiqueta": "Un patrón"
+          },
+          {
+            "etiqueta": "La cuota|que paga"
+          },
+          {
+            "etiqueta": "¿Queda|beneficio?"
+          },
+          {
+            "etiqueta": "Casi nunca",
+            "pie": "El patrón es la parte fácil.|Sobrevivir a la cuota, no."
+          }
+        ]
+      },
+      "figcaption": "Encontrar el patrón es la mitad fácil del problema.",
+      "sr": "Diagrama: un patrón se enfrenta a la cuota que lo paga, y solo entonces se ve si queda beneficio. Casi nunca queda.",
+      "composicion": "dividido"
+    },
+    {
+      "id": "s-datos",
+      "etiqueta": "Los datos",
+      "eyebrow": "Los datos",
+      "titulo_antes": "Dos fuentes y",
+      "titulo_acento": "un identificador de verdad",
+      "titulo_despues": ".",
+      "lead": "Tennis-Data pone los partidos y las cuotas; el fichero de jugadores de Jeff Sackmann pone la altura, la mano y la fecha de nacimiento. Unirlas es el punto delicado del trabajo, porque Tennis-Data nombra a la gente como «Ruud C.» y en el otro fichero hay 65.019 jugadores de todas las épocas.",
+      "parrafos": [
+        "«Ruud C.» son dos personas: Casper Ruud, nacido en 1998 y de 183 cm, y su padre Christian, nacido en 1972 y de 188. Un cruce por apellido e inicial elige a uno de los dos, y elegir mal significa analizar 292 partidos con la altura y la edad equivocadas. Lo mismo pasa con Ben Shelton y su padre Bryan.",
+        "El cruce actual va por identificador único de jugador y aplica controles en cascada: apellido normalizado, iniciales alternativas, apellidos compuestos y —el que decide— la edad plausible en las fechas en que ese nombre jugó. Si después de todo eso queda más de un candidato, el jugador se queda sin atributos. Se resuelven 510 de 517 nombres.",
+        "Y hay comprobaciones automáticas encima: edades imposibles, alturas fuera de rango, jugadores con dos alturas distintas, duplicados. Cazaron un caso que se me había escapado, un jugador emparejado con alguien de 50 años."
+      ],
+      "ledger": [
+        {
+          "clave": "Periodo",
+          "valor": "ATP, 2020 – 2024"
+        },
+        {
+          "clave": "Partidos",
+          "valor": "11.794"
+        },
+        {
+          "clave": "Jugadores identificados",
+          "valor": "510 de 517",
+          "destacada": true
+        },
+        {
+          "clave": "Sin emparejar",
+          "valor": "7, todos documentados"
+        }
+      ],
+      "grafico": {
+        "tipo": "escalones",
+        "datos": [
+          {
+            "valor": "2",
+            "etiqueta": "fuentes cruzadas",
+            "parte": 0.42
+          },
+          {
+            "valor": "11.794",
+            "etiqueta": "partidos",
+            "parte": 1.0
+          },
+          {
+            "valor": "510",
+            "etiqueta": "de 517 jugadores",
+            "parte": 0.72
+          }
+        ]
+      },
+      "figcaption": "Del cruce de las dos fuentes a los jugadores identificados.",
+      "sr": "Escalones: dos fuentes cruzadas, 11.794 partidos, 510 de 517 jugadores identificados por identificador único.",
+      "composicion": "invertido"
+    },
+    {
+      "id": "s-hipotesis",
+      "etiqueta": "Tres corazonadas",
+      "eyebrow": "Tres corazonadas",
+      "titulo_antes": "Una aguanta.",
+      "titulo_acento": "Dos se caen",
+      "titulo_despues": ".",
+      "lead": "Tres creencias del tenis, contrastadas una a una. Los altos ganan más en superficies rápidas: se cumple, y además se ordena por superficie igual que predice la teoría del saque. Los zurdos y los veteranos: no se cumplen.",
+      "parrafos": [
+        "El de la altura es el único que aguanta, y aguanta bien: 56,96 % en hierba, 55,33 % en pista dura y 53,24 % en tierra. Que salga en ese orden y no al azar es lo que lo hace creíble, porque es exactamente el orden en que la superficie premia el saque.",
+        "Los zurdos ganan el 47,62 % de sus 2.671 duelos contra diestros: menos de la mitad. La leyenda descansa sobre Nadal, no sobre el conjunto.",
+        "Los veteranos ganan el 45,68 % de los partidos a cinco sets con más de cinco años de diferencia. Y no es que el partido largo les penalice: a tres sets ganan el 45,27 %, prácticamente lo mismo. La duración no cambia nada."
+      ],
+      "ledger": [
+        {
+          "clave": "Altos en hierba",
+          "valor": "56,96 %",
+          "destacada": true
+        },
+        {
+          "clave": "Altos en pista dura",
+          "valor": "55,33 %"
+        },
+        {
+          "clave": "Altos en tierra",
+          "valor": "53,24 %"
+        },
+        {
+          "clave": "Zurdos contra diestros",
+          "valor": "47,62 %"
+        },
+        {
+          "clave": "Veteranos a cinco sets",
+          "valor": "45,68 %"
+        }
+      ],
+      "grafico": {
+        "tipo": "pista",
+        "datos": [
+          {
+            "valor": 56.96,
+            "texto": "56,96%",
+            "etiqueta": "Hierba",
+            "destacada": true,
+            "pie": "955|partidos"
+          },
+          {
+            "valor": 55.33,
+            "texto": "55,33%",
+            "etiqueta": "Pista dura",
+            "pie": "5.404|partidos"
+          },
+          {
+            "valor": 53.24,
+            "texto": "53,24%",
+            "etiqueta": "Tierra",
+            "pie": "2.825|partidos"
+          }
+        ]
+      },
+      "figcaption": "Una pista por superficie. El suelo se llena cuanto más gana el jugador más alto, y el orden es el que predice la teoría del saque.",
+      "sr": "Tres pistas de tenis vistas desde arriba, una por superficie, con el porcentaje de partidos que gana el jugador más alto: hierba 56,96% sobre 955 partidos; pista dura 55,33% sobre 5.404; tierra 53,24% sobre 2.825. El 50% sería no tener ninguna ventaja.",
+      "composicion": "ancho"
+    },
+    {
+      "id": "s-simulacion",
+      "etiqueta": "La simulación",
+      "eyebrow": "La simulación",
+      "titulo_antes": "El favorito gana el 68%.",
+      "titulo_acento": "Y aun así se pierde",
+      "titulo_despues": ".",
+      "lead": "Apostar 1 € por partido siguiendo una regla fija y medir el ROI. El favorito gana el 68,18 % de las veces, que es mucho, y aun así la estrategia pierde el 4,54 %. La explicación no está en el acierto: está en el precio.",
+      "parrafos": [
+        "Las tres estrategias pierden. Apostar al favorito: −4,54 %. Al más alto en hierba, que es el patrón que sí existía: −3,31 %. Y al revés, al no favorito: −8,90 %. Da igual el lado al que te pongas.",
+        "El motivo está medido: si las cuotas fueran justas, sus probabilidades implícitas sumarían 1. Suman de más, y ese exceso —un 5,46 % de media— es el margen del que vive la casa. Hay que superarlo antes de empezar a ganar, y un patrón del 57 % no llega.",
+        "Los 77 partidos que terminaron en walkover o adjudicación quedan fuera de la simulación: nadie saltó a la pista y una casa habría devuelto el dinero. Contarlos como apuesta ganada o perdida sería contar euros que no se mueven."
+      ],
+      "ledger": [
+        {
+          "clave": "Gana el favorito",
+          "valor": "68,18 %"
+        },
+        {
+          "clave": "ROI apostando al favorito",
+          "valor": "−4,54 %"
+        },
+        {
+          "clave": "ROI al más alto en hierba",
+          "valor": "−3,31 %"
+        },
+        {
+          "clave": "ROI al no favorito",
+          "valor": "−8,90 %"
+        },
+        {
+          "clave": "Margen medio de la casa",
+          "valor": "5,46 %",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "resto",
+        "datos": [
+          {
+            "valor": 68.18,
+            "texto": "68,18",
+            "etiqueta": "Gana el favorito",
+            "resto": "Gana el otro"
+          }
+        ]
+      },
+      "figcaption": "El favorito gana casi siete de cada diez partidos. Y aun así pierde dinero.",
+      "sr": "El favorito gana el 68,18 % de los partidos; el resto los gana el otro jugador. Apostar siempre al favorito da un ROI del −4,54 %.",
+      "composicion": "centrado"
+    },
+    {
+      "id": "s-limites",
+      "etiqueta": "Lo que no prueba",
+      "eyebrow": "Los límites",
+      "titulo_antes": "Lo que este análisis",
+      "titulo_acento": "no demuestra",
+      "titulo_despues": ".",
+      "lead": "Lo que este trabajo no puede decir. Las tres primeras eran defectos reales de la primera versión y están arregladas; las dos últimas siguen ahí y conviene no disimularlas.",
+      "parrafos": [
+        "El cruce de fuentes ya usa un identificador único de jugador con controles automáticos, y el filtro de edades atípicas ha desaparecido: lo que borraba no eran outliers, eran 432 filas mal cruzadas, y de paso se llevaba por delante a veteranos reales como Feliciano López o Karlović.",
+        "Lo que sigue sin poder afirmarse es que la diferencia en hierba sea estadísticamente significativa: 955 partidos dan una estimación, no una prueba. Y el ROI no incluye comisiones ni límites de apuesta, así que el número real de cualquiera de estas estrategias sería algo peor, no mejor.",
+        "Tampoco hay partición temporal: las estrategias se evalúan sobre los mismos datos en los que se observaron los patrones. Aquí no invalida la conclusión —el sesgo empujaría a parecer más rentable, y aun así todo pierde—, pero impediría defender una estrategia que hubiera salido ganadora."
+      ],
+      "ledger": [
+        {
+          "clave": "Cruce por clave real",
+          "valor": "Sí, por player_id"
+        },
+        {
+          "clave": "Filtro de edades atípicas",
+          "valor": "Eliminado"
+        },
+        {
+          "clave": "Significatividad en hierba",
+          "valor": "No contrastada"
+        },
+        {
+          "clave": "Comisiones y límites",
+          "valor": "Fuera del ROI"
+        }
+      ],
+      "grafico": {
+        "tipo": "veredictos",
+        "datos": [
+          {
+            "si": true,
+            "etiqueta": "El cruce de fuentes|usa una clave de verdad"
+          },
+          {
+            "si": true,
+            "etiqueta": "Las edades salen de|la fecha de nacimiento"
+          },
+          {
+            "si": false,
+            "etiqueta": "La diferencia en hierba|es significativa"
+          },
+          {
+            "si": false,
+            "etiqueta": "El ROI incluye comisiones|y límites de apuesta"
+          }
+        ]
+      },
+      "figcaption": "Cuatro cosas que este análisis no sostiene.",
+      "sr": "Cuatro comprobaciones con su veredicto, dos cumplidas y dos no. Cumplidas: el cruce de fuentes usa una clave de verdad, y las edades salen de la fecha de nacimiento. No cumplidas: la diferencia en hierba es significativa, y el ROI incluye comisiones y límites de apuesta.",
+      "composicion": "editorial"
+    }
+  ],
+  "cierre": {
+    "eyebrow": "El código",
+    "titulo_antes": "El código está en",
+    "titulo_acento": "GitHub",
+    "titulo_despues": ".",
+    "parrafos": [
+      "Todo lo de esta página sale del cuaderno de Python del trabajo: la carga y el cruce de las dos fuentes, la limpieza, el análisis exploratorio con sus gráficos, y la simulación de las estrategias de apuesta partido a partido.",
+      "El repositorio lleva el cuaderno entero, con su código y sus salidas, incluido el apartado de limitaciones tal y como lo escribí. Es la parte que más dice sobre cómo trabajo."
+    ],
+    "botones": [
+      {
+        "texto": "Ver el código en GitHub",
+        "href": "https://github.com/ppblanco/atp-tennis-betting-analysis",
+        "nueva_pestana": true
+      },
+      {
+        "texto": "Escríbeme",
+        "href": "mailto:pedro.perez.blanco@outlook.es"
+      }
+    ],
+    "informe": {
+      "titulo": "Ganar a la casa de apuestas · Presentación",
+      "tipo": "PDF",
+      "alt": "Primera página de la presentación del análisis exploratorio sobre apuestas deportivas en el circuito ATP.",
+      "cta": "Ver la presentación",
+      "descargar": "Descargar presentación",
+      "ampliar": "Abrir en pantalla completa",
+      "descarga": "apuestas-presentacion.pdf",
+      "archivo": "apuestas-presentacion.pdf",
+      "portada": "../medios/informes/apuestas-portada.jpg",
+      "paginas": 11,
+      "peso": "859 KB",
+      "octetos": 879392,
+      "ancho": 1000,
+      "alto": 563
+    }
+  },
+  "siguiente": {
+    "rotulo": "Siguiente trabajo",
+    "titulo": "Lead scoring y asistente RAG",
+    "href": "tfm-lead-scoring.html"
+  },
+  "paleta": {
+    "_porque": "verde-cian 172° del vídeo: el 34% de sus píxeles, la pista",
+    "senal": "#3FB39A",
+    "senal_viva": "#6BCBB6",
+    "senal_tenue": "rgba(63,179,154,.14)",
+    "senal_linea": "rgba(63,179,154,.34)"
+  }
+}

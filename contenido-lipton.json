@@ -1,0 +1,403 @@
+{
+  "_leeme": "Todo el texto de trabajos/lipton.html sale de aquí. Edita y ejecuta 'python herramientas/hacer-caso.py'. No edites el HTML a mano: se sobrescribe entero. Las cifras salen de la memoria original (originales/memorias/Lipton Campaign final.pdf). OJO: fue un trabajo de EQUIPO, de cuatro personas, y la página lo dice. No pongas nada que suene a que la campaña la hizo Pedro solo. Los nombres de los otros tres NO se publican: aparecen en el PDF, pero el PDF ya no se enlaza y no es cosa nuestra sacarlos a una URL pública.",
+  "meta": {
+    "titulo_pestana": "Lipton · The Summer Shake Up · Pedro Pérez Blanco",
+    "descripcion": "Campaña de marca para Lipton Ice Tea dirigida a la generación Z: investigación propia, concepto, merchandising y presupuesto con su retorno.",
+    "dominio": "pedro-perez-data.netlify.app"
+  },
+  "volver": {
+    "texto": "Todos los trabajos",
+    "href": "../index.html#trabajo"
+  },
+  "hero": {
+    "tipo": "animada",
+    "video": {
+      "src": "../medios/video/lipton.mp4",
+      "poster": "../medios/video/lipton-poster.jpg"
+    },
+    "categoria": "Estrategia de marca · Publicidad creativa",
+    "titulo": "Lipton · The Summer Shake Up",
+    "sub": "Campaña para Lipton Ice Tea, hecha en equipo de cuatro durante el intercambio en Fontys y presentada al concurso Ad Venture de Edcom. El encargo: que la generación Z hable de la marca. No que la conozca —eso ya pasa—, sino que esté entre las cinco de las que habla.",
+    "datos": [
+      {
+        "k": "Papel",
+        "v": "Equipo de cuatro · investigación y estrategia"
+      },
+      {
+        "k": "Dónde",
+        "v": "Fontys · intercambio Erasmus"
+      },
+      {
+        "k": "Concurso",
+        "v": "Ad Venture · Edcom"
+      },
+      {
+        "k": "Entrega",
+        "v": "Memoria de 68 páginas"
+      }
+    ],
+    "cifras": [
+      {
+        "valor": "Gen Z",
+        "pie": "el público del encargo"
+      },
+      {
+        "valor": "4",
+        "pie": "fases de campaña"
+      },
+      {
+        "valor": "14,1%",
+        "pie": "de retorno previsto"
+      }
+    ]
+  },
+  "rail": [
+    {
+      "texto": "El encargo",
+      "ancla": "s-encargo"
+    },
+    {
+      "texto": "La marca",
+      "ancla": "s-marca"
+    },
+    {
+      "texto": "La investigación",
+      "ancla": "s-investigacion"
+    },
+    {
+      "texto": "El concepto",
+      "ancla": "s-concepto"
+    },
+    {
+      "texto": "Los números",
+      "ancla": "s-numeros"
+    }
+  ],
+  "secciones": [
+    {
+      "id": "s-encargo",
+      "etiqueta": "El encargo",
+      "eyebrow": "El encargo",
+      "titulo_antes": "No es notoriedad.",
+      "titulo_acento": "Es conversación",
+      "titulo_despues": ".",
+      "lead": "Lipton Ice Tea no tiene un problema de conocimiento: la generación Z sabe perfectamente quién es. Lo que no hace es hablar de ella. El objetivo del encargo era subir su notoriedad espontánea —el famoso «top of mind»— y meterla entre las cinco marcas de refrescos que esta generación menciona sin que se lo pregunten.",
+      "parrafos": [
+        "La diferencia entre conocer una marca y acordarse de ella cambia por completo el trabajo. Un problema de conocimiento se resuelve con alcance y dinero; uno de conversación se resuelve dándole a la gente algo que contar, y eso es lo que la campaña tenía que inventar.",
+        "El otro medio encargo era el merchandising: no como regalo promocional, sino como la pieza que hace que alguien enseñe la marca a sus amigos sin que se lo pidan."
+      ],
+      "ledger": [
+        {
+          "clave": "Marca",
+          "valor": "Lipton Ice Tea"
+        },
+        {
+          "clave": "Público",
+          "valor": "Generación Z"
+        },
+        {
+          "clave": "Objetivo",
+          "valor": "Entrar en el top 5 de menciones",
+          "destacada": true
+        },
+        {
+          "clave": "Memoria",
+          "valor": "68 páginas, 6 capítulos"
+        }
+      ],
+      "grafico": {
+        "tipo": "escalones",
+        "datos": [
+          {
+            "valor": "68",
+            "etiqueta": "páginas de memoria",
+            "parte": 1.0
+          },
+          {
+            "valor": "6",
+            "etiqueta": "capítulos",
+            "parte": 0.5
+          },
+          {
+            "valor": "4",
+            "etiqueta": "personas en el equipo",
+            "parte": 0.34
+          }
+        ]
+      },
+      "figcaption": "La forma del entregable.",
+      "sr": "Embudo: una memoria de 68 páginas repartida en 6 capítulos, hecha por un equipo de 4 personas.",
+      "composicion": "invertido"
+    },
+    {
+      "id": "s-marca",
+      "etiqueta": "La marca",
+      "eyebrow": "El diagnóstico",
+      "titulo_antes": "Lo que la marca hace bien,",
+      "titulo_acento": "y lo que no",
+      "titulo_despues": ".",
+      "lead": "Antes de proponer nada hay que saber de qué se parte. El análisis interno y externo dejó cuatro cosas claras, dos a favor y dos en contra, y las dos en contra son las que acabaron dando forma a la campaña.",
+      "parrafos": [
+        "A favor: la marca tiene una personalidad definida —el arquetipo del bufón, divertida y sin complejos— que a la generación Z le funciona, y una presencia real en TikTok e Instagram que la mantiene vigente.",
+        "En contra: está en las redes pero habla poco con quien le contesta, y no siempre usa sus propios símbolos —el círculo amarillo— de forma coherente, lo que hace que su identidad se diluya. Una campaña que pide conversación tenía que atacar justo eso.",
+        "El precio percibido también salió como debilidad: parte del público la ve cara frente a marcas parecidas. No es algo que arregle una campaña de comunicación, y por eso se dejó fuera del alcance en vez de fingir que sí."
+      ],
+      "ledger": [
+        {
+          "clave": "Arquetipo de marca",
+          "valor": "El bufón"
+        },
+        {
+          "clave": "Presencia social",
+          "valor": "TikTok e Instagram"
+        },
+        {
+          "clave": "Punto débil que se ataca",
+          "valor": "Habla poco con su público",
+          "destacada": true
+        },
+        {
+          "clave": "Fuera de alcance",
+          "valor": "El precio percibido"
+        }
+      ],
+      "grafico": {
+        "tipo": "veredictos",
+        "datos": [
+          {
+            "si": true,
+            "etiqueta": "Personalidad de marca|definida y reconocible"
+          },
+          {
+            "si": true,
+            "etiqueta": "Presencia real en las redes|de su público"
+          },
+          {
+            "si": false,
+            "etiqueta": "Conversa con quien|le responde"
+          },
+          {
+            "si": false,
+            "etiqueta": "Usa sus propios símbolos|de forma coherente"
+          }
+        ]
+      },
+      "figcaption": "El diagnóstico, en cuatro líneas.",
+      "sr": "Cuatro puntos: la marca sí tiene personalidad definida y presencia real en redes; no conversa con su público ni usa sus símbolos de forma coherente.",
+      "composicion": "dividido"
+    },
+    {
+      "id": "s-investigacion",
+      "etiqueta": "La investigación",
+      "eyebrow": "La investigación",
+      "titulo_antes": "Preguntar antes de",
+      "titulo_acento": "proponer",
+      "titulo_despues": ".",
+      "lead": "La investigación fue en tres pasos y cada uno servía para algo distinto. Un cuestionario en línea para llegar a mucha gente, grupos de discusión para entender el porqué de las respuestas, y dos entrevistas privadas para profundizar sin que nadie se dejara influir por el grupo.",
+      "parrafos": [
+        "El orden no es casual. El cuestionario da amplitud pero respuestas cortas; el grupo da matices pero arrastra al que habla primero; la entrevista privada da profundidad sin esa presión. Cada método tapa el punto ciego del anterior.",
+        "Lo que salió: preguntados directamente, dicen valorar el precio, la reputación y la calidad. Pero lo que de verdad mueve la notoriedad espontánea en esta generación es otra cosa —marcas con personalidad propia, coherentes, transparentes y en las que se sientan representados—. Esa distancia entre lo que se dice valorar y lo que de hecho funciona es el hallazgo del que sale el concepto."
+      ],
+      "ledger": [
+        {
+          "clave": "Cuestionario en línea",
+          "valor": "Difundido en redes y grupos"
+        },
+        {
+          "clave": "Grupos de discusión",
+          "valor": "Para el porqué"
+        },
+        {
+          "clave": "Entrevistas privadas",
+          "valor": "2"
+        },
+        {
+          "clave": "El hallazgo",
+          "valor": "Dicen «precio»; responden a «personalidad»",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "flujo",
+        "datos": [
+          {
+            "etiqueta": "Encuesta|en línea"
+          },
+          {
+            "etiqueta": "Grupos de|discusión"
+          },
+          {
+            "etiqueta": "Entrevista|privada"
+          },
+          {
+            "etiqueta": "El|concepto",
+            "pie": "Cada método tapa|el punto ciego del anterior."
+          }
+        ]
+      },
+      "figcaption": "Tres métodos, cada uno para lo que el anterior no da.",
+      "sr": "Diagrama: una encuesta en línea, luego grupos de discusión y luego entrevistas privadas; de ahí sale el concepto de campaña.",
+      "composicion": "ancho"
+    },
+    {
+      "id": "s-concepto",
+      "etiqueta": "El concepto",
+      "eyebrow": "El concepto",
+      "titulo_antes": "Una botella que",
+      "titulo_acento": "suena",
+      "titulo_despues": ".",
+      "lead": "«The Summer Shake Up»: sacar a la generación Z de su zona de confort durante el verano, con una lista de retos, eventos donde la marca está presente y embajadores locales en cada país. Cuatro fases, de despertar la expectativa a mantener la conversación.",
+      "parrafos": [
+        "La pieza central del merchandising es una botella de cristal reutilizable con cubitos de metal dentro, que suenan al agitarla. Ese detalle es toda la campaña resumida en un objeto: hace ruido, invita a agitarla, y agitar es literalmente el nombre del concepto. Alrededor van gorras, mantas de picnic, sudaderas y camisetas.",
+        "Los embajadores son de cada país, no una única cara internacional. Para una generación que valora sentirse representada, una voz local pesa más que una campaña doblada."
+      ],
+      "ledger": [
+        {
+          "clave": "Concepto",
+          "valor": "The Summer Shake Up",
+          "destacada": true
+        },
+        {
+          "clave": "Fases de campaña",
+          "valor": "4"
+        },
+        {
+          "clave": "Pieza central",
+          "valor": "Botella con cubitos de metal"
+        },
+        {
+          "clave": "Embajadores",
+          "valor": "Uno por país"
+        }
+      ],
+      "grafico": {
+        "tipo": "botella",
+        "datos": [
+          {
+            "valor": "01",
+            "etiqueta": "Expectación|dos semanas antes"
+          },
+          {
+            "valor": "02",
+            "etiqueta": "La marca aparece|en los eventos"
+          },
+          {
+            "valor": "03",
+            "etiqueta": "Los retos y|el merchandising"
+          },
+          {
+            "valor": "04",
+            "etiqueta": "La conversación|se sostiene"
+          }
+        ]
+      },
+      "figcaption": "Las cuatro fases, apiladas con el perfil del envase que es la pieza central de la campaña.",
+      "sr": "Cuatro fases de campaña apiladas de arriba abajo, con forma de botella: 01, expectación durante las dos semanas previas; 02, la marca aparece en los eventos; 03, los retos y el merchandising; 04, la conversación se sostiene.",
+      "composicion": "invertido"
+    },
+    {
+      "id": "s-numeros",
+      "etiqueta": "Los números",
+      "eyebrow": "El presupuesto",
+      "titulo_antes": "Una campaña que",
+      "titulo_acento": "se paga sola",
+      "titulo_despues": ".",
+      "lead": "Un concepto sin números es una idea, no una propuesta. El presupuesto suma 184.000 dólares —159.000 en producto promocional y 25.000 en el patrocinio de un festival de música— frente a 210.000 de ingresos previstos por la venta del merchandising.",
+      "parrafos": [
+        "Eso deja 26.000 dólares de beneficio neto y un retorno del 14,13%. Lo relevante no es la cifra: es que el merchandising deje de ser una línea de gasto y pase a financiar la campaña que lo reparte.",
+        "Los ingresos se reparten entre mantas de picnic (67.500), gorras (45.000), camisetas (37.500), sudaderas (30.000) y botellas (30.000). Que la botella —la pieza central del concepto— sea de las que menos factura es coherente: está ahí para que la enseñen, no para que la compren."
+      ],
+      "ledger": [
+        {
+          "clave": "Producto promocional",
+          "valor": "159.000 $"
+        },
+        {
+          "clave": "Patrocinio del festival",
+          "valor": "25.000 $"
+        },
+        {
+          "clave": "Ingresos previstos",
+          "valor": "210.000 $"
+        },
+        {
+          "clave": "Beneficio neto",
+          "valor": "26.000 $"
+        },
+        {
+          "clave": "Retorno de la inversión",
+          "valor": "14,13%",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "barras",
+        "datos": [
+          {
+            "valor": 184,
+            "texto": "184.000 $",
+            "etiqueta": "Costes"
+          },
+          {
+            "valor": 210,
+            "texto": "210.000 $",
+            "etiqueta": "Ingresos",
+            "destacada": true
+          }
+        ]
+      },
+      "figcaption": "Costes contra ingresos previstos, en dólares.",
+      "sr": "Dos barras: 184.000 dólares de costes frente a 210.000 de ingresos previstos, lo que deja 26.000 de beneficio neto y un retorno del 14,13%.",
+      "composicion": "centrado"
+    }
+  ],
+  "cierre": {
+    "eyebrow": "El trabajo",
+    "titulo_antes": "Fue un trabajo",
+    "titulo_acento": "de cuatro",
+    "titulo_despues": ".",
+    "parrafos": [
+      "La campaña la hicimos entre cuatro durante el intercambio en Fontys —Cristina Ortiz, Viola Lechner, Zoë van der Meer y yo— y se presentó al concurso Ad Venture de Edcom. Mi parte estuvo en la investigación y en la estrategia: el análisis de marca, el diseño del cuestionario y de los grupos, y la construcción del concepto a partir de lo que salió de ahí.",
+      "La memoria completa está aquí abajo, entera y sin salir de esta página. Se puede leer, descargar y abrir en grande."
+    ],
+    "botones": [
+      {
+        "texto": "Ver el proyecto en GitHub",
+        "href": "https://github.com/ppblanco/lipton-summer-shake-up",
+        "nueva_pestana": true
+      },
+      {
+        "texto": "Escríbeme",
+        "href": "mailto:pedro.perez.blanco@outlook.es"
+      }
+    ],
+    "informe": {
+      "archivo": "lipton-summer-shake-up.pdf",
+      "portada": "../medios/informes/lipton-portada.jpg",
+      "paginas": 68,
+      "peso": "8,5 MB",
+      "octetos": 8915611,
+      "titulo": "Lipton · Informe final",
+      "descarga": "lipton-summer-shake-up.pdf",
+      "tipo": "PDF",
+      "alt": "Portada de la memoria: «Creative Advertising», presentada por Cristina Ortiz, Pedro Pérez, Viola Lechner y Zoë van der Meer, con los logotipos de Edcom, Lipton y Fontys.",
+      "cta": "Leer el informe",
+      "descargar": "Descargar informe",
+      "ampliar": "Abrir en pantalla completa",
+      "ancho": 1000,
+      "alto": 1415
+    }
+  },
+  "siguiente": {
+    "rotulo": "Siguiente trabajo",
+    "titulo": "Ganar a la casa de apuestas",
+    "href": "apuestas.html"
+  },
+  "paleta": {
+    "_porque": "amarillo 52°, casi la mitad del vídeo: es el color del producto",
+    "senal": "#DCC64A",
+    "senal_viva": "#EBDA7C",
+    "senal_tenue": "rgba(220,198,74,.14)",
+    "senal_linea": "rgba(220,198,74,.34)"
+  }
+}

@@ -1,0 +1,16 @@
+# Configuracion de despliegue del portfolio.
+#
+# El sitio NO se sirve desde la raiz del repositorio: se sirve desde
+# publicar/, que monta preparar-publicacion.py con una lista blanca. Eso es
+# a proposito. En la raiz conviven las fuentes, los generadores y las
+# pruebas, y nada de eso tiene por que estar colgado de una URL publica.
+#
+# El script solo usa la libreria estandar de Python, asi que no hay nada que
+# instalar en el build.
+
+[build]
+  command = "python3 herramientas/preparar-publicacion.py"
+  publish = "publicar"
+
+[build.environment]
+  PYTHON_VERSION = "3.13"

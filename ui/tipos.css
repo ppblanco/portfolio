@@ -1,0 +1,27 @@
+/* =============================================================
+   TIPOS · las cuatro caras, servidas desde este mismo dominio
+   -------------------------------------------------------------
+   No se le piden a Google. La misma red corporativa que bloquea
+   la analítica puede bloquear las fuentes, y esta página se abre
+   justo desde ahí: si cayeran, se vería entera en Arial.
+   Se regeneran con herramientas/hacer-tipos.py
+   ============================================================= */
+
+@font-face{
+  font-family:"Barlow Condensed"; font-style:normal; font-weight:400; font-display:swap;
+  src:url("../tipos/barlow-condensed-400.woff2") format("woff2");
+}
+@font-face{
+  font-family:"Barlow Condensed"; font-style:normal; font-weight:600; font-display:swap;
+  src:url("../tipos/barlow-condensed-600.woff2") format("woff2");
+}
+@font-face{
+  font-family:"Barlow"; font-style:normal; font-weight:400; font-display:swap;
+  src:url("../tipos/barlow-400.woff2") format("woff2");
+}
+/* Solo para lecturas numéricas: métricas, tablas de resultados y
+   etiquetas de dato. Separar el dato de la prosa ayuda a leerlo. */
+@font-face{
+  font-family:"IBM Plex Mono"; font-style:normal; font-weight:400; font-display:swap;
+  src:url("../tipos/plex-mono-400.woff2") format("woff2");
+}

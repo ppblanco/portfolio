@@ -1,0 +1,117 @@
+# Portfolio de Pedro Pérez Blanco
+#
+# Lo que se PUBLICA lo decide herramientas/preparar-publicacion.py, que copia
+# index.html, 404.html y las carpetas tipos/, ui/, trabajos/ y medios/. Este
+# archivo es otra cosa: dice qué NO entra en el repositorio.
+#
+# Regla: material de construcción fuera; lo que la web sirve, dentro.
+
+# ---------------------------------------------------------------- material
+# originales/ son 117 MB de fuentes: fotos sin recortar, vídeos sin comprimir,
+# memorias y notebooks. De ahí salen los assets de medios/ con hacer-fotos.py
+# y hacer-video.py, pero el original no se publica ni se versiona.
+originales/
+
+# Versiones anteriores de los trabajos. Histórico local.
+_archivo_original/
+
+# ---------------------------------------------------------- datos y análisis
+# Los notebooks y los datasets pertenecen a los repositorios de cada proyecto,
+# no al portfolio: aquí solo hacen falta el PDF, las imágenes y los textos.
+*.ipynb
+.ipynb_checkpoints/
+*.parquet
+*.csv
+*.xlsx
+*.pkl
+*.keras
+*.h5
+
+# ------------------------------------------------------------------ cachés
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+
+# ------------------------------------------------ residuos y temporales
+bash.exe.stackdump
+*.stackdump
+*.tmp
+*.bak
+~$*
+.DS_Store
+Thumbs.db
+
+# Lo que dejan las pruebas al fallar
+pruebas/test-results/
+pruebas/playwright-report/
+
+# ------------------------------------------------------- referencias internas
+# Capturas de «cómo debe quedar» y el clon de una web ajena que sirvió de
+# referencia visual. Material de trabajo, no del sitio.
+referencias/
+
+# La carpeta que genera preparar-publicacion.py para subir a Netlify: se
+# regenera y no tiene sentido versionarla.
+publicar/
+
+# ---------------------------------------------------------------------------
+# LO QUE SÍ ENTRA, por si alguien duda: index.html, 404.html, contenido-*.json,
+# ui/, tipos/, trabajos/ (con sus PDF), medios/ (fotos, vídeos comprimidos,
+# informes, CV), herramientas/, pruebas/*.js, documentacion/ y los .md.
+
+# Capturas de referencia que deja Pedro para explicar qué quiere. Material de
+# trabajo: no son del sitio y no se publican.
+Estilo de las graficas*.png
+Detalles graficas*.png
+mas detalles*.png
+Como*.png
+*referencia*.png
+
+# ---------------------------------------------------- añadido al publicar
+# Copias sueltas en la raiz. La mas grave: el PPTX ORIGINAL del TFM, el que
+# NO esta depurado. Lleva dentro el embudo de captacion, el analisis por
+# canal y por colegio, la tasa de conversion y los percentiles de corte, y
+# todo eso es justo lo que la pagina del TFM promete no publicar. Lo que se
+# publica es el PDF de 18 paginas ya depurado, que vive en trabajos/.
+*.pptx
+*.docx
+*.xlsx
+
+# Capturas de referencia que se usaron de inspiracion, incluida la web ajena
+# que sirvio de estudio y una diapositiva del propio TFM. Material de
+# trabajo: no son del sitio.
+Captura de pantalla*.png
+Captura*.png
+
+# Lo que deja Playwright al ejecutarse desde la raiz
+test-results/
+playwright-report/
+
+# Notas internas de trabajo. Se quedan en local:
+#   · NOTAS.md lleva una ruta personal completa en un ejemplo de comando;
+#   · LEEME.md describe una estructura anterior («Candidatura/»);
+#   · CLAUDE.md son 1.681 lineas de instrucciones de trabajo, no documentacion
+#     de un portfolio publico;
+#   · documentacion/SEGURIDAD.md cita la ruta del .env de OTRO proyecto;
+#   · CAMBIOS_FUTUROS.md es la guia para pedir cambios mas adelante y lleva la
+#     ruta local completa del proyecto.
+# Lo que el repositorio publica es README.md.
+# ---------------------------------------------------- confidencialidad
+# Los valores reales que la politica del TFM prohibe publicar (los dos
+# umbrales y la conversion absoluta de A). Los usa la guarda de
+# herramientas/hacer-caso.py y la prueba de confidencialidad.
+#
+# Antes vivian escritos dentro del propio generador y del propio test, que si
+# se publican: la guarda que protegia el dato lo publicaba en el mismo gesto.
+# Fuera del repositorio la guarda hace su trabajo sin ser ella la fuga.
+/herramientas/confidencial.local.json
+
+/CLAUDE.md
+/NOTAS.md
+/LEEME.md
+/CAMBIOS_FUTUROS.md
+/documentacion/
+
+# Local Netlify folder
+.netlify

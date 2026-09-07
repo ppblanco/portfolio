@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es" data-caso="letterboxd">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- GENERADO por herramientas/hacer-caso.py desde contenido-letterboxd.json.
+     No lo edites a mano: se sobrescribe entero en cada ejecución. -->
+<title>Letterboxd · Topic modeling · Pedro Pérez Blanco</title>
+<meta name="description" content="LDA sobre reseñas de cine de Letterboxd. Tres de los seis tópicos no eran temas, eran idiomas. De ahí salió un experimento que no estaba en el encargo.">
+<meta name="theme-color" content="#0B0C0F">
+
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Letterboxd · Topic modeling · Pedro Pérez Blanco">
+<meta property="og:description" content="LDA sobre reseñas de cine de Letterboxd. Tres de los seis tópicos no eran temas, eran idiomas. De ahí salió un experimento que no estaba en el encargo.">
+<meta property="og:image" content="https://pedro-perez-data.netlify.app/medios/og.jpg">
+<meta property="og:image:alt" content="Tarjeta con el nombre de Pedro Pérez Blanco y el titular del portfolio.">
+<meta property="og:url" content="https://pedro-perez-data.netlify.app/trabajos/letterboxd.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="stylesheet" href="../ui/tipos.css">
+<link rel="stylesheet" href="../ui/plantilla.css">
+<!-- Después de plantilla.css, porque se apoya en sus tokens y solo añade lo
+     que es propio de una página de caso. -->
+<link rel="stylesheet" href="../ui/trabajo.css">
+<style>
+  /* Paleta de este trabajo. naranja 22° del vídeo: el ámbar de sala de cine, más rojo que el del sitio */
+  :root{
+    --senal:#E0703F;
+    --senal-viva:#EE9169;
+    --senal-tenue:rgba(224,112,63,.14);
+    --senal-linea:rgba(224,112,63,.34);
+  }
+  /* El cursor NO cambia con el caso: es del sitio. Si cambiara,
+     al pasar de un trabajo a otro pareceria otro puntero. Hay
+     una prueba que lo compara con el del portfolio. */
+  .nodo-cursor{ border-color:rgba(224,164,88,.34) }
+  .nodo-cursor::after{ background:#E0A458 }
+  .nodo-cursor.esta-activo{ border-color:#E0A458;
+                            background:rgba(224,164,88,.07) }
+</style>
+</head>
+<body>
+
+<canvas class="fondo" id="fondo" aria-hidden="true"></canvas>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra" id="barra">
+  <nav class="barra__caja" aria-label="Secciones">
+    <a class="barra__marca" href="../index.html">
+      <span class="barra__iniciales" aria-hidden="true">PPB</span>
+      <span class="barra__nombre">Pedro Pérez Blanco</span>
+    </a>
+    <ul class="barra__lista" id="menu-lista"><li><a href="#s-corpus" data-nav>El corpus</a></li><li><a href="#s-nlp" data-nav>El preprocesado</a></li><li><a href="#s-hallazgo" data-nav>El hallazgo</a></li><li><a href="#s-experimento" data-nav>El experimento</a></li><li><a href="#s-limites" data-nav>Lo que no prueba</a></li></ul>
+    <button class="barra__pausa" id="reanudar" type="button">
+      <span class="barra__pausa__punto" aria-hidden="true"></span>Movimiento en pausa
+      <span class="oculto">, pulsa para reanudarlo</span>
+    </button>
+    <a class="barra__cta" href="../index.html#trabajo">Todos los trabajos</a>
+    <button class="barra__menu" id="menu" type="button"
+            aria-expanded="true" aria-controls="menu-lista">
+      <span aria-hidden="true"></span>
+      <span class="oculto">Abrir el menú</span>
+    </button>
+  </nav>
+  <div class="barra__avance" id="avance" aria-hidden="true"></div>
+</header>
+
+<main id="contenido">
+
+  <section class="caso-portada caso-portada--animada"><div class="relieve" aria-hidden="true"><img class="relieve__quieta" src="../medios/video/letterboxd-poster.jpg" width="1440" height="810" alt="" decoding="async"><video id="portada-video" muted loop playsinline preload="none" poster="../medios/video/letterboxd-poster.jpg" data-src="../medios/video/letterboxd.mp4"></video><span class="relieve__velo"></span></div>
+    <div class="marco">
+      <a class="volver" href="../index.html#trabajo">
+        <span aria-hidden="true">&larr;</span> Todos los trabajos
+      </a>
+      <div class="cristal"><span class="cristal__fx" aria-hidden="true"><span class="cristal__cara"></span><span class="cristal__filo cristal__filo--t"></span><span class="cristal__filo cristal__filo--b"></span><span class="cristal__filo cristal__filo--i"></span><span class="cristal__filo cristal__filo--d"></span></span><div class="cristal__dentro">
+      <div class="caso-portada__panel" data-revelar>
+        <p class="rotulo eyebrow">Datos no estructurados · PLN</p>
+        <h1 class="caso-portada__titulo" data-partir>Letterboxd · De qué habla quien reseña cine</h1>
+        <p class="parrafo parrafo--lead">Topic modeling sobre reseñas de películas estrenadas en 2024. El modelo encontró seis tópicos, y al mirarlos de cerca resultó que la mitad no hablaban de cine: separaban idiomas. Eso convirtió un hallazgo incómodo en la pregunta siguiente.</p>
+        <div class="datos"><div class="dato"><span class="dato__k">Papel</span><span class="dato__v">Equipo de tres · trabajo conjunto</span></div><div class="dato"><span class="dato__k">Autores</span><span class="dato__v">Alfredo Martín · Marcos Fernández · Pedro Pérez</span></div><div class="dato"><span class="dato__k">Año</span><span class="dato__v">2026 · MUBA, ICADE</span></div><div class="dato"><span class="dato__k">Herramientas</span><span class="dato__v">Python · spaCy · NLTK · Gensim · pyLDAvis</span></div></div>
+      </div>
+      </div></div>
+      <div class="cifras" data-revelar><div class="cifra"><span class="cifra__n">3 de 6</span><span class="cifra__pie">tópicos eran idiomas</span></div><div class="cifra"><span class="cifra__n">48</span><span class="cifra__pie">idiomas en el corpus</span></div><div class="cifra"><span class="cifra__n">32,3%</span><span class="cifra__pie">de reseñas en tópicos de idioma</span></div></div>
+    </div>
+  </section>
+  <!-- El raíl de apartados. Son anclas de verdad, así que funciona con el
+       JavaScript bloqueado; lo único que añade el script es marcar en cuál
+       estás. Es un índice, no unas pestañas: el caso entero está en la
+       página. -->
+  <nav class="rail" id="rail" aria-label="Apartados de este trabajo">
+    <div class="marco rail__caja"><a href="#s-corpus" data-rail>El corpus</a><a href="#s-nlp" data-rail>El preprocesado</a><a href="#s-hallazgo" data-rail>El hallazgo</a><a href="#s-experimento" data-rail>El experimento</a><a href="#s-limites" data-rail>Lo que no prueba</a></div>
+  </nav>
+
+  <section class="caso" id="s-corpus" data-caso="El corpus">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--editorial">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">El corpus</p>
+          <h2 class="titulo-menor">De 847.000 películas <em class="acento">a 12.000 reseñas</em>.</h2>
+          <p class="parrafo parrafo--lead">El dataset de partida son 1,12 GB y 847.209 películas de Letterboxd, cada una con hasta diez reseñas. Filtrando por año de estreno quedan 40.486 películas de 2024 y 119.096 reseñas con texto, que bajan a 111.798 al deduplicar.</p>
+          <p class="parrafo">Sobre esas ~112.000 se trabaja con una muestra aleatoria de 12.000 reseñas con semilla fija —11.968 tras normalizar—. No es un recorte de conveniencia disimulado: procesar el corpus entero pasa de una hora solo en lematización y etiquetado, y el notebook está pensado para poder ejecutarse de principio a fin en unos minutos. Basta cambiar una constante para usarlo completo.</p><p class="parrafo">Hay además una discrepancia que no hemos sabido explicar. El trabajo entregado en su día decía 38.531 reseñas de 2024; ejecutando hoy el mismo filtro sobre el mismo dataset salen 119.096. Descartamos que sea un artefacto del agrupado, y ahí se quedó: el dataset no está versionado y no se puede comprobar qué había entonces.</p><p class="parrafo">Del dataset se usan el título, el año, la nota media y el texto. El nombre de usuario no se extrae en ningún momento: son personas reales y el trabajo iba a acabar en un repositorio público.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Películas en la fuente</span><span class="lectura__valor">847.209</span></div><div class="lectura"><span class="lectura__clave">Estrenadas en 2024</span><span class="lectura__valor">40.486</span></div><div class="lectura"><span class="lectura__clave">Reseñas tras deduplicar</span><span class="lectura__valor">111.798</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Muestra analizada</span><span class="lectura__valor">11.968</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 380" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="50" y="30" width="540" height="64" rx="6" fill="var(--linea-fuerte)" opacity=".45"/><text x="66" y="79" class="g-num">847.209</text><text x="50" y="124" class="g-pie">películas en la fuente</text><rect x="50" y="152" width="335" height="64" rx="6" fill="var(--linea-fuerte)" opacity=".45"/><text x="66" y="201" class="g-num">111.798</text><text x="50" y="246" class="g-pie">reseñas de 2024</text><rect x="50" y="274" width="184" height="64" rx="6" fill="var(--senal)" opacity=".9"/><text x="66" y="323" class="g-num">11.968</text><text x="50" y="368" class="g-pie">muestra con semilla fija</text></svg>
+          <figcaption class="caso__pie">Del dataset completo a la muestra reproducible.</figcaption>
+          <p class="oculto">Escalones: 847.209 películas en la fuente, 111.798 reseñas de películas de 2024 tras deduplicar y una muestra de 11.968.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-nlp" data-caso="El preprocesado">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--dividido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">El preprocesado</p>
+          <h2 class="titulo-menor">Trece palabras <em class="acento">por reseña</em>.</h2>
+          <p class="parrafo parrafo--lead">Las reseñas de Letterboxd son cortas, irónicas y llenas de jerga. La mediana está en 16 palabras. Eso condiciona todo lo que se puede hacer después, porque casi ninguna técnica de PLN está pensada para textos tan breves.</p>
+          <p class="parrafo">El pipeline es el habitual: normalización, tokenización con NLTK, stopwords —del inglés, de industria y multilingües—, y lematización con spaCy más un diccionario de correcciones propias.</p><p class="parrafo">El etiquetado gramatical se hizo con tres métodos sobre el mismo texto para poder compararlos: spaCy, el perceptrón de NLTK y Flair. Este último, mucho más lento, solo sobre una muestra de 500 reseñas.</p><p class="parrafo">Se midió también la diversidad léxica con el Type-Token Ratio, y ahí hay una trampa que conviene declarar: sube de 0,918 a 0,965 tras el preprocesado, pero las reseñas pasan de 27,7 a 14,5 palabras, y el TTR sube casi solo cuando el texto se acorta. La subida no demuestra por sí sola más riqueza léxica.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Mediana de palabras</span><span class="lectura__valor">16 por reseña</span></div><div class="lectura"><span class="lectura__clave">Etiquetadores comparados</span><span class="lectura__valor">spaCy · NLTK · Flair</span></div><div class="lectura"><span class="lectura__clave">TTR antes / después</span><span class="lectura__valor">0,918 → 0,965</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Palabras antes / después</span><span class="lectura__valor">27,7 → 14,5</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 396" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><text x="50" y="60" class="g-rotulo">Palabras por reseña</text><rect x="50" y="80" width="540" height="62" rx="8" fill="var(--linea-fuerte)" opacity=".32"/><rect x="50" y="80" width="149.6" height="62" rx="8" fill="var(--senal)" opacity=".55"/><text x="218" y="128" class="g-num" text-anchor="start">27,7%</text><text x="50" y="176" class="g-pie">antes</text><text x="50" y="230" class="g-rotulo">Palabras por reseña</text><rect x="50" y="250" width="540" height="62" rx="8" fill="var(--linea-fuerte)" opacity=".32"/><rect x="50" y="250" width="78.3" height="62" rx="8" fill="var(--senal)" opacity=".92"/><text x="146" y="298" class="g-num" text-anchor="start">14,5%</text><text x="50" y="346" class="g-pie">después</text></svg>
+          <figcaption class="caso__pie">El preprocesado deja los textos a la mitad. El TTR sube por eso.</figcaption>
+          <p class="oculto">Comparación: 27,7 palabras por reseña antes del preprocesado y 14,5 después.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-hallazgo" data-caso="El hallazgo">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--ancho">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">El hallazgo</p>
+          <h2 class="titulo-menor">La mitad de los tópicos <em class="acento">no hablaban de cine</em>.</h2>
+          <p class="parrafo parrafo--lead">LDA con seis tópicos sobre el corpus completo. Tres de ellos —el de alemán e italiano, el de ruso y persa, el de francés y portugués— no separan temas: separan idiomas. Se llevan el 32,3 % de las reseñas.</p>
+          <p class="parrafo">El criterio para llamarlo «tópico de idioma» no es que sus palabras suenen extranjeras, que sería una impresión. Es que más de la mitad de las reseñas que caen en él no están en inglés, y eso se mide: 92,4 %, 71,0 % y 96,5 % respectivamente.</p><p class="parrafo">El corpus tiene 48 idiomas y solo el 62,4 % de las reseñas están en inglés. La lista de stopwords multilingües del trabajo original eran 28 palabras escritas a mano, que no cubren ni de lejos el francés, el portugués, el español o el indonesio que hay ahí dentro.</p><p class="parrafo">Con once tópicos en lugar de seis el problema empeora: son siete de once los que separan idiomas. Más tópicos no dan más temas, dan más idiomas.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Idiomas detectados</span><span class="lectura__valor">48</span></div><div class="lectura"><span class="lectura__clave">Reseñas en inglés</span><span class="lectura__valor">62,4 %</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Tópicos de idioma (K=6)</span><span class="lectura__valor">3 de 6</span></div><div class="lectura"><span class="lectura__clave">Tópicos de idioma (K=11)</span><span class="lectura__valor">7 de 11</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 538" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="16" y="26" width="608" height="152" rx="4" fill="var(--linea)" opacity=".35"/><rect x="24" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="24" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="54" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="54" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="84" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="84" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="114" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="114" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="144" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="144" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="174" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="174" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="204" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="204" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="234" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="234" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="264" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="264" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="294" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="294" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="324" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="324" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="354" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="354" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="384" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="384" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="414" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="414" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="444" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="444" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="474" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="474" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="504" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="504" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="534" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="534" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="564" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="564" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="594" y="31" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="594" y="162" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><g class="foto" tabindex="0"><rect class="foto__marco" x="30.0" y="46" width="184.0" height="112" rx="3" fill="var(--senal)" opacity=".07"/><rect class="foto__filo" x="30.0" y="46" width="184.0" height="112" rx="3" fill="none" stroke="var(--senal)" stroke-width="1" opacity=".45"/><text class="g-num" x="122" y="102" text-anchor="middle">29,7%</text><text class="g-pie" x="122" y="138" text-anchor="middle">T0</text><text class="g-pie" x="122" y="204" text-anchor="middle" opacity=".8">cine</text><text class="g-pie" x="122" y="238" text-anchor="middle" opacity=".8">inglés</text></g><g class="foto foto--idioma" tabindex="0"><rect class="foto__marco" x="228.0" y="46" width="184.0" height="112" rx="3" fill="var(--senal)" opacity=".13"/><rect class="foto__filo" x="228.0" y="46" width="184.0" height="112" rx="3" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity=".95"/><text class="g-num" x="320" y="102" text-anchor="middle">7,8%</text><text class="g-pie" x="320" y="138" text-anchor="middle">T1</text><text class="g-pie" x="320" y="204" text-anchor="middle" opacity=".8">alemán</text><text class="g-pie" x="320" y="238" text-anchor="middle" opacity=".8">italiano</text><circle cx="240" cy="59" r="3.6" fill="var(--senal)"/></g><g class="foto" tabindex="0"><rect class="foto__marco" x="426.0" y="46" width="184.0" height="112" rx="3" fill="var(--senal)" opacity=".07"/><rect class="foto__filo" x="426.0" y="46" width="184.0" height="112" rx="3" fill="none" stroke="var(--senal)" stroke-width="1" opacity=".45"/><text class="g-num" x="518" y="102" text-anchor="middle">9,1%</text><text class="g-pie" x="518" y="138" text-anchor="middle">T2</text><text class="g-pie" x="518" y="204" text-anchor="middle" opacity=".8">festivales</text></g><rect x="16" y="260" width="608" height="152" rx="4" fill="var(--linea)" opacity=".35"/><rect x="24" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="24" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="54" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="54" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="84" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="84" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="114" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="114" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="144" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="144" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="174" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="174" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="204" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="204" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="234" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="234" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="264" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="264" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="294" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="294" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="324" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="324" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="354" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="354" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="384" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="384" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="414" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="414" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="444" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="444" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="474" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="474" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="504" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="504" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="534" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="534" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="564" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="564" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="594" y="265" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><rect x="594" y="396" width="12" height="9" rx="2" fill="var(--fondo)" opacity=".9"/><g class="foto foto--idioma" tabindex="0"><rect class="foto__marco" x="30.0" y="280" width="184.0" height="112" rx="3" fill="var(--senal)" opacity=".13"/><rect class="foto__filo" x="30.0" y="280" width="184.0" height="112" rx="3" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity=".95"/><text class="g-num" x="122" y="336" text-anchor="middle">6,2%</text><text class="g-pie" x="122" y="372" text-anchor="middle">T3</text><text class="g-pie" x="122" y="438" text-anchor="middle" opacity=".8">ruso</text><text class="g-pie" x="122" y="472" text-anchor="middle" opacity=".8">persa</text><circle cx="42" cy="293" r="3.6" fill="var(--senal)"/></g><g class="foto foto--idioma" tabindex="0"><rect class="foto__marco" x="228.0" y="280" width="184.0" height="112" rx="3" fill="var(--senal)" opacity=".13"/><rect class="foto__filo" x="228.0" y="280" width="184.0" height="112" rx="3" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity=".95"/><text class="g-num" x="320" y="336" text-anchor="middle">18,3%</text><text class="g-pie" x="320" y="372" text-anchor="middle">T4</text><text class="g-pie" x="320" y="438" text-anchor="middle" opacity=".8">francés</text><text class="g-pie" x="320" y="472" text-anchor="middle" opacity=".8">portugués</text><circle cx="240" cy="293" r="3.6" fill="var(--senal)"/></g><g class="foto" tabindex="0"><rect class="foto__marco" x="426.0" y="280" width="184.0" height="112" rx="3" fill="var(--senal)" opacity=".07"/><rect class="foto__filo" x="426.0" y="280" width="184.0" height="112" rx="3" fill="none" stroke="var(--senal)" stroke-width="1" opacity=".45"/><text class="g-num" x="518" y="336" text-anchor="middle">28,9%</text><text class="g-pie" x="518" y="372" text-anchor="middle">T5</text><text class="g-pie" x="518" y="438" text-anchor="middle" opacity=".8">cine</text><text class="g-pie" x="518" y="472" text-anchor="middle" opacity=".8">narrativa</text></g><text class="g-pie" x="320" y="526" text-anchor="middle" opacity=".8">el punto marca los tópicos de idioma</text></svg>
+          <figcaption class="caso__pie">Los seis tópicos como seis fotogramas. Tres de ellos no hablan de cine: separan idiomas, y se llevan el 32,3% del corpus.</figcaption>
+          <p class="oculto">Seis fotogramas, uno por tópico, con el porcentaje de reseñas que le corresponde: T0 el 29,7% sobre cine en inglés; T1 el 7,8% en alemán e italiano; T2 el 9,1% sobre festivales; T3 el 6,2% en ruso y persa; T4 el 18,3% en francés y portugués; T5 el 28,9% sobre narrativa en inglés. Los tópicos T1, T3 y T4 separan idiomas en lugar de temas y van marcados con un punto.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-experimento" data-caso="El experimento">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--invertido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">El experimento</p>
+          <h2 class="titulo-menor">Filtrar el idioma <em class="acento">no mejora la métrica</em>.</h2>
+          <p class="parrafo parrafo--lead">La pregunta obvia era qué pasa si se filtra. Se repitió todo el modelado sobre las 7.465 reseñas en inglés, con el mismo preprocesado, el mismo barrido de K y los mismos hiperparámetros. Lo único que cambia es el corpus.</p>
+          <p class="parrafo">Y el resultado va en contra de lo esperado: la coherencia baja. Con K=6, 0,5107 frente a 0,6038. Y no es un K concreto: el corpus filtrado puntúa por debajo en 12 de los 14 valores del barrido.</p><p class="parrafo">Se comprobó que no fuera un efecto del tamaño —el corpus filtrado tiene un 38 % menos de documentos—: submuestreando el multilingüe a las mismas 7.465 reseñas, doce veces, el filtrado queda por debajo de las doce. Aun así la dispersión de la métrica entre submuestras es mayor que la propia diferencia, así que lo honesto es decir que filtrar no mejora la coherencia, no que la empeore.</p><p class="parrafo">Pero la coherencia no era el objetivo. Emparejando los tópicos de los dos corpus por vocabulario compartido, los tres de idioma no tienen ningún equivalente en el filtrado. Filtrar deja de gastar la mitad de los tópicos en separar lenguas. La lección de fondo es sobre la métrica: las palabras de un mismo idioma co-ocurren siempre, así que un tópico puede ser perfectamente coherente y perfectamente inútil.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Corpus multilingüe</span><span class="lectura__valor">11.968 reseñas · c_v 0,6038</span></div><div class="lectura"><span class="lectura__clave">Corpus solo inglés</span><span class="lectura__valor">7.465 reseñas · c_v 0,5107</span></div><div class="lectura"><span class="lectura__clave">K en que gana el filtrado</span><span class="lectura__valor">2 de 14</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Tópicos de idioma tras filtrar</span><span class="lectura__valor">Ninguno</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 430" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="60" y="56" width="520" height="250" rx="8" fill="var(--senal)" opacity=".04"/><rect class="pantalla__luz" x="68" y="64" width="504" height="234" rx="6" fill="var(--senal)" opacity=".10"/><rect x="60" y="56" width="520" height="250" rx="8" fill="none" stroke="var(--senal-linea)" stroke-width="1.5"/><text class="g-num" x="190" y="170" text-anchor="middle">0,6038</text><text class="g-pie" x="190" y="232" text-anchor="middle">Multilingüe</text><rect x="100" y="190" width="180" height="8" rx="4" fill="var(--senal)" opacity=".14"/><rect x="100" y="190" width="180.0" height="8" rx="4" fill="var(--senal)" opacity=".8"/><text class="g-num" x="450" y="170" text-anchor="middle">0,5107</text><text class="g-pie" x="450" y="232" text-anchor="middle">Solo inglés</text><rect x="360" y="190" width="180" height="8" rx="4" fill="var(--senal)" opacity=".14"/><rect x="360" y="190" width="152.2" height="8" rx="4" fill="var(--senal)" opacity=".8"/><text class="g-pie" x="320" y="274" text-anchor="middle" opacity=".72">coherencia c_v · seis tópicos</text><path d="M96,372 v-22 a12,12 0 0 1 12,-12 h20 a12,12 0 0 1 12,12 v22 Z" fill="var(--senal)" opacity=".22"/><path d="M162,372 v-34 a12,12 0 0 1 12,-12 h20 a12,12 0 0 1 12,12 v34 Z" fill="var(--senal)" opacity=".22"/><path d="M228,372 v-26 a12,12 0 0 1 12,-12 h20 a12,12 0 0 1 12,12 v26 Z" fill="var(--senal)" opacity=".22"/><path d="M294,372 v-36 a12,12 0 0 1 12,-12 h20 a12,12 0 0 1 12,12 v36 Z" fill="var(--senal)" opacity=".22"/><path d="M360,372 v-24 a12,12 0 0 1 12,-12 h20 a12,12 0 0 1 12,12 v24 Z" fill="var(--senal)" opacity=".22"/><path d="M426,372 v-32 a12,12 0 0 1 12,-12 h20 a12,12 0 0 1 12,12 v32 Z" fill="var(--senal)" opacity=".22"/><path d="M492,372 v-22 a12,12 0 0 1 12,-12 h20 a12,12 0 0 1 12,12 v22 Z" fill="var(--senal)" opacity=".22"/><text class="g-pie" x="320" y="422" text-anchor="middle" opacity=".75">el corpus entero contra solo inglés</text></svg>
+          <figcaption class="caso__pie">Coherencia c_v con seis tópicos en los dos corpus. Baja al filtrar a inglés; la interpretabilidad sube.</figcaption>
+          <p class="oculto">Dos coherencias c_v con seis tópicos, proyectadas una al lado de la otra: 0,6038 en el corpus multilingüe y 0,5107 en el corpus filtrado a inglés.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-limites" data-caso="Lo que no prueba">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--centrado">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Los límites</p>
+          <h2 class="titulo-menor">Una cifra que <em class="acento">nadie puede reproducir</em>.</h2>
+          <p class="parrafo parrafo--lead">El trabajo entregado usaba LdaMulticore, que reparte los documentos entre procesos y los incorpora según terminan. Consecuencia: con la misma semilla no da el mismo modelo. Medido, dos ejecuciones idénticas dieron 0,5633 y 0,5404.</p>
+          <p class="parrafo">Todo el trabajo pasó a LdaModel, que repitió 0,5890 las dos veces. Entre una coherencia alta y una que otra persona puede comprobar, la segunda vale más. La consecuencia incómoda es que el 0,678 que figuraba en la presentación entregada no lo puede reproducir nadie.</p><p class="parrafo">Sobre el corpus quedan dos cosas dichas y no resueltas: se trabaja sobre una muestra de 11.968 reseñas de las ~112.000 disponibles, y la discrepancia con el recuento del trabajo original sigue sin explicación.</p><p class="parrafo">Y la detección de idioma no es infalible sobre textos de mediana 16 palabras. Las reseñas de menos de 20 caracteres se marcan aparte en vez de asignarles un idioma a la fuerza, pero el resto tampoco es perfecto.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Modelo reproducible</span><span class="lectura__valor">Sí, con LdaModel</span></div><div class="lectura"><span class="lectura__clave">Muestra</span><span class="lectura__valor">11.968 de ~112.000</span></div><div class="lectura"><span class="lectura__clave">Discrepancia del corpus</span><span class="lectura__valor">Sin explicar</span></div><div class="lectura"><span class="lectura__clave">Detección de idioma</span><span class="lectura__valor">Imperfecta en textos cortos</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 598" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><circle cx="74" cy="48" r="20" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity="1"/><path d="M 64 48 l 8 8 l 14 -16" fill="none" stroke="var(--senal)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="46" class="g-rotulo">Se confirma</text><text x="116" y="85" class="g-pie">El modelo da el mismo</text><text x="116" y="122" class="g-pie">resultado dos veces</text><circle cx="74" cy="191" r="20" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity="1"/><path d="M 64 191 l 8 8 l 14 -16" fill="none" stroke="var(--senal)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="189" class="g-rotulo">Se confirma</text><text x="116" y="228" class="g-pie">El criterio de «tópico</text><text x="116" y="265" class="g-pie">de idioma» está medido</text><circle cx="74" cy="334" r="20" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.8" opacity=".8"/><path d="M 65 325 l 18 18 m 0 -18 l -18 18" fill="none" stroke="var(--linea-fuerte)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="332" class="g-rotulo">Se cae</text><text x="116" y="371" class="g-pie">Se usa el corpus</text><text x="116" y="408" class="g-pie">completo de 2024</text><circle cx="74" cy="477" r="20" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.8" opacity=".8"/><path d="M 65 468 l 18 18 m 0 -18 l -18 18" fill="none" stroke="var(--linea-fuerte)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="475" class="g-rotulo">Se cae</text><text x="116" y="514" class="g-pie">La discrepancia del</text><text x="116" y="551" class="g-pie">corpus está explicada</text></svg>
+          <figcaption class="caso__pie">Lo que el trabajo sostiene y lo que sigue abierto.</figcaption>
+          <p class="oculto">Veredictos: el modelo es reproducible, sí; el criterio de tópico de idioma está medido, sí; se usa el corpus completo, no; la discrepancia del corpus está explicada, no.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="caso caso--cierre" id="s-cierre">
+    <div class="marco">
+      <div class="cierre" data-revelar>
+        <p class="rotulo eyebrow">El trabajo</p>
+        <h2 class="titulo-menor">Fue un trabajo <em class="acento">de tres</em>.</h2>
+        <p class="parrafo">Proyecto conjunto de Alfredo Martín, Marcos Fernández y Pedro Pérez para la asignatura de Datos No Estructurados del máster.</p><p class="parrafo">Lo que más me llevo no es el modelo, es el experimento que salió de mirar un resultado que no cuadraba. La primera versión daba por buenos seis tópicos; media hora mirándolos de cerca convirtió «el modelo funciona» en «el modelo está midiendo otra cosa».</p>
+        <div class="botones"><a class="boton boton--solido" href="https://github.com/ppblanco/letterboxd-topic-modeling" target="_blank" rel="noopener">Ver el código en GitHub <span class="flecha" aria-hidden="true">↗</span></a><a class="boton " href="mailto:pedro.perez.blanco@outlook.es">Escríbeme <span class="flecha" aria-hidden="true">↗</span></a></div>
+      </div>
+      
+        <figure class="visor" data-revelar>
+          <figcaption class="visor__barra visor__barra--alta">
+            <span class="visor__rotulo">Letterboxd · Presentación</span>
+            <span class="visor__meta">PDF · 26 páginas · 1,0 MB</span>
+          </figcaption>
+
+          <div class="visor__lienzo">
+            <a class="visor__fachada" href="letterboxd-presentacion.pdf"
+               target="_blank" rel="noopener"
+               data-visor="Letterboxd · Presentación, 26 páginas">
+              <img class="visor__portada" src="../medios/informes/letterboxd-portada.jpg"
+                   width="1000" height="563"
+                   loading="lazy" decoding="async"
+                   alt="Primera página de la presentación del trabajo de topic modeling sobre reseñas de Letterboxd.">
+              <span class="visor__cta">Ver la presentación
+                <span class="visor__peso">1,0 MB</span>
+                <span class="oculto" data-visor-nota>, se abre en otra pestaña</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="visor__barra visor__barra--baja">
+            <a class="visor__accion" href="letterboxd-presentacion.pdf"
+               download="letterboxd-presentacion.pdf">
+              <span class="visor__icono" aria-hidden="true">&#8595;</span>Descargar presentación
+              <span class="visor__peso">1,0 MB</span>
+            </a>
+            <a class="visor__accion visor__accion--fin" href="letterboxd-presentacion.pdf"
+               target="_blank" rel="noopener">
+              Abrir en pantalla completa <span class="flecha" aria-hidden="true">↗</span>
+              <span class="oculto">, se abre en otra pestaña</span>
+            </a>
+          </div>
+        </figure>
+    </div>
+  </section>
+
+  <section class="caso caso--siguiente">
+    <div class="marco">
+      <a class="siguiente" href="lipton.html">
+        <span class="siguiente__rotulo">Siguiente trabajo</span>
+        <span class="siguiente__titulo">Lipton · The Summer Shake Up</span>
+        <span class="siguiente__flecha" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- Las dos piezas que faltaban aquí y sí estaban en el portfolio, y por eso
+     el ratón no se comportaba igual al abrir un trabajo. El anillo lo dibuja
+     plantilla.js, que ya venía cargado; sin este div no tenía dónde. -->
+<div class="nodo-cursor" id="nodo-cursor" aria-hidden="true"></div>
+
+<a class="flotante" id="flotante" href="mailto:pedro.perez.blanco@outlook.es" aria-label="Escribir a Pedro Pérez Blanco por correo">
+  <span class="flotante__texto">
+    <b>Ponte en contacto</b>
+    <span>Escríbeme cuando quieras</span>
+  </span>
+  <span class="flotante__icono" aria-hidden="true">&#9993;</span>
+</a>
+
+<footer class="pie">
+  <div class="marco">
+    <div class="pie__reparto">
+      <div>
+        <p class="pie__nombre">Pedro Pérez Blanco</p>
+        <p class="pie__nota">Analista de marketing y datos · Madrid</p>
+        <button class="pie__quieto" id="quieto" type="button" aria-pressed="false">
+          <span class="pie__punto" aria-hidden="true"></span><span data-texto>Parar movimiento</span>
+        </button>
+      </div>
+      <div class="pie__enlaces">
+        <a class="pie__enlace" href="../index.html">Volver al portfolio <span class="flecha" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../ui/fondo.js" defer></script>
+<script src="../ui/plantilla.js" defer></script>
+</body>
+</html>

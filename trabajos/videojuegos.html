@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es" data-caso="videojuegos">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- GENERADO por herramientas/hacer-caso.py desde contenido-videojuegos.json.
+     No lo edites a mano: se sobrescribe entero en cada ejecución. -->
+<title>Predicción de ventas de videojuegos · Pedro Pérez Blanco</title>
+<meta name="description" content="Cuatro modelos para estimar las ventas de un videojuego. El mejor explica el 49,8 % de la varianza en escala logarítmica y el 22,7 % sobre millones.">
+<meta name="theme-color" content="#0B0C0F">
+
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Predicción de ventas de videojuegos · Pedro Pérez Blanco">
+<meta property="og:description" content="Cuatro modelos para estimar las ventas de un videojuego. El mejor explica el 49,8 % de la varianza en escala logarítmica y el 22,7 % sobre millones.">
+<meta property="og:image" content="https://pedro-perez-data.netlify.app/medios/og.jpg">
+<meta property="og:image:alt" content="Tarjeta con el nombre de Pedro Pérez Blanco y el titular del portfolio.">
+<meta property="og:url" content="https://pedro-perez-data.netlify.app/trabajos/videojuegos.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="stylesheet" href="../ui/tipos.css">
+<link rel="stylesheet" href="../ui/plantilla.css">
+<!-- Después de plantilla.css, porque se apoya en sus tokens y solo añade lo
+     que es propio de una página de caso. -->
+<link rel="stylesheet" href="../ui/trabajo.css">
+<style>
+  /* Paleta de este trabajo. azul 202° del vídeo, el 21% de sus píxeles con color: pantallas y carcasas */
+  :root{
+    --senal:#63B4DE;
+    --senal-viva:#8ACBEB;
+    --senal-tenue:rgba(99,180,222,.14);
+    --senal-linea:rgba(99,180,222,.34);
+  }
+  /* El cursor NO cambia con el caso: es del sitio. Si cambiara,
+     al pasar de un trabajo a otro pareceria otro puntero. Hay
+     una prueba que lo compara con el del portfolio. */
+  .nodo-cursor{ border-color:rgba(224,164,88,.34) }
+  .nodo-cursor::after{ background:#E0A458 }
+  .nodo-cursor.esta-activo{ border-color:#E0A458;
+                            background:rgba(224,164,88,.07) }
+</style>
+</head>
+<body>
+
+<canvas class="fondo" id="fondo" aria-hidden="true"></canvas>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra" id="barra">
+  <nav class="barra__caja" aria-label="Secciones">
+    <a class="barra__marca" href="../index.html">
+      <span class="barra__iniciales" aria-hidden="true">PPB</span>
+      <span class="barra__nombre">Pedro Pérez Blanco</span>
+    </a>
+    <ul class="barra__lista" id="menu-lista"><li><a href="#s-pregunta" data-nav>La pregunta</a></li><li><a href="#s-hipotesis" data-nav>Las hipótesis</a></li><li><a href="#s-modelos" data-nav>Los modelos</a></li><li><a href="#s-shap" data-nav>Qué pesa</a></li><li><a href="#s-limites" data-nav>Lo que no ve</a></li><li><a href="#s-uso" data-nav>Para qué sirve</a></li></ul>
+    <button class="barra__pausa" id="reanudar" type="button">
+      <span class="barra__pausa__punto" aria-hidden="true"></span>Movimiento en pausa
+      <span class="oculto">, pulsa para reanudarlo</span>
+    </button>
+    <a class="barra__cta" href="../index.html#trabajo">Todos los trabajos</a>
+    <button class="barra__menu" id="menu" type="button"
+            aria-expanded="true" aria-controls="menu-lista">
+      <span aria-hidden="true"></span>
+      <span class="oculto">Abrir el menú</span>
+    </button>
+  </nav>
+  <div class="barra__avance" id="avance" aria-hidden="true"></div>
+</header>
+
+<main id="contenido">
+
+  <section class="caso-portada caso-portada--animada"><div class="relieve" aria-hidden="true"><img class="relieve__quieta" src="../medios/video/videojuegos-poster.jpg" width="1440" height="810" alt="" decoding="async"><video id="portada-video" muted loop playsinline preload="none" poster="../medios/video/videojuegos-poster.jpg" data-src="../medios/video/videojuegos.mp4"></video><span class="relieve__velo"></span></div>
+    <div class="marco">
+      <a class="volver" href="../index.html#trabajo">
+        <span aria-hidden="true">&larr;</span> Todos los trabajos
+      </a>
+      <div class="cristal"><span class="cristal__fx" aria-hidden="true"><span class="cristal__cara"></span><span class="cristal__filo cristal__filo--t"></span><span class="cristal__filo cristal__filo--b"></span><span class="cristal__filo cristal__filo--i"></span><span class="cristal__filo cristal__filo--d"></span></span><div class="cristal__dentro">
+      <div class="caso-portada__panel" data-revelar>
+        <p class="rotulo eyebrow">Aprendizaje supervisado · Regresión</p>
+        <h1 class="caso-portada__titulo" data-partir>Predicción de ventas de videojuegos</h1>
+        <p class="parrafo parrafo--lead">16.719 títulos cruzados con un segundo dataset de 51 consolas, para estimar cuánto va a vender un juego y, sobre todo, para entender qué mueve esa cifra. Cuatro modelos contra una línea de base, cuatro hipótesis contrastadas una a una, y las métricas dadas en las dos escalas que importan: la logarítmica en la que se entrena y los millones de unidades que entiende el negocio.</p>
+        <div class="datos"><div class="dato"><span class="dato__k">Papel</span><span class="dato__v">Autor · trabajo individual</span></div><div class="dato"><span class="dato__k">Asignatura</span><span class="dato__v">Machine Learning supervisado</span></div><div class="dato"><span class="dato__k">Año</span><span class="dato__v">2026 · MUBA, ICADE</span></div><div class="dato"><span class="dato__k">Herramientas</span><span class="dato__v">Python · scikit-learn · SHAP · statsmodels</span></div></div>
+      </div>
+      </div></div>
+      <div class="cifras" data-revelar><div class="cifra"><span class="cifra__n">16.444</span><span class="cifra__pie">títulos en el modelo</span></div><div class="cifra"><span class="cifra__n">R² 0,498</span><span class="cifra__pie">sobre log(ventas + 1)</span></div><div class="cifra"><span class="cifra__n">R² 0,227</span><span class="cifra__pie">sobre ventas en millones</span></div></div>
+    </div>
+  </section>
+  <!-- El raíl de apartados. Son anclas de verdad, así que funciona con el
+       JavaScript bloqueado; lo único que añade el script es marcar en cuál
+       estás. Es un índice, no unas pestañas: el caso entero está en la
+       página. -->
+  <nav class="rail" id="rail" aria-label="Apartados de este trabajo">
+    <div class="marco rail__caja"><a href="#s-pregunta" data-rail>La pregunta</a><a href="#s-hipotesis" data-rail>Las hipótesis</a><a href="#s-modelos" data-rail>Los modelos</a><a href="#s-shap" data-rail>Qué pesa</a><a href="#s-limites" data-rail>Lo que no ve</a><a href="#s-uso" data-rail>Para qué sirve</a></div>
+  </nav>
+
+  <section class="caso" id="s-pregunta" data-caso="La pregunta">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--dividido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">La pregunta</p>
+          <h2 class="titulo-menor">Qué hace que un juego <em class="acento">venda</em>.</h2>
+          <p class="parrafo parrafo--lead">El objetivo es una cifra continua —ventas globales en millones de unidades—, así que es un problema de regresión y no de clasificación. Pero la pregunta interesante no era predecir por predecir: era saber qué variables mueven de verdad esa cifra, y cuáles solo lo parecen.</p>
+          <p class="parrafo">El dataset base son 16.719 títulos con sus ventas, notas de crítica y de usuarios, año, género y plataforma. Por sí solo no dice nada del hardware, así que se cruzó con un segundo dataset de 51 consolas y sus unidades vendidas, para poder preguntar si el tamaño del parque instalado explica algo.</p><p class="parrafo">Del cruce y la limpieza salen 16.444 observaciones. Se pierden 271 títulos sin género o sin año y 4 con año posterior a 2016; los 973 sin consola identificable no se descartan, se marcan con una bandera.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Títulos de partida</span><span class="lectura__valor">16.719</span></div><div class="lectura"><span class="lectura__clave">Consolas cruzadas</span><span class="lectura__valor">51</span></div><div class="lectura"><span class="lectura__clave">Observaciones en el modelo</span><span class="lectura__valor">16.444</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Objetivo</span><span class="lectura__valor">log(ventas + 1)</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 380" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="50" y="30" width="540" height="64" rx="6" fill="var(--linea-fuerte)" opacity=".45"/><text x="66" y="79" class="g-num">16.719</text><text x="50" y="124" class="g-pie">títulos con ventas</text><rect x="50" y="152" width="297" height="64" rx="6" fill="var(--linea-fuerte)" opacity=".45"/><text x="66" y="201" class="g-num">51</text><text x="50" y="246" class="g-pie">consolas cruzadas</text><rect x="50" y="274" width="497" height="64" rx="6" fill="var(--senal)" opacity=".9"/><text x="66" y="323" class="g-num">16.444</text><text x="50" y="368" class="g-pie">observaciones en el modelo</text></svg>
+          <figcaption class="caso__pie">De los dos datasets a las observaciones que entran en el modelo.</figcaption>
+          <p class="oculto">Embudo: 16.719 títulos con ventas, cruzados con 51 consolas, dan 16.444 observaciones en el modelo.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-hipotesis" data-caso="Las hipótesis">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--centrado">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Cuatro hipótesis</p>
+          <h2 class="titulo-menor">Tres se confirman. <em class="acento">Una se cae</em>.</h2>
+          <p class="parrafo parrafo--lead">Las cuatro se escribieron antes de mirar los datos, que es la única forma de que una hipótesis signifique algo. Tres aguantan la contrastación —nota de la crítica, tamaño del parque de la consola y número de plataformas—. La cuarta, la clasificación por edad, no resulta significativa.</p>
+          <p class="parrafo">La que se cae es la más interesante de las cuatro. Parecía razonable que un juego para todos los públicos vendiera más que uno para adultos, y no se sostiene: una vez controladas las demás variables, el Rating no aporta nada.</p><p class="parrafo">Un trabajo que solo enseña las hipótesis que salieron bien no está enseñando el trabajo, está enseñando el resultado. La que falla es la que demuestra que la contrastación era de verdad.</p>
+          <div class="lecturas"><div class="lectura lectura--destacada"><span class="lectura__clave">Nota de la crítica</span><span class="lectura__valor">Significativa</span></div><div class="lectura"><span class="lectura__clave">Unidades de la consola</span><span class="lectura__valor">Significativa</span></div><div class="lectura"><span class="lectura__clave">Número de plataformas</span><span class="lectura__valor">Significativa</span></div><div class="lectura"><span class="lectura__clave">Clasificación por edad</span><span class="lectura__valor">No significativa</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 598" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><circle cx="74" cy="48" r="20" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity="1"/><path d="M 64 48 l 8 8 l 14 -16" fill="none" stroke="var(--senal)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="46" class="g-rotulo">Se confirma</text><text x="116" y="85" class="g-pie">Los juegos mejor valorados</text><text x="116" y="122" class="g-pie">por la crítica venden más</text><circle cx="74" cy="191" r="20" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity="1"/><path d="M 64 191 l 8 8 l 14 -16" fill="none" stroke="var(--senal)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="189" class="g-rotulo">Se confirma</text><text x="116" y="228" class="g-pie">Las consolas más vendidas</text><text x="116" y="265" class="g-pie">arrastran más ventas</text><circle cx="74" cy="334" r="20" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity="1"/><path d="M 64 334 l 8 8 l 14 -16" fill="none" stroke="var(--senal)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="332" class="g-rotulo">Se confirma</text><text x="116" y="371" class="g-pie">Los multiplataforma venden</text><text x="116" y="408" class="g-pie">más que los exclusivos</text><circle cx="74" cy="477" r="20" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.8" opacity=".8"/><path d="M 65 468 l 18 18 m 0 -18 l -18 18" fill="none" stroke="var(--linea-fuerte)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="475" class="g-rotulo">Se cae</text><text x="116" y="514" class="g-pie">La clasificación por edad</text><text x="116" y="551" class="g-pie">influye en las ventas</text></svg>
+          <figcaption class="caso__pie">Las cuatro hipótesis, contrastadas una por una.</figcaption>
+          <p class="oculto">Tres hipótesis se confirman: la nota de la crítica, las unidades vendidas de la consola y el número de plataformas. La cuarta, la clasificación por edad, no resulta significativa.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-modelos" data-caso="Los modelos">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--ancho">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Cuatro modelos</p>
+          <h2 class="titulo-menor">Todo se mide contra <em class="acento">predecir la media</em>.</h2>
+          <p class="parrafo parrafo--lead">La línea de base no es un trámite: es predecir siempre la media y ver qué error da. Su R² es 0,000 por definición, y cualquier modelo que no la supere con holgura no vale el tiempo que cuesta explicarlo. Gana Gradient Boosting con R² 0,498 y un RMSE de 0,285, medidos sobre log(ventas + 1).</p>
+          <p class="parrafo">El orden importa tanto como el ganador. La regresión lineal ya recoge la mitad del terreno, lo que dice que buena parte de la relación es lineal; KNN mejora poco sobre ella, y el salto de verdad lo da el ensamblado, que es donde entran las interacciones entre variables.</p><p class="parrafo">El RMSE del mejor modelo baja de 0,402 a 0,285: un 29 % menos de error que decir siempre la media. Y aquí hay que frenar antes de traducirlo: 0,285 está medido sobre log(ventas + 1), así que deshacer el logaritmo da un factor de 1,33 sobre ventas + 1, no sobre las ventas. Para un título que vende millones la diferencia apenas se nota; para uno que vende décimas de millón, el «+1» pesa más que la propia cifra y el factor deja de querer decir «se equivoca un tercio». Y un RMSE es un error típico, no un intervalo de predicción: no promete que cada título caiga dentro de ese margen.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Línea de base (la media)</span><span class="lectura__valor">R² 0,000 · RMSE 0,402</span></div><div class="lectura"><span class="lectura__clave">Regresión lineal</span><span class="lectura__valor">R² 0,291 · RMSE 0,339</span></div><div class="lectura"><span class="lectura__clave">KNN (k = 11)</span><span class="lectura__valor">R² 0,347 · RMSE 0,325</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Gradient Boosting</span><span class="lectura__valor">R² 0,498 · RMSE 0,285</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 400" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="30" y="50" width="580" height="304" rx="10" fill="var(--senal)" opacity=".045"/><rect x="30" y="50" width="580" height="304" rx="10" fill="none" stroke="var(--senal-linea)" stroke-width="1"/><circle class="punto" cx="54" cy="140" r="4" fill="var(--senal)" style="--i:0"/><circle class="punto" cx="54" cy="202" r="4" fill="var(--senal)" style="--i:1"/><circle class="punto" cx="54" cy="264" r="4" fill="var(--senal)" style="--i:2"/><circle class="punto" cx="54" cy="326" r="4" fill="var(--senal)" style="--i:3"/><g class="come"><path class="come__quijada come__quijada--izq" d="M54,129 A11,11 0 0 0 54,151 Z" fill="var(--senal)"/><path class="come__quijada come__quijada--der" d="M54,129 A11,11 0 0 1 54,151 Z" fill="var(--senal)"/></g><text class="g-pie" x="76" y="138">Base</text><rect x="236.0" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="247.5" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="259.0" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="270.5" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="282.0" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="293.5" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="305.0" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="316.5" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="328.0" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="339.5" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="351.0" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="362.5" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="374.0" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="385.5" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="397.0" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="408.5" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="420.0" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="431.5" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="443.0" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="454.5" y="120" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><text class="g-num" x="598" y="140" text-anchor="end">0,000</text><text class="g-pie" x="76" y="200">Lineal</text><rect x="236.0" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="247.5" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="259.0" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="270.5" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="282.0" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="293.5" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="305.0" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="316.5" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="328.0" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="339.5" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="351.0" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="362.5" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="374.0" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="385.5" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="397.0" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="408.5" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="420.0" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="431.5" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="443.0" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="454.5" y="182" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><text class="g-num" x="598" y="202" text-anchor="end">0,291</text><text class="g-pie" x="76" y="262">KNN</text><rect x="236.0" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="247.5" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="259.0" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="270.5" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="282.0" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="293.5" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="305.0" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="316.5" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="328.0" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="339.5" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="351.0" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="362.5" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="374.0" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="385.5" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".62"/><rect x="397.0" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="408.5" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="420.0" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="431.5" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="443.0" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><rect x="454.5" y="244" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".13"/><text class="g-num" x="598" y="264" text-anchor="end">0,347</text><rect x="68" y="300" width="530" height="38" rx="5" fill="var(--senal)" opacity=".07"/><path d="M72 314 L78 319 L72 324 Z" fill="var(--senal)"/><text class="g-pie" x="88" y="324">Boosting</text><rect x="236.0" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="247.5" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="259.0" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="270.5" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="282.0" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="293.5" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="305.0" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="316.5" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="328.0" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="339.5" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="351.0" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="362.5" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="374.0" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="385.5" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="397.0" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="408.5" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="420.0" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="431.5" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="443.0" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><rect x="454.5" y="306" width="9.5" height="20" rx="1.5" fill="var(--senal)" opacity=".92"/><text class="g-num" x="598" y="326" text-anchor="end">0,498</text><text class="g-pie" x="50" y="389" opacity=".75">cada bloque, cinco centésimas de R²</text></svg>
+          <figcaption class="caso__pie">R² sobre log(ventas + 1), en test. Cada bloque son cinco centésimas: el mejor llena diez y la línea de base, ninguno.</figcaption>
+          <p class="oculto">Cuatro medidores por bloques con el R² sobre el logaritmo de las ventas en test: línea de base 0,000; regresión lineal 0,291; KNN 0,347; y Gradient Boosting 0,498, el mejor de los cuatro.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-shap" data-caso="Qué pesa">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--invertido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Interpretabilidad</p>
+          <h2 class="titulo-menor">No pesa la nota. <em class="acento">Pesa cuánta gente vota</em>.</h2>
+          <p class="parrafo parrafo--lead">La importancia SHAP sobre el conjunto de test deja un primer puesto que no es el esperado: manda el número de votos de usuarios, muy por encima de la nota que ponen y de la que pone la crítica.</p>
+          <p class="parrafo">Tiene sentido si se piensa un momento: el número de votos no mide calidad, mide cuánta gente jugó. Es una señal de popularidad disfrazada de valoración. Un juego con un 9 y treinta votos vende menos que uno con un 7 y diez mil.</p><p class="parrafo">Los tres puestos siguientes tampoco hablan del producto sino de su contexto comercial: el año, el parque instalado de la consola y en cuántas plataformas salió el título.</p>
+          <div class="lecturas"><div class="lectura lectura--destacada"><span class="lectura__clave">Votos de usuarios</span><span class="lectura__valor">0,109</span></div><div class="lectura"><span class="lectura__clave">Año de lanzamiento</span><span class="lectura__valor">0,076</span></div><div class="lectura"><span class="lectura__clave">Unidades de la consola</span><span class="lectura__valor">0,058</span></div><div class="lectura"><span class="lectura__clave">Número de plataformas</span><span class="lectura__valor">0,047</span></div><div class="lectura"><span class="lectura__clave">Nota de la crítica</span><span class="lectura__valor">0,040</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 329" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><line x1="50" y1="250" x2="590" y2="250" stroke="var(--linea)" stroke-width="1"/><rect x="76" y="108" width="84" height="142" rx="5" fill="var(--senal)" opacity=".92"/><text x="118" y="94" class="g-num" text-anchor="middle">0,11</text><text x="118" y="282" class="g-rotulo" text-anchor="middle">Votos</text><rect x="211" y="151" width="84" height="99" rx="5" fill="var(--senal)" opacity=".45"/><text x="252" y="137" class="g-num" text-anchor="middle">0,08</text><text x="252" y="282" class="g-rotulo" text-anchor="middle">Año</text><rect x="346" y="174" width="84" height="76" rx="5" fill="var(--senal)" opacity=".45"/><text x="388" y="160" class="g-num" text-anchor="middle">0,06</text><text x="388" y="282" class="g-rotulo" text-anchor="middle">Consola</text><rect x="481" y="198" width="84" height="52" rx="5" fill="var(--senal)" opacity=".45"/><text x="522" y="184" class="g-num" text-anchor="middle">0,04</text><text x="522" y="282" class="g-rotulo" text-anchor="middle">Nota</text></svg>
+          <figcaption class="caso__pie">Importancia SHAP media en test. «Nota» es la de la crítica: pesa casi tres veces menos que el número de votos.</figcaption>
+          <p class="oculto">Barras de importancia SHAP: votos de usuarios 0,109; año de lanzamiento 0,076; unidades de la consola 0,058; nota de la crítica 0,040. El número de plataformas queda en 0,047.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-limites" data-caso="Lo que no ve">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--dividido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Los límites</p>
+          <h2 class="titulo-menor">Un R² de 0,498 <em class="acento">no es el 50% de las ventas</em>.</h2>
+          <p class="parrafo parrafo--lead">Aquí hay que ser preciso, porque es donde se cuela el error más común. Ese 0,498 es la varianza explicada de log(ventas + 1), que es la escala en la que se entrenó. Al deshacer la transformación y medir sobre ventas en millones de unidades, el R² del mismo modelo es 0,227.</p>
+          <p class="parrafo">Las dos cifras son correctas y describen el mismo modelo: responden a preguntas distintas. La logarítmica dice lo bien que ordena los títulos por magnitud; la de millones, cuánto se equivoca en unidades vendidas. Decir «el modelo explica el 50 % de las ventas» sería falso.</p><p class="parrafo">Hay una limitación mayor que el R², y es de calendario: la nota de la crítica y la de los usuarios son datos posteriores al lanzamiento. En una predicción anterior a lanzar, esas dos columnas no existen, y son justo las que más pesan.</p><p class="parrafo">Y una tercera, metodológica: el 51,5 % de las notas de crítica venían vacías y se imputaron con la mediana, calculada solo con el tramo de entrenamiento. Los juegos sin nota venden de media menos (0,39 millones frente a 0,69), así que esa ausencia no es aleatoria.</p><p class="parrafo">Las unidades de la consola son además su total histórico, no las que llevaba vendidas el día que salió el juego. Es la aproximación disponible, pero favorece a los títulos de plataformas que acabaron vendiendo mucho.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">R² sobre log(ventas + 1)</span><span class="lectura__valor">0,498</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">R² sobre ventas en millones</span><span class="lectura__valor">0,227</span></div><div class="lectura"><span class="lectura__clave">Notas de crítica y usuarios</span><span class="lectura__valor">Post-lanzamiento</span></div><div class="lectura"><span class="lectura__clave">Notas de crítica vacías</span><span class="lectura__valor">51,5 %</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 380" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="0" y="0" width="640" height="380" fill="none"/><rect x="60" y="132" width="530" height="26" rx="4" fill="var(--linea)" opacity=".55"/><rect x="60" y="132" width="263.9" height="26" rx="4" fill="var(--senal)" opacity="0.95"/><line x1="192" y1="126" x2="192" y2="164" stroke="var(--linea)" stroke-width="1" opacity=".7"/><line x1="325" y1="126" x2="325" y2="164" stroke="var(--linea)" stroke-width="1" opacity=".7"/><line x1="458" y1="126" x2="458" y2="164" stroke="var(--linea)" stroke-width="1" opacity=".7"/><line x1="60" y1="126" x2="60" y2="164" stroke="var(--linea-fuerte)" stroke-width="1.4"/><line x1="590" y1="126" x2="590" y2="164" stroke="var(--linea-fuerte)" stroke-width="1.4"/><text class="g-num" x="60" y="74">49,8%</text><text class="g-pie" x="60" y="118">Varianza de log(ventas + 1)</text><text class="g-pie" x="590" y="184" text-anchor="end" opacity=".8">la escala en la que se entrenó</text><rect x="60" y="300" width="530" height="26" rx="4" fill="var(--linea)" opacity=".55"/><rect x="60" y="300" width="120.3" height="26" rx="4" fill="var(--senal)" opacity="0.6"/><line x1="192" y1="294" x2="192" y2="332" stroke="var(--linea)" stroke-width="1" opacity=".7"/><line x1="325" y1="294" x2="325" y2="332" stroke="var(--linea)" stroke-width="1" opacity=".7"/><line x1="458" y1="294" x2="458" y2="332" stroke="var(--linea)" stroke-width="1" opacity=".7"/><line x1="60" y1="294" x2="60" y2="332" stroke="var(--linea-fuerte)" stroke-width="1.4"/><line x1="590" y1="294" x2="590" y2="332" stroke="var(--linea-fuerte)" stroke-width="1.4"/><text class="g-num" x="60" y="242">22,7%</text><text class="g-pie" x="60" y="286">Varianza de ventas en millones</text><text class="g-pie" x="590" y="352" text-anchor="end" opacity=".8">la misma predicción, en unidades</text><line x1="60" y1="228" x2="590" y2="228" stroke="var(--linea-fuerte)" stroke-width="1" stroke-dasharray="3 5" opacity=".6"/></svg>
+          <figcaption class="caso__pie">Dos escalas, dos reglas. El mismo modelo mide 49,8 en una y 22,7 en la otra: no son dos resultados, son dos preguntas.</figcaption>
+          <p class="oculto">Dos reglas graduadas de 0 a 100. La primera, sobre el logaritmo de las ventas más uno, llega a 49,8. La segunda, sobre las ventas en millones de unidades, llega a 22,7. Son el mismo modelo medido en dos escalas distintas.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-uso" data-caso="Para qué sirve">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--editorial">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Utilidad</p>
+          <h2 class="titulo-menor">El momento en que <em class="acento">sí sirve</em>.</h2>
+          <p class="parrafo parrafo--lead">Con las notas de la crítica dentro, el modelo no predice antes de lanzar: estima después de las primeras reseñas. Y ahí es cuando una distribuidora todavía tiene una decisión encima de la mesa, que es cuánto invertir en la campaña de las semanas siguientes.</p>
+          <p class="parrafo">Esa es la ventana útil: entre las primeras críticas y el grueso del gasto en marketing. Una estimación con un error medio de 0,38 millones de unidades no decide la campaña sola, pero sí ordena una lista de lanzamientos por dónde merece la pena poner el dinero.</p><p class="parrafo">La otra mitad del valor es explicativa, y no necesita ninguna ventana: saber que el Rating no mueve las ventas y que el número de plataformas sí es una conclusión que se puede usar en la siguiente negociación con un estudio.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Error medio (MAE)</span><span class="lectura__valor">0,38 millones de unidades</span></div><div class="lectura"><span class="lectura__clave">Cuándo se puede usar</span><span class="lectura__valor">Tras las primeras críticas</span></div><div class="lectura"><span class="lectura__clave">Decisión que apoya</span><span class="lectura__valor">Reparto del gasto en campaña</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 454" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="16" y="64" width="190" height="96" rx="8" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><text x="111" y="101" class="g-rotulo" text-anchor="middle">Sale el</text><text x="111" y="140" class="g-rotulo" text-anchor="middle">juego</text><rect x="223" y="64" width="190" height="96" rx="8" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><text x="318" y="101" class="g-rotulo" text-anchor="middle">Primeras</text><text x="318" y="140" class="g-rotulo" text-anchor="middle">críticas</text><rect x="430" y="64" width="190" height="96" rx="8" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><text x="525" y="101" class="g-rotulo" text-anchor="middle">Estimación</text><text x="525" y="140" class="g-rotulo" text-anchor="middle">de ventas</text><path d="M 206 112 l 17 0 m -6 -5 l 6 5 l -6 5" fill="none" stroke="var(--senal)" stroke-width="1.5"/><path d="M 413 112 l 17 0 m -6 -5 l 6 5 l -6 5" fill="none" stroke="var(--senal)" stroke-width="1.5"/><path d="M 318 160 L 318 267 L 430 267" fill="none" stroke="var(--senal)" stroke-width="1.5" stroke-dasharray="5 5" opacity=".8"/><rect x="430" y="208" width="190" height="118" rx="8" fill="none" stroke="var(--senal)" stroke-width="1.5" opacity=".8"/><text x="525" y="256" class="g-rotulo" text-anchor="middle">Reparto</text><text x="525" y="295" class="g-rotulo" text-anchor="middle">del gasto</text><text x="320" y="370" class="g-pie" text-anchor="middle">Antes de las críticas esas</text><text x="320" y="407" class="g-pie" text-anchor="middle">variables no existen.</text></svg>
+          <figcaption class="caso__pie">Dónde encaja el modelo en el calendario de un lanzamiento.</figcaption>
+          <p class="oculto">Diagrama: tras el lanzamiento llegan las primeras críticas, con ellas se estima la venta, y esa estimación alimenta el reparto del gasto en campaña. Antes de las críticas esas variables no existen.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="caso caso--cierre" id="s-cierre">
+    <div class="marco">
+      <div class="cierre" data-revelar>
+        <p class="rotulo eyebrow">El código</p>
+        <h2 class="titulo-menor">El código está en <em class="acento">GitHub</em>.</h2>
+        <p class="parrafo">Cada cifra de esta página viene del cuaderno de Python del trabajo: la carga y limpieza de los dos datasets, el análisis exploratorio, el modelo OLS con sus contrastes, los tres modelos comparados y la interpretación con SHAP.</p><p class="parrafo">El repositorio lleva el cuaderno entero, con su código y sus salidas, incluido el apartado de limitaciones tal y como lo escribí. Es la parte que más dice sobre cómo trabajo.</p>
+        <div class="botones"><a class="boton boton--solido" href="https://github.com/ppblanco/video-game-sales-prediction" target="_blank" rel="noopener">Ver el código en GitHub <span class="flecha" aria-hidden="true">↗</span></a><a class="boton " href="mailto:pedro.perez.blanco@outlook.es">Escríbeme <span class="flecha" aria-hidden="true">↗</span></a></div>
+      </div>
+      
+        <figure class="visor" data-revelar>
+          <figcaption class="visor__barra visor__barra--alta">
+            <span class="visor__rotulo">Predicción de ventas · Presentación</span>
+            <span class="visor__meta">PDF · 11 páginas · 325 KB</span>
+          </figcaption>
+
+          <div class="visor__lienzo">
+            <a class="visor__fachada" href="videojuegos-presentacion.pdf"
+               target="_blank" rel="noopener"
+               data-visor="Predicción de ventas · Presentación, 11 páginas">
+              <img class="visor__portada" src="../medios/informes/videojuegos-portada.jpg"
+                   width="1000" height="563"
+                   loading="lazy" decoding="async"
+                   alt="Primera página de la presentación del trabajo de aprendizaje supervisado sobre predicción de ventas de videojuegos.">
+              <span class="visor__cta">Ver la presentación
+                <span class="visor__peso">325 KB</span>
+                <span class="oculto" data-visor-nota>, se abre en otra pestaña</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="visor__barra visor__barra--baja">
+            <a class="visor__accion" href="videojuegos-presentacion.pdf"
+               download="videojuegos-presentacion.pdf">
+              <span class="visor__icono" aria-hidden="true">&#8595;</span>Descargar presentación
+              <span class="visor__peso">325 KB</span>
+            </a>
+            <a class="visor__accion visor__accion--fin" href="videojuegos-presentacion.pdf"
+               target="_blank" rel="noopener">
+              Abrir en pantalla completa <span class="flecha" aria-hidden="true">↗</span>
+              <span class="oculto">, se abre en otra pestaña</span>
+            </a>
+          </div>
+        </figure>
+    </div>
+  </section>
+
+  <section class="caso caso--siguiente">
+    <div class="marco">
+      <a class="siguiente" href="deep-learning.html">
+        <span class="siguiente__rotulo">Siguiente trabajo</span>
+        <span class="siguiente__titulo">Predicción de demanda con redes recurrentes</span>
+        <span class="siguiente__flecha" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- Las dos piezas que faltaban aquí y sí estaban en el portfolio, y por eso
+     el ratón no se comportaba igual al abrir un trabajo. El anillo lo dibuja
+     plantilla.js, que ya venía cargado; sin este div no tenía dónde. -->
+<div class="nodo-cursor" id="nodo-cursor" aria-hidden="true"></div>
+
+<a class="flotante" id="flotante" href="mailto:pedro.perez.blanco@outlook.es" aria-label="Escribir a Pedro Pérez Blanco por correo">
+  <span class="flotante__texto">
+    <b>Ponte en contacto</b>
+    <span>Escríbeme cuando quieras</span>
+  </span>
+  <span class="flotante__icono" aria-hidden="true">&#9993;</span>
+</a>
+
+<footer class="pie">
+  <div class="marco">
+    <div class="pie__reparto">
+      <div>
+        <p class="pie__nombre">Pedro Pérez Blanco</p>
+        <p class="pie__nota">Analista de marketing y datos · Madrid</p>
+        <button class="pie__quieto" id="quieto" type="button" aria-pressed="false">
+          <span class="pie__punto" aria-hidden="true"></span><span data-texto>Parar movimiento</span>
+        </button>
+      </div>
+      <div class="pie__enlaces">
+        <a class="pie__enlace" href="../index.html">Volver al portfolio <span class="flecha" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../ui/fondo.js" defer></script>
+<script src="../ui/plantilla.js" defer></script>
+</body>
+</html>

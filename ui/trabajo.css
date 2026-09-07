@@ -1,0 +1,831 @@
+/* ============================================================
+   trabajo.css · la piel de una página de caso
+
+   Va DESPUÉS de plantilla.css y solo añade lo que es propio de un caso:
+   la portada con su ficha de datos, el raíl de apartados y el reparto de
+   texto y gráfico. Todo lo demás —barra, fondo, cursor, pie, botones,
+   tipografía, colores— sale de plantilla.css sin tocar una línea, que es
+   la razón de que esta página se lea como la misma web y no como un anexo.
+
+   No define ni un token nuevo. Si aquí hace falta un color o una medida que
+   no exista en plantilla.css, el sitio de crearlo es plantilla.css.
+   ============================================================ */
+
+/* ---------- La portada del caso ---------------------------------- */
+
+.caso-portada{ padding:var(--e8) 0 var(--e6) }
+
+.volver{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:var(--t-rotulo); letter-spacing:.1em;
+  text-transform:uppercase; text-decoration:none; color:var(--bruma-tenue);
+  margin-bottom:var(--e5);
+  transition:color var(--rapido) var(--sale), gap var(--rapido) var(--sale);
+}
+.volver:hover{ color:var(--senal); gap:12px }
+
+.caso-portada__titulo{
+  font-family:var(--titulos); font-weight:600;
+  font-size:var(--t-h1); line-height:1.02; letter-spacing:-.01em;
+  margin:var(--e2) 0 var(--e4); text-wrap:balance;
+}
+
+/* La ficha de datos: papel, dirección, entrega, herramientas. Es lo primero
+   que mira quien evalúa un trabajo, y en una lista corrida se pierde. En
+   rejilla se leen los cuatro de un vistazo y se comparan por columnas. */
+.datos{
+  display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--e4);
+  margin-top:var(--e6); padding-top:var(--e5); border-top:1px solid var(--linea);
+}
+.dato{ display:flex; flex-direction:column; gap:6px; min-width:0 }
+.dato__k{
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.16em;
+  text-transform:uppercase; color:var(--bruma-tenue);
+}
+.dato__v{ font-size:var(--t-menor); line-height:1.45; color:var(--tinta) }
+
+/* Las tres cifras de cabecera. Son las que se recuerdan, así que van grandes
+   y solas, sin competir con el párrafo. */
+.cifras{
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--e5);
+  margin-top:var(--e7);
+}
+.cifra{
+  padding:var(--e4); border:1px solid var(--linea); border-radius:var(--canto);
+  background:var(--panel);
+}
+.cifra__n{
+  display:block; font-family:var(--titulos); font-weight:600;
+  font-size:clamp(38px,6vw,60px); line-height:.92; color:var(--senal);
+  font-variant-numeric:tabular-nums;
+}
+.cifra__pie{
+  display:block; margin-top:10px;
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.14em;
+  text-transform:uppercase; color:var(--bruma-tenue); line-height:1.5;
+}
+
+/* ---------- La portada animada ----------------------------------- */
+
+/* DETRÁS DEL TEXTO VA EL VÍDEO DE PEDRO, en bucle y sin sonido, como en la
+   referencia. Se estudió hacerlo con un lienzo y se descartó en cuanto él
+   trajo el metraje: un dibujo generado nunca iba a decir «datos y
+   videojuegos» tan rápido como una mesa con velas bursátiles y un Mario Kart.
+
+   Tres cosas hacen que un vídeo de fondo no sea un problema, y las tres están
+   resueltas fuera de este archivo:
+     · Pesa. El original eran 60 MB; se sirve una versión de 1 MB (ver
+       herramientas/hacer-video.py).
+     · Se descarga siempre. Aquí no: va con preload="none" y el src en
+       data-src, así que con el movimiento parado no se pide nunca.
+     · Ignora el botón de parar. Aquí no: lo gobierna plantilla.js con la
+       misma clase html.sin-movimiento que el fondo y el mapa.
+
+   Debajo del vídeo va el póster como <img>, que es lo que se ve mientras el
+   vídeo no está: sin él, con el movimiento parado la portada sale negra. */
+.caso-portada--animada{ position:relative; isolation:isolate }
+.relieve{
+  position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none;
+  border-bottom:1px solid var(--linea);
+}
+.relieve video,
+.relieve__quieta{
+  position:absolute; inset:0;
+  display:block; width:100%; height:100%;
+  object-fit:cover; object-position:center;
+  /* EL VÍDEO ES TEXTURA, NO CONTENIDO. Sin tratar, un plano de dos monitores
+     encendidos es lo más luminoso y más saturado de toda la web: se lleva por
+     delante el titular y, peor, la identidad —ámbar sobre casi negro— deja de
+     existir en la primera pantalla del trabajo. Bajado y desaturado, aporta
+     lo que tiene que aportar, que es «datos y videojuegos» de un vistazo,
+     sin competir con nada. */
+  filter:brightness(.34) saturate(.55) contrast(1.06);
+}
+/* La imagen queda DEBAJO. No se esconde cuando arranca el vídeo: el vídeo la
+   tapa por completo, y dejarla puesta evita el parpadeo negro de un
+   fotograma que hay entre que el vídeo se descarga y empieza a pintar. */
+.relieve__quieta{ z-index:0 }
+.relieve video{
+  z-index:1;
+  opacity:0; transition:opacity var(--lento) var(--sale);
+}
+/* Solo se enseña cuando de verdad tiene fotogramas que enseñar. La clase la
+   pone plantilla.js al primer 'playing'. */
+.relieve video.esta-encendido{ opacity:1 }
+@media (prefers-reduced-motion:reduce){
+  .relieve video{ transition:none }
+}
+/* El velo. Un vídeo de una mesa iluminada es MUCHO más claro que unas líneas
+   sobre negro, así que sin esto el titular sobre él no se lee ni de lejos.
+   Cae hacia la derecha, que es donde el texto termina antes, y cierra por
+   arriba y por abajo para que la portada se funda con el resto de la página
+   en lugar de acabar en un corte. */
+.relieve__velo{
+  position:absolute; inset:0;
+  background:
+    /* De izquierda a derecha: donde cae el texto queda casi opaco, y se abre
+       hacia la derecha, que es por donde el vídeo puede respirar. */
+    linear-gradient(to right, rgba(11,12,15,.94) 6%, rgba(11,12,15,.72) 42%, rgba(11,12,15,.42) 100%),
+    /* Y de arriba abajo, para que la portada nazca y muera en el fondo de la
+       página en vez de acabar en un corte. */
+    linear-gradient(to bottom, var(--fondo), rgba(11,12,15,.30) 16%, rgba(11,12,15,.30) 70%, var(--fondo));
+}
+
+/* EL PANEL DE CRISTAL. Es la pieza que la referencia usa para poder poner
+   texto encima de algo que se mueve: una cara translúcida que difumina lo de
+   detrás y cuatro filos que recogen la luz, que es lo que hace que se lea
+   como un objeto y no como una caja gris.
+
+   backdrop-filter es progresivo: donde no exista, queda el color de respaldo
+   del propio panel, que ya es opaco de sobra para leer encima. */
+.cristal{
+  position:relative; z-index:1; isolation:isolate;
+  border-radius:calc(var(--canto) + 6px);
+  background:rgba(17,19,24,.62);
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:0 30px 90px -50px rgba(0,0,0,.95);
+  overflow:hidden;
+}
+@supports (backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px)){
+  .cristal{
+    background:rgba(17,19,24,.42);
+    -webkit-backdrop-filter:blur(16px) saturate(1.15);
+    backdrop-filter:blur(16px) saturate(1.15);
+  }
+}
+.cristal__dentro{ position:relative; z-index:2; padding:var(--e6) var(--e5) }
+.cristal__fx{ position:absolute; inset:0; z-index:1; pointer-events:none }
+/* La cara: un brillo muy suave desde la esquina de arriba a la izquierda,
+   que es de donde viene la luz en el resto de la página. */
+.cristal__cara{
+  position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,0) 42%);
+}
+/* Los cuatro filos. Un borde de 1px uniforme se lee como una caja; un filo
+   que se enciende arriba y a la izquierda y se apaga abajo se lee como un
+   canto biselado, que es todo el efecto. */
+.cristal__filo{ position:absolute; background:rgba(255,255,255,.14) }
+.cristal__filo--t{ top:0; left:0; right:0; height:1px;
+  background:linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,.30), rgba(255,255,255,0)) }
+.cristal__filo--b{ bottom:0; left:0; right:0; height:1px;
+  background:linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,.10), rgba(255,255,255,0)) }
+.cristal__filo--i{ top:0; bottom:0; left:0; width:1px;
+  background:linear-gradient(to bottom, rgba(255,255,255,.24), rgba(255,255,255,0)) }
+.cristal__filo--d{ top:0; bottom:0; right:0; width:1px;
+  background:linear-gradient(to bottom, rgba(255,255,255,.12), rgba(255,255,255,0)) }
+
+/* Dentro del cristal el panel ya no necesita su propio aire. */
+.cristal .caso-portada__panel{ margin:0 }
+.caso-portada--animada .cifras{ position:relative; z-index:1 }
+.caso-portada--animada .volver{ position:relative; z-index:1 }
+
+/* ---------- El raíl de apartados --------------------------------- */
+
+/* Pegajoso justo debajo de la barra. Es un índice, no unas pestañas: el caso
+   entero está en la página y esto solo dice en qué parte vas. Son anclas de
+   verdad, así que con el JavaScript bloqueado sigue llevando a su sitio; lo
+   único que añade el script es marcar la actual. */
+.rail{
+  position:sticky; top:var(--alto-barra,64px); z-index:40;
+  border-top:1px solid var(--linea); border-bottom:1px solid var(--linea);
+  background:color-mix(in srgb, var(--fondo) 88%, transparent);
+  backdrop-filter:blur(10px);
+}
+.rail__caja{
+  display:flex; gap:var(--e5); overflow-x:auto;
+  /* safe, como en la barra de la portada: alineado al principio mientras
+     quepa, y sin esconder nada por el borde de arriba cuando no quepa. */
+  justify-content:flex-start;
+  scrollbar-width:none;
+}
+.rail__caja::-webkit-scrollbar{ display:none }
+.rail a{
+  flex:none; padding:14px 0; text-decoration:none;
+  font-family:var(--mono); font-size:var(--t-rotulo); letter-spacing:.1em;
+  text-transform:uppercase; color:var(--bruma-tenue); white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:color var(--rapido) var(--sale), border-color var(--rapido) var(--sale);
+}
+.rail a:hover{ color:var(--tinta) }
+.rail a[aria-current="true"]{ color:var(--senal); border-bottom-color:var(--senal) }
+
+/* ---------- Los capítulos ---------------------------------------- */
+
+.caso{ padding:var(--e8) 0 0 }
+.caso__reparto{
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
+  gap:var(--e7); align-items:start;
+}
+/* El texto lleva su propio ritmo. `.parrafo` viene de plantilla.css con
+   margin:0 —allí el hueco lo pone la rejilla de la sección—, y aquí van
+   varios seguidos: sin esto se leen como un solo bloque sin respiración.
+   Se resuelve con la separación entre hermanos y no con un margen suelto,
+   que no deja hueco de más ni antes del primero ni después del último. */
+.caso__texto,
+.cierre{ display:flex; flex-direction:column; align-items:flex-start }
+.caso__texto > * + *,
+.cierre > * + *{ margin-top:var(--e3) }
+.caso__texto > .titulo-menor,
+.cierre > .titulo-menor{ margin-top:var(--e2) }
+.caso__texto > .parrafo--lead{ margin-top:var(--e4) }
+.caso__texto .lecturas{ margin-top:var(--e5) }
+
+/* EL GRÁFICO es lo que se queda quieto, no el texto. Se probó al revés y no
+   servía de nada: el texto de un apartado es más alto que la ventana, así
+   que fijarlo no fija nada y además dejaba un hueco de panel vacío a la
+   derecha. Fijando el gráfico, se lee el párrafo con el dibujo delante, que
+   es justo para lo que está el dibujo. */
+.caso__figura{
+  position:sticky; top:calc(var(--alto-barra,64px) + 72px);
+  margin:0; padding:var(--e4);
+  border:1px solid var(--linea); border-radius:var(--canto);
+  background:var(--panel);
+}
+.caso__pie{
+  margin:var(--e3) 0 0;
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.1em;
+  text-transform:uppercase; color:var(--bruma-tenue); line-height:1.5;
+}
+
+/* ---------- Los gráficos ------------------------------------------ */
+
+/* SVG dibujado por el generador, sin una sola librería. Lleva viewBox y no
+   medidas fijas, así que escala solo y no necesita ni una media query ni un
+   listener de resize. */
+.grafico{ display:block; width:100%; height:auto; --g:1.28 }
+
+/* --g DESHACE LA ESCALA DEL DIBUJO, y sin ella no se leía nada.
+   El texto de un SVG con viewBox se mide en unidades del viewBox, no en
+   píxeles: su tamaño en pantalla es «lo declarado x la escala del dibujo».
+   Y esa escala nunca es 1. El lienzo mide 640 y la columna donde vive son
+   499px en un monitor —0,78— y 285px en un móvil de 375 —0,45—. Medido con
+   getBBox() en veinte anchos de ventana: el rótulo se leía a 10,1px en el
+   monitor y a 5,3px en el teléfono. Eso es lo que Pedro no entendía.
+   Los cortes NO son números redondos: son los sitios donde cambia la escala.
+   A 899 la página pasa a una columna y el dibujo CRECE de golpe de 356 a
+   797px, así que ahí la letra tiene que encoger, no crecer. */
+@media (max-width:1179px){ .grafico{ --g:1.52 } }
+@media (max-width:899px) { .grafico{ --g:0.95 } }
+@media (max-width:699px) { .grafico{ --g:1.30 } }
+@media (max-width:519px) { .grafico{ --g:1.55 } }
+@media (max-width:459px) { .grafico{ --g:1.80 } }
+@media (max-width:399px) { .grafico{ --g:2.00 } }
+
+/* El letter-spacing va en em, así que se escala solo con la letra. */
+.g-num{
+  font-family:var(--titulos); font-weight:600; font-size:calc(24px * var(--g));
+  fill:var(--tinta); font-variant-numeric:tabular-nums;
+}
+/* 32 y no 44: la cifra va DENTRO de un arco de radio 92, y al compensarla
+   con --g creció hasta montarse encima del trazo. El arco es geometría y no
+   se escala; la letra sí. Medido: pedía 81 unidades de medio ancho donde el
+   arco daba 35. Lo comprueba el generador al dibujar. */
+/* 25 y no 28: con la validación temporal a cuatro decimales, «0,6911»
+   se montaba sobre el arco de su medidor. El generador lo mide y avisa
+   (hacer-caso.py, CIFRA_MEDIDOR), así que los dos números van juntos:
+   si cambias este, cambia aquel. */
+.g-num--grande{ font-size:calc(25px * var(--g)); fill:var(--senal) }
+/* Sobre la barra ámbar hace falta tinta oscura: blanco sobre ámbar no llega
+   al contraste mínimo y el número es justo lo que hay que poder leer. */
+.g-num--sobre{ fill:#17120A }
+.g-rotulo{
+  font-family:var(--mono); font-size:calc(13px * var(--g)); letter-spacing:.12em;
+  text-transform:uppercase; fill:var(--tinta);
+}
+.g-pie{
+  font-family:var(--mono); font-size:calc(12px * var(--g)); letter-spacing:.08em;
+  fill:var(--bruma-tenue);
+}
+
+/* ---------- Cierre y siguiente ----------------------------------- */
+
+.caso--cierre .cierre{ max-width:68ch }
+.caso--cierre .boton{ margin-top:var(--e5) }
+
+.caso--siguiente{ padding-bottom:var(--e8) }
+.siguiente{
+  display:flex; align-items:center; gap:var(--e4);
+  margin-top:var(--e7); padding:var(--e5) var(--e4);
+  border-top:1px solid var(--linea); text-decoration:none;
+  transition:border-color var(--medio) var(--sale);
+}
+.siguiente:hover{ border-top-color:var(--senal-linea) }
+.siguiente__rotulo{
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.16em;
+  text-transform:uppercase; color:var(--bruma-tenue); flex:none;
+}
+.siguiente__titulo{
+  font-family:var(--titulos); font-weight:600; font-size:var(--t-h4);
+  color:var(--tinta); transition:color var(--medio) var(--sale);
+}
+.siguiente:hover .siguiente__titulo{ color:var(--senal) }
+.siguiente__flecha{
+  margin-left:auto; color:var(--senal); font-size:20px; flex:none;
+  transition:transform var(--medio) var(--sale);
+}
+.siguiente:hover .siguiente__flecha{ transform:translateX(6px) }
+
+/* ---------- Estrecho ---------------------------------------------- */
+
+/* El relleno del panel del gráfico se come 48px de los 375 de un móvil, y
+   esos 48px salen del tamaño de la letra: el dibujo se escala con su hueco.
+   Aquí el aire cuesta legibilidad, así que por debajo de 520 se recorta. */
+@media (max-width:519px){
+  .caso__figura{ padding:var(--e3) var(--e2) }
+}
+
+@media (max-width:899px){
+  .caso-portada{ padding:var(--e6) 0 var(--e5) }
+  .datos{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--e4) }
+  .cifras{ grid-template-columns:1fr; gap:var(--e3) }
+  /* Una columna, y el gráfico DEBAJO del texto que lo explica. Al revés se ve
+     un dibujo sin saber qué se está mirando. */
+  .caso__reparto{ grid-template-columns:1fr; gap:var(--e5) }
+  /* Y el gráfico deja de ser pegajoso: en una columna no hay nada que fijar,
+     solo un bloque que se queda pegado tapando lo que viene detrás. */
+  .caso__figura{ position:static }
+  .caso{ padding:var(--e7) 0 0 }
+}
+
+@media (max-width:560px){
+  .datos{ grid-template-columns:1fr }
+  .siguiente{ flex-wrap:wrap; gap:var(--e2) }
+  .siguiente__flecha{ margin-left:0 }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .volver,.siguiente,.siguiente__titulo,.siguiente__flecha,.rail a{ transition:none }
+  .siguiente:hover .siguiente__flecha{ transform:none }
+}
+
+/* ---------- El visor de documento --------------------------------- */
+
+/* La arquitectura viene del bloque .pd-embed de la web de referencia. Lo que
+   se copia es la LÓGICA: marco oscuro, barra arriba con el nombre y los datos
+   del archivo, el documento centrado con aire alrededor, y barra abajo con
+   las acciones. Los colores, la tipografía y el ritmo son los nuestros.
+
+   Y lo que importa de verdad: lo que se pinta de entrada NO es el PDF, es la
+   portada de su primera página. El documento son 8,5 MB y no se pide hasta
+   que alguien lo pulsa. */
+.visor{
+  margin:var(--e7) 0 0;
+  border:1px solid var(--linea); border-radius:var(--canto);
+  background:var(--panel); overflow:hidden;
+}
+
+.visor__barra{
+  display:flex; align-items:center; gap:var(--e3);
+  padding:14px var(--e4);
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.14em;
+  text-transform:uppercase; color:var(--bruma-tenue);
+}
+.visor__barra--alta{ border-bottom:1px solid var(--linea) }
+.visor__barra--baja{ border-top:1px solid var(--linea); flex-wrap:wrap }
+.visor__rotulo{ color:var(--tinta); font-weight:600 }
+/* El meta se va al otro extremo. margin-left:auto y no justify-content, para
+   que con el rótulo largo se quede pegado en vez de saltar de línea solo. */
+.visor__meta{ margin-left:auto; white-space:nowrap }
+
+/* El lienzo: fondo más hondo que el panel, para que el documento se lea como
+   algo puesto encima y no como parte de la caja. */
+.visor__lienzo{
+  position:relative; background:var(--fondo);
+  padding:var(--e5) var(--e4);
+  display:grid; place-items:center;
+}
+
+.visor__fachada{
+  position:relative; display:block; width:100%; max-width:470px;
+  text-decoration:none; border-radius:6px; overflow:hidden;
+  /* La sombra hace el trabajo del papel: sin ella, un rectángulo blanco sobre
+     negro es un recorte, no un documento. */
+  box-shadow:0 24px 70px -34px rgba(0,0,0,.95), 0 0 0 1px rgba(255,255,255,.06);
+  transition:transform var(--medio) var(--sale), box-shadow var(--medio) var(--sale);
+}
+.visor__fachada:hover{
+  transform:translateY(-4px);
+  box-shadow:0 34px 90px -34px rgba(0,0,0,.95), 0 0 0 1px var(--senal-linea);
+}
+.visor__portada{ display:block; width:100%; height:auto }
+
+/* La llamada, encima de la portada y arriba a la derecha, como en la
+   referencia. No aparece con el hover: está siempre. En una pantalla táctil
+   no hay hover, y ahí es justo donde más falta hace saber que se puede
+   pulsar. */
+.visor__cta{
+  position:absolute; top:14px; right:14px;
+  display:inline-flex; align-items:center; gap:8px;
+  padding:9px 15px; border-radius:999px;
+  background:var(--senal); color:#17120A;
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.12em;
+  text-transform:uppercase; font-weight:600;
+  box-shadow:0 8px 24px -10px rgba(0,0,0,.8);
+  transition:background var(--rapido) var(--sale);
+}
+.visor__fachada:hover .visor__cta{ background:var(--senal-viva) }
+/* El peso del archivo dentro de la píldora del acento. Estaba a .66 de alfa
+   y con 10 px -texto normal, mínimo 4,5:1- se quedaba corto sobre todos los
+   acentos: 4,20:1 sobre el ámbar y 3,83:1 sobre el naranja de Letterboxd.
+   Cada caso pinta esa píldora con SU color, así que el alfa tiene que
+   cumplir en el peor de los seis, no solo en el de la página que se mire.
+   A .85 el peor es 4,79:1 (Letterboxd) y el mejor 13,2:1 (Lipton), y el
+   peso sigue leyéndose como lo secundario que es al lado del rótulo. */
+.visor__cta .visor__peso{ color:rgba(23,18,10,.85) }
+.visor__peso{ color:var(--bruma-tenue); font-variant-numeric:tabular-nums }
+
+/* El foco se dibuja en la fachada entera: el área pulsable es el documento,
+   y un recuadro solo alrededor de la píldora mentiría sobre su tamaño. */
+.visor__fachada:focus-visible{
+  outline:2px solid var(--senal); outline-offset:4px;
+}
+
+.visor__accion{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:var(--t-rotulo); letter-spacing:.08em;
+  text-transform:uppercase; text-decoration:none; color:var(--bruma);
+  transition:color var(--rapido) var(--sale);
+}
+.visor__accion:hover{ color:var(--senal) }
+.visor__accion--fin{ margin-left:auto }
+.visor__icono{ color:var(--senal); font-size:14px }
+
+/* Cuando el script cambia la fachada por el PDF de verdad. El fondo claro es
+   deliberado: un PDF se pinta sobre blanco, y dejar el hueco negro hasta que
+   llega produce un parpadeo feo. */
+.visor__marco{
+  display:block; width:100%; max-width:760px; height:70vh; min-height:420px;
+  border:0; border-radius:6px; background:#f3f3f3;
+  box-shadow:0 24px 70px -34px rgba(0,0,0,.95);
+}
+
+@media (max-width:899px){
+  .visor{ margin-top:var(--e6) }
+  .visor__lienzo{ padding:var(--e4) var(--e3) }
+  .visor__fachada{ max-width:320px }
+  /* La barra de arriba se parte en dos líneas antes que recortar el rótulo. */
+  .visor__barra--alta{ flex-wrap:wrap; gap:6px }
+  .visor__meta{ margin-left:0; width:100% }
+  .visor__barra--baja{ gap:var(--e3) }
+  .visor__accion--fin{ margin-left:0 }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .visor__fachada,.visor__cta{ transition:none }
+  .visor__fachada:hover{ transform:none }
+}
+
+
+/* ---------- Gráficos con vida propia (03/09/2026) -----------------
+   Tres piezas nuevas, una por proyecto. Las tres son SVG y las tres
+   enseñan TODO de entrada: el hover no descubre nada, solo resalta. Así
+   funcionan igual con teclado, en un móvil y con el JavaScript apagado.
+
+   No hace falta engancharlas al botón de parar: la regla global
+   `html.sin-movimiento *{ animation-play-state:paused }` ya las alcanza,
+   porque son animaciones CSS y no un bucle propio. */
+
+/* La ventana deslizante de deep learning. Recorre la serie despacio y para
+   un momento en cada extremo: es lo que hace una ventana al entrenar. */
+.ventana{ animation:ventana-avanza 14s ease-in-out infinite }
+@keyframes ventana-avanza{
+  0%,   6%  { transform:translateX(0) }
+  50%, 56%  { transform:translateX(487px) }
+  100%      { transform:translateX(0) }
+}
+
+/* Con menos movimiento la ventana no se mueve: se queda dentro del tramo de
+   entrenamiento, que es donde empieza, y el dibujo sigue explicando lo mismo. */
+@media (prefers-reduced-motion:reduce){
+  .ventana{ animation:none; transform:translateX(96px) }
+}
+
+/* La tira de película de Letterboxd. Cada fotograma se puede tabular; al
+   señalarlo o enfocarlo se ilumina su marco. La información ya estaba. */
+.foto{ cursor:default }
+.foto__marco, .foto__filo{ transition:opacity .18s ease, stroke-width .18s ease }
+.foto:hover .foto__marco,
+.foto:focus-visible .foto__marco{ opacity:.26 }
+.foto:hover .foto__filo,
+.foto:focus-visible .foto__filo{ opacity:1; stroke-width:2.2 }
+.foto:focus{ outline:none }
+.foto:focus-visible .foto__filo{ stroke-dasharray:none }
+.foto:focus-visible{ outline:2px solid var(--senal); outline-offset:2px }
+
+/* Las dos reglas graduadas de videojuegos no llevan interacción: son una
+   comparación que hay que poder leer de un vistazo, y parpadear ahí sobra. */
+
+
+/* ---------- Las tres piezas de la segunda pasada (04/09/2026) ------
+   Mismo trato que las anteriores: todo el dato se ve de entrada y el
+   hover solo resalta. Se pueden tabular y el foco se ve. */
+
+.pista{ cursor:default }
+.pista__suelo{ transition:opacity .2s ease }
+.pista:hover .pista__suelo,
+.pista:focus-visible .pista__suelo{ opacity:.34 }
+.pista:focus{ outline:none }
+.pista:focus-visible{ outline:2px solid var(--senal); outline-offset:3px }
+
+
+/* ================================================================
+   LA COMPOSICIÓN DEL APARTADO                          (04/09/2026)
+   ================================================================
+
+   El problema era de ritmo, no de maquetación: treinta y tres apartados
+   repartidos exactamente igual se leen como el mismo apartado repetido
+   seis veces. Ahora cada uno elige, y lo elige por lo que cuenta: una
+   matriz de tres modelos por tres métricas pide ancho; una comparación
+   de dos cifras pide quedarse pequeña y centrada.
+
+   El HTML es el MISMO en las cinco. Sale siempre texto y después figura,
+   que es el orden en que se lee en voz alta y el orden en que lo recorre
+   el tabulador. Lo único que cambia es dónde lo pone la rejilla, y en
+   cuanto la pantalla se estrecha se apila en ese mismo orden. */
+
+.caso__reparto--invertido .caso__texto{ grid-column:2 }
+.caso__reparto--invertido .caso__figura{ grid-column:1; grid-row:1 }
+
+.caso__reparto--ancho{ grid-template-columns:minmax(0,1fr); gap:var(--e6) }
+.caso__reparto--ancho .caso__texto{ max-width:74ch }
+/* A todo lo ancho la figura ya no se queda quieta: no hay columna de texto
+   al lado por la que seguir bajando, así que pegarla arriba solo taparía
+   lo que viene después. */
+.caso__reparto--ancho .caso__figura{ position:static }
+/* Y con tope. El SVG lleva viewBox de 640 y `width:100%`, así que en una
+   columna de 1.128 px se dibuja a 1,76 aumentos: la letra sale enorme y la
+   matriz parece un cartel. El panel sigue siendo más ancho que el texto
+   —que es de lo que iba la composición— pero deja de crecer ahí. */
+.caso__reparto--ancho .caso__figura{ max-width:860px }
+
+.caso__reparto--centrado{ grid-template-columns:minmax(0,1fr); gap:var(--e6) }
+.caso__reparto--centrado .caso__texto{ max-width:62ch; margin-inline:auto }
+.caso__reparto--centrado .caso__figura{
+  position:static; max-width:600px; margin-inline:auto; width:100%;
+}
+
+.caso__reparto--editorial{ grid-template-columns:minmax(0,1.55fr) minmax(0,1fr) }
+
+/* ================================================================
+   EL BRILLO                                            (04/09/2026)
+   ================================================================
+
+   Una luz muy tenue del color del proyecto por debajo de los paneles.
+   Sale de --senal, así que cada trabajo brilla del suyo sin una sola
+   línea por trabajo: ámbar el TFM, azul videojuegos, naranja Letterboxd.
+
+   Tres reglas que no se pueden romper:
+
+   · NO LLEVA INFORMACIÓN. Nada de estado, foco ni jerarquía depende de
+     él. Si el navegador no lo pintara, la página seguiría diciendo
+     exactamente lo mismo.
+   · NO VA EN TODO. Paneles, visor y piezas que se tocan. Un párrafo
+     corriente no necesita estar dentro de una caja que brilla.
+   · NO PARPADEA. Es una sombra fija; al pasar por encima sube un punto
+     y ya está. No hay animación que pausar. */
+
+.caso__figura,
+.visor{
+  box-shadow:0 24px 60px -34px var(--senal-tenue),
+             0 2px 10px -6px rgba(0,0,0,.5);
+  transition:box-shadow .25s ease, border-color .25s ease;
+}
+.caso__figura:hover,
+.caso__figura:focus-within,
+.visor:hover,
+.visor:focus-within{
+  box-shadow:0 26px 66px -30px var(--senal-tenue),
+             0 2px 10px -6px rgba(0,0,0,.5);
+  border-color:var(--senal-linea);
+}
+
+/* La lectura destacada de una ficha es la cifra protagonista del apartado.
+   Se le pone la misma luz, en pequeño, y nada más: el color del valor ya
+   la distinguía y sigue distinguiéndola. */
+.lectura--destacada{
+  box-shadow:inset 2px 0 0 -1px var(--senal-linea);
+  padding-left:var(--e2); margin-left:calc(var(--e2) * -1);
+}
+
+
+/* ================================================================
+   EL RECORRIDO POR FASES DEL TFM                       (04/09/2026)
+   ================================================================
+
+   Una luz baja por el raíl parándose en cada fase, llega al final y
+   vuelve arriba. Las paradas duran doce centésimas del ciclo y el salto
+   tres, así que hay parada de verdad y no un barrido continuo.
+
+   La cuenta, para que se pueda tocar sin romperla: seis paradas a 15%
+   cada una son el 90% del ciclo, y el 13% que sobra es la vuelta
+   arriba. Cada parada se enciende con la MISMA animación y un retraso
+   de 2,4 s por posición, que es exactamente ese 15% de los 16 s: así la
+   parada se enciende justo cuando la luz llega, sin escribir seis
+   animaciones.
+
+   Lo importante: la información NO depende de esto. Las seis fases
+   están escritas y legibles desde el primer fotograma. */
+
+.ascensor{ animation:ascensor-baja 16s cubic-bezier(.65,0,.35,1) infinite }
+@keyframes ascensor-baja{
+  0%,12%   { transform:translateY(0) }
+  15%,27%  { transform:translateY(72px) }
+  30%,42%  { transform:translateY(144px) }
+  45%,57%  { transform:translateY(216px) }
+  60%,72%  { transform:translateY(288px) }
+  75%,87%  { transform:translateY(360px) }
+  100%     { transform:translateY(0) }
+}
+
+.parada__cuerpo{
+  animation:parada-encendida 16s steps(1,end) infinite;
+  animation-delay:calc(var(--i) * 2.4s);
+}
+@keyframes parada-encendida{
+  0%,12%   { opacity:1 }
+  15%,100% { opacity:.5 }
+}
+
+/* Al pasar por encima o al tabular, esa parada se queda encendida pase por
+   donde pase la luz. El dato ya se leía; esto solo la separa del resto. */
+.parada{ cursor:default }
+.parada:hover .parada__cuerpo,
+.parada:focus-visible .parada__cuerpo{ animation:none; opacity:1 }
+.parada:focus{ outline:none }
+.parada:focus-visible{ outline:2px solid var(--senal); outline-offset:4px }
+
+/* Sin movimiento: las seis encendidas y la luz arriba del todo. No es un
+   apaño, es el estado completo de la pieza: se ven las seis fases a la vez. */
+@media (prefers-reduced-motion:reduce){
+  .ascensor{ animation:none }
+  .parada__cuerpo{ animation:none; opacity:1 }
+}
+
+
+/* ---------- Apilado ------------------------------------------------
+   Va AL FINAL a propósito. `.caso__reparto--editorial` pesa más que
+   `.caso__reparto`, así que la media query de arriba, que pone una sola
+   columna, no le ganaba: las figuras de las composiciones nuevas se
+   quedaban en setenta píxeles de ancho y el texto del SVG se pintaba a
+   2,6 px. Lo cazó la prueba que mide el tamaño real de los rótulos a
+   375. Con la misma especificidad y más abajo, gana esta. */
+@media (max-width:899px){
+  .caso__reparto--invertido,
+  .caso__reparto--editorial{ grid-template-columns:minmax(0,1fr) }
+  /* Apilado, la figura vuelve detrás del texto: el orden que se lee manda
+     sobre el orden que se ve. */
+  .caso__reparto--invertido .caso__texto,
+  .caso__reparto--invertido .caso__figura{ grid-column:1; grid-row:auto }
+  .caso__reparto--centrado .caso__texto,
+  .caso__reparto--centrado .caso__figura{ max-width:none }
+  /* Sesenta píxeles de sombra en una pantalla de 375 son media pantalla. */
+  .caso__figura,
+  .visor{ box-shadow:0 12px 28px -22px var(--senal-tenue) }
+}
+
+
+/* ================================================================
+   EL RECORRIDO DE LOS MODELOS  ·  videojuegos          (04/09/2026)
+   ================================================================
+
+   Una figura baja por el canal del panel parándose en cada modelo. El
+   ciclo son 11 s: cuatro paradas de 18% y saltos de 4%, y el 16% que
+   sobra al final es la vuelta arriba.
+
+   Los puntos se encienden con la MISMA animación y 2,42 s de retraso por
+   posición —el 22% del ciclo—, así que cada uno se enciende justo cuando
+   la boca llega. Igual que las paradas del TFM, pero aquí la figura come
+   y allí solo alumbra: no es el mismo gesto y no se lee igual.
+
+   Nada de esto lleva dato. Los cuatro R² están escritos y contados en
+   bloques desde el primer fotograma. */
+
+.come{ animation:come-baja 11s cubic-bezier(.6,0,.4,1) infinite }
+@keyframes come-baja{
+  0%,18%   { transform:translateY(0) }
+  22%,40%  { transform:translateY(62px) }
+  44%,62%  { transform:translateY(124px) }
+  66%,84%  { transform:translateY(186px) }
+  100%     { transform:translateY(0) }
+}
+
+/* La boca. Las dos mitades giran en sentidos opuestos sobre el centro de
+   la figura, que está escrito en unidades del viewBox porque el grupo de
+   fuera solo traslada y no cambia la escala. */
+.come__quijada{
+  transform-origin:54px 140px;
+  animation:come-muerde .42s ease-in-out infinite alternate;
+}
+.come__quijada--der{ animation-name:come-muerde-der }
+@keyframes come-muerde     { from{ transform:rotate(0deg)  } to{ transform:rotate(24deg)  } }
+@keyframes come-muerde-der { from{ transform:rotate(0deg)  } to{ transform:rotate(-24deg) } }
+
+.punto{
+  opacity:.18;
+  animation:punto-comido 11s steps(1,end) infinite;
+  animation-delay:calc(var(--i) * 2.42s);
+}
+@keyframes punto-comido{
+  0%,18%   { opacity:1 }
+  22%,100% { opacity:.18 }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .come{ animation:none }
+  .come__quijada{ animation:none; transform:rotate(0deg) }
+  .come__quijada--der{ transform:rotate(0deg) }
+  .punto{ animation:none; opacity:.85 }
+}
+
+
+/* ================================================================
+   TRES DETALLES MÁS                                    (04/09/2026)
+   ================================================================ */
+
+/* LA PANTALLA · letterboxd.  Se enciende al entrar en el viewport, con el
+   mismo interruptor que ya usaba el resto de la página: la clase que pone
+   plantilla.js cuando el bloque se ve. No lleva `forwards` a propósito —el
+   atributo del SVG ya trae el valor final, así que con el JavaScript
+   bloqueado la pantalla sale encendida en vez de salir negra. */
+.esta-visible .pantalla__luz{ animation:pantalla-enciende 1.8s ease-out }
+@keyframes pantalla-enciende{ from{ opacity:0 } to{ opacity:.10 } }
+
+/* LOS CUBITOS · lipton.  Flotan. Es la campaña entera en un gesto: la
+   botella lleva cubitos de metal dentro y suena al agitarla. */
+.cubito{
+  animation:cubito-flota 6s ease-in-out infinite alternate;
+  animation-delay:calc(var(--i) * -1.4s);
+}
+@keyframes cubito-flota{
+  from{ transform:translateY(0)     rotate(0deg) }
+  to  { transform:translateY(-7px)  rotate(9deg) }
+}
+
+/* LA PELOTA · apuestas.  Cae, bota una vez y se queda. Después espera y
+   vuelve a empezar. Ocho segundos de ciclo para que sea un gesto y no un
+   partido. */
+.pelota{ animation:pelota-bota 8s ease-in-out infinite }
+@keyframes pelota-bota{
+  0%      { transform:translateY(0) }
+  22%     { transform:translateY(74px) }
+  34%     { transform:translateY(38px) }
+  46%,88% { transform:translateY(74px) }
+  100%    { transform:translateY(0) }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .pantalla__luz{ animation:none }
+  .cubito{ animation:none }
+  .pelota{ animation:none; transform:translateY(56px) }
+}
+
+
+/* LAS CELDAS DE ESTADO · deep learning.            (04/09/2026)
+   Se encienden en orden mientras la ventana avanza: una recurrente no lee
+   el tramo de golpe, lo recorre y actualiza un estado. Van DENTRO del grupo
+   de la ventana, así que viajan con ella sin una línea de JavaScript. */
+.celda{
+  opacity:.22;
+  animation:celda-late 2.8s ease-in-out infinite;
+  animation-delay:calc(var(--i) * .35s);
+}
+@keyframes celda-late{ 0%,55%,100%{ opacity:.22 } 18%,32%{ opacity:.9 } }
+@media (prefers-reduced-motion:reduce){ .celda{ animation:none; opacity:.5 } }
+
+
+/* ================================================================
+   EL RECORRIDO DEL LEAD                                (04/09/2026)
+   ================================================================
+
+   Lo que se mueve NO es un marcador que viaja: eso ya lo hace el
+   ascensor de las fases y ya lo hace el comecocos de videojuegos, y
+   tres veces el mismo gesto es un gesto gastado. Aquí baja un PULSO
+   por los conectores, uno detrás de otro, como una tubería que se va
+   llenando. Nada se desplaza.
+
+   Cada tramo lleva DOS líneas: una fija al 30% que está siempre, y esta
+   encima que se enciende. Con el movimiento parado el diagrama sigue
+   entero; lo que se pierde es el orden, que además está escrito. */
+
+.tramo{
+  stroke-dasharray:28; stroke-dashoffset:28;
+  animation:tramo-pulsa 10s ease-in-out infinite;
+  animation-delay:calc(var(--i) * 2s);
+}
+@keyframes tramo-pulsa{
+  0%       { stroke-dashoffset:28; opacity:.9 }
+  10%,26%  { stroke-dashoffset:0;  opacity:.9 }
+  36%,100% { stroke-dashoffset:0;  opacity:0 }
+}
+@media (prefers-reduced-motion:reduce){
+  .tramo{ animation:none; stroke-dashoffset:0; opacity:.9 }
+}
+
+
+/* El esquema del asistente lleva CUATRO rótulos cortos y nada más, así que
+   puede permitirse tipo más grande que un pie normal. Hace falta: esa pieza
+   va en la composición estrecha —la que le toca, porque es la secundaria— y
+   ahí el SVG se dibuja a poco más de medio aumento. Con 12 px acababa en 9
+   de pantalla. Ojo al tocarlo: un carácter pasa de 16,3 unidades a 20,4 y
+   las pastillas están medidas con ese número. */
+.g-pie--nodo{ font-size:calc(15px * var(--g)) }

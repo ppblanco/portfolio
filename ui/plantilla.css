@@ -1,0 +1,1243 @@
+/* =============================================================
+   PLANTILLA · sistema visual del portfolio editorial
+   -------------------------------------------------------------
+   Autocontenida a propósito: define sus propios tokens y no toca
+   tokens.css ni componentes.css. plantilla.html carga solo
+   tipos.css y este archivo, así que no puede chocar con la
+   versión negra ni con la clara.
+
+   Las medidas (escala tipográfica, ancho de contenedor, ritmo de
+   80px entre secciones, columnas de cada rejilla y en qué ancho
+   se recolocan) están tomadas de la referencia con el navegador,
+   no a ojo. La paleta y las tipografías son propias: el color y
+   la letra son la marca de quien hizo aquella web.
+   ============================================================= */
+
+:root{
+  /* ---- Color. Un fondo casi negro de sesgo frío y UN acento. --- */
+  --fondo:#0B0C0F;
+  --panel:#131519;
+  --panel-alto:#191C21;
+  --tinta:#F2F3F5;
+  --bruma:#9AA0A9;
+  /* Aclarada de #6E747D a #7E848D. El tono anterior se quedaba en 4,15:1
+     sobre el fondo, 3,88:1 sobre el panel y 3,63:1 sobre el panel alto, y
+     este gris lo gastan rotulos, pies y etiquetas de 10 a 14 px, que son
+     texto normal: el minimo son 4,5:1. Con #7E848D sale 5,19 · 4,93 · 4,85
+     y 4,53 sobre los cuatro fondos que se usan de verdad, medido. Es el
+     aclarado mas pequeno que cumple en el peor de ellos: el gris sigue
+     siendo gris y la jerarquia no se mueve. */
+  --bruma-tenue:#7E848D;
+  --linea:rgba(255,255,255,.10);
+  --linea-fuerte:rgba(255,255,255,.18);
+
+  /* El ámbar se gasta solo en el número de sección, la palabra
+     acentuada del titular, las flechas y el botón principal. Si se
+     usa para decorar deja de significar nada. */
+  --senal:#E0A458;
+  --senal-viva:#EFBB74;
+  --senal-tenue:rgba(224,164,88,.14);
+  --senal-linea:rgba(224,164,88,.34);
+
+  /* ---- Tipos --------------------------------------------------- */
+  --display:"Barlow Condensed",system-ui,sans-serif;
+  --texto:"Barlow",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+
+  /* Curvas medidas: 36,8px a 375 -> 56px a 1440 para el H1, y las
+     dos alturas de H2 que usa la referencia (mayor y menor). */
+  --t-h1:clamp(36.8px, 18.3px + 2.62vw, 56px);
+  --t-h2:clamp(32px, 23.9px + 2.16vw, 48px);
+  --t-h3:clamp(24px, 19.5px + 1.2vw, 32px);
+  --t-h4:18px;
+  --t-lead:18px;
+  --t-cuerpo:16px;
+  --t-menor:14px;
+  --t-rotulo:12px;
+  --t-micro:10px;
+
+  /* ---- Espacio. Escala de 4. --------------------------------- */
+  --e1:8px;  --e2:12px; --e3:16px; --e4:24px;
+  --e5:32px; --e6:40px; --e7:56px; --e8:80px;
+
+  --ancho:1180px;      /* el contenedor de la referencia */
+  --ancho-leer:640px;  /* la columna de texto de "sobre mí" */
+  --canto:16px;        /* radio de los paneles */
+  --canto-chico:10px;
+
+  --rapido:.16s; --medio:.28s; --lento:.5s;
+  --sale:cubic-bezier(.22,.61,.36,1);
+}
+
+*,*::before,*::after{ box-sizing:border-box }
+
+html{
+  -webkit-text-size-adjust:100%;
+  scroll-behavior:smooth;
+  scroll-padding-top:96px;   /* la barra flota encima: sin esto tapa el título */
+  background:var(--fondo);
+  /* clip, no hidden, y en <html>, no en <body>. Las tiras que se desplazan a
+     lo ancho asoman fuera del marco y hay que recortarlas, pero:
+     · overflow-x:hidden convierte al elemento en caja de desplazamiento, y
+       entonces documentElement.scrollWidth pasa a contar lo oculto —la página
+       parecía desbordarse 1.090px cuando no se desbordaba nada.
+     · overflow:clip recorta sin crear caja, así que ni rompe position:sticky
+       ni descoloca lo que mide el ancho de la página. */
+  overflow-x:clip;
+}
+@media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto } }
+
+/* <body> NO lleva fondo, y esto no es un olvido.
+   El lienzo del fondo y el degradado de tierra van en z-index negativo, o sea
+   que pintan en el paso de "hijos con z negativo" del contexto de apilamiento
+   raíz. Los fondos de bloque —el de <body>— pintan DESPUÉS. Con un fondo
+   opaco aquí, body tapa las dos capas y el efecto no se ve: medido, 19 de 25
+   puntos con tinta fuerte salían idénticos al fondo liso.
+   El color de tierra lo lleva <html>. Es la misma regla que ya estaba escrita
+   en CLAUDE.md para el campo de estrellas de index.html. */
+body{
+  margin:0;
+  color:var(--tinta);
+  font-family:var(--texto);
+  font-size:var(--t-cuerpo);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* height:auto no es opcional. Las <img> llevan width/height en el HTML para
+   que el navegador reserve el hueco antes de descargarlas y la página no dé
+   saltos. Pero si luego el CSS solo pone width:100%, la altura se queda en la
+   del atributo y manda por encima del aspect-ratio: la tira de imágenes salía
+   de 560px de alto y las fichas de proyecto de 472, con lo que la sección de
+   trabajos medía 1.536px en vez de 850. */
+img{ max-width:100%; height:auto; display:block }
+
+a{ color:inherit }
+/* El box-shadow no es adorno: es un halo del color del fondo que separa el
+   anillo de la superficie que tenga debajo. Sin él, sobre un panel claro o
+   sobre el ámbar de un botón sólido, el anillo se confunde con el borde. */
+:focus-visible{
+  outline:2px solid var(--senal); outline-offset:3px; border-radius:4px;
+  box-shadow:0 0 0 6px var(--fondo);
+}
+.boton--solido:focus-visible,.barra__cta:focus-visible{
+  outline-color:var(--tinta); box-shadow:0 0 0 6px var(--senal);
+}
+
+/* La tierra de la página. Fija a la ventana, no estirada por todo el alto:
+   estirada, en una página larga el degradado saldría enorme y borroso. Va en
+   un pseudoelemento de <body> con z-index negativo, y por eso el negro lo
+   lleva <html>. */
+body::before{
+  content:"";
+  position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, rgba(224,164,88,.22), transparent),
+    radial-gradient(1.2px 1.2px at 68% 8%,  rgba(255,255,255,.14), transparent),
+    radial-gradient(1.4px 1.4px at 84% 42%, rgba(224,164,88,.16), transparent),
+    radial-gradient(1.2px 1.2px at 26% 62%, rgba(255,255,255,.12), transparent),
+    radial-gradient(1.3px 1.3px at 52% 88%, rgba(224,164,88,.14), transparent),
+    radial-gradient(1.1px 1.1px at 92% 76%, rgba(255,255,255,.10), transparent),
+    radial-gradient(120% 70% at 50% 0%, #12131A 0%, var(--fondo) 62%);
+}
+/* Los seis puntos de arriba son el respaldo de cuando no hay JavaScript: sin
+   ellos el fondo se quedaría liso. En cuanto el lienzo está montado sobran,
+   porque el lienzo dibuja los suyos y se solaparían. La clase la pone
+   ui/fondo.js, así que el respaldo solo desaparece si de verdad hay relevo. */
+html.con-fondo body::before{
+  background-image:radial-gradient(120% 70% at 50% 0%, #12131A 0%, var(--fondo) 62%);
+}
+
+/* El lienzo. Fijo a la ventana y detrás de todo. No entra en el flujo, así que
+   no puede cambiar las dimensiones del documento ni crear desplazamiento
+   horizontal; pointer-events:none para que no robe ni un clic ni impida
+   seleccionar un párrafo. */
+.fondo{
+  position:fixed; inset:0; z-index:-1;
+  width:100%; height:100%;
+  pointer-events:none; user-select:none;
+  display:block;
+  /* Entra con un fundido en vez de aparecer de golpe con la red ya montada.
+     La clase la pone ui/fondo.js después del primer dibujo, así que si el
+     script no llegara a correr no queda un lienzo invisible: no queda lienzo. */
+  opacity:0; transition:opacity .6s var(--sale);
+}
+.fondo.esta-encendido{ opacity:1 }
+@media (prefers-reduced-motion:reduce){
+  .fondo{ transition:none }
+}
+
+.saltar{
+  position:absolute; left:-9999px; top:0; z-index:100;
+  background:var(--tinta); color:var(--fondo);
+  padding:12px 18px; font-family:var(--mono); font-size:var(--t-rotulo);
+  text-decoration:none; border-radius:0 0 var(--canto-chico) 0;
+}
+.saltar:focus{ left:0 }
+
+.oculto{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+/* ---------- Tipografía base ------------------------------------ */
+
+h1,h2,h3,h4{
+  font-family:var(--display); font-weight:600;
+  margin:0; text-wrap:balance;
+}
+h1{ font-size:var(--t-h1); line-height:.98; letter-spacing:-.01em }
+.titulo-mayor{ font-size:var(--t-h2); line-height:1.02; letter-spacing:-.015em }
+.titulo-menor{ font-size:var(--t-h3); line-height:1.04; letter-spacing:-.012em }
+h3{ font-size:var(--t-h4); line-height:1.25; letter-spacing:-.005em }
+
+/* La palabra acentuada del titular: es el único sitio donde el
+   ámbar toca un texto grande, y va en cursiva para que se lea como
+   énfasis y no como un enlace. */
+.acento{ color:var(--senal); font-style:italic }
+
+.parrafo{ margin:0; color:var(--bruma); max-width:62ch }
+.parrafo--lead{ font-size:var(--t-lead); line-height:1.6; color:var(--bruma) }
+
+.rotulo{
+  font-family:var(--mono); font-size:var(--t-rotulo);
+  letter-spacing:.16em; text-transform:uppercase;
+  color:var(--bruma-tenue); margin:0;
+}
+.rotulo--micro{ font-size:var(--t-micro); letter-spacing:.2em }
+/* El rótulo se dibuja de izquierda a derecha. clip-path no mueve nada de
+   sitio, así que no empuja al titular mientras entra. */
+.con-revelado [data-revelar] .eyebrow{ clip-path:inset(0 100% 0 0) }
+.con-revelado [data-revelar].esta-visible .eyebrow{
+  clip-path:inset(0 0 0 0); transition:clip-path .8s var(--sale) .1s;
+}
+.rotulo__n{ color:var(--senal) }
+
+/* ---------- Contenedores y ritmo -------------------------------- */
+
+.marco{ width:100%; max-width:var(--ancho); margin:0 auto; padding:0 26px }
+
+/* 80px arriba y 0 abajo: el aire lo pone siempre la sección de
+   abajo, nunca las dos a la vez. Así el ritmo no se descuadra al
+   quitar una sección. */
+.seccion{ padding:var(--e8) 0 0 }
+.seccion__cabecera{ display:flex; flex-direction:column; gap:var(--e2); margin-bottom:var(--e7) }
+.seccion__intro{ margin-top:var(--e1); max-width:58ch }
+.aviso{
+  margin-top:var(--e5); padding-top:var(--e4); border-top:1px solid var(--linea);
+  font-size:var(--t-menor); color:var(--bruma-tenue); max-width:76ch;
+}
+
+@media (max-width:620px){
+  .marco{ padding:0 20px }
+  .seccion{ padding:56px 0 0 }
+  .seccion__cabecera{ margin-bottom:var(--e6) }
+}
+
+/* ---------- Aparición al entrar en pantalla --------------------- */
+/* La clase .con-revelado la pone revelar.js. Si el JavaScript no
+   llega a ejecutarse, no hay nada escondido y la página se ve. */
+.con-revelado [data-revelar]{
+  opacity:0; transform:translateY(14px);
+  transition:opacity var(--lento) var(--sale), transform var(--lento) var(--sale);
+}
+.con-revelado [data-revelar].esta-visible{ opacity:1; transform:none }
+@media (prefers-reduced-motion:reduce){
+  .con-revelado [data-revelar]{ opacity:1; transform:none; transition:none }
+}
+/* El interruptor del pie hace lo mismo para quien lo pida a mano. */
+/* Pausar, no rematar. animation-play-state congela donde esté; poner la
+   duración a cero la manda al último fotograma, que no es lo mismo ni es lo
+   que pide quien pulsa "parar". Las transiciones sí se acortan: una
+   transición pausada deja el elemento a medio camino para siempre. */
+html.sin-movimiento *,
+html.sin-movimiento *::before,
+html.sin-movimiento *::after{
+  animation-play-state:paused !important;
+  transition-duration:.001ms !important;
+}
+html.sin-movimiento{ scroll-behavior:auto }
+
+/* ---------- Barra flotante -------------------------------------- */
+
+.barra{
+  position:sticky; top:14px; z-index:60; padding:0 20px; margin-top:14px;
+  transition:transform var(--medio) var(--sale);
+}
+/* Se aparta al bajar y vuelve al subir; la lógica está en plantilla.js. */
+.barra.esta-oculta{ transform:translateY(calc(-100% - 24px)) }
+/* Dos reglas separadas, no una lista de selectores: un navegador que no
+   entienda :has() descartaría la lista entera y con ella el :focus-within,
+   dejando a un teclado sin barra. */
+.barra.esta-oculta:focus-within{ transform:none }
+.barra:has(.barra__lista:not([hidden])) .barra__caja{ border-color:var(--linea-fuerte) }
+
+.barra__avance{
+  position:absolute; left:20px; right:20px; bottom:-1px; height:2px;
+  transform:scaleX(0); transform-origin:left;
+  background:linear-gradient(90deg, transparent, var(--senal));
+  border-radius:999px; pointer-events:none;
+}
+.barra__caja{
+  width:fit-content; max-width:100%; margin:0 auto;
+  display:flex; align-items:center; gap:var(--e4);
+  padding:8px 8px 8px 10px;
+  background:rgba(19,21,25,.78);
+  border:1px solid var(--linea);
+  border-radius:999px;
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  transition:box-shadow var(--medio) var(--sale), border-color var(--medio) var(--sale);
+}
+.barra.esta-posada .barra__caja{ box-shadow:0 10px 40px rgba(0,0,0,.42) }
+.barra__marca{
+  display:flex; align-items:center; gap:var(--e2);
+  text-decoration:none; padding-right:var(--e2); flex:none;
+}
+.barra__iniciales{
+  width:32px; height:32px; flex:none; border-radius:50%;
+  display:grid; place-items:center;
+  background:var(--senal-tenue); border:1px solid var(--senal-linea);
+  color:var(--senal); font-family:var(--mono); font-size:11px; letter-spacing:.04em;
+}
+.barra__nombre{
+  font-family:var(--display); font-weight:600; font-size:15px;
+  letter-spacing:.01em; white-space:nowrap;
+}
+.barra__lista{
+  display:flex; align-items:center; gap:var(--e4);
+  list-style:none; margin:0; padding:0; min-width:0;
+}
+.barra__lista a{
+  position:relative; display:block; padding:6px 0;
+  font-size:var(--t-menor); text-decoration:none; color:var(--bruma);
+  white-space:nowrap; transition:color var(--rapido) var(--sale);
+}
+.barra__lista a::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:1px;
+  background:var(--senal); transform:scaleX(0); transform-origin:left;
+  transition:transform var(--medio) var(--sale);
+}
+.barra__lista a:hover{ color:var(--tinta) }
+.barra__lista a.esta-activo{ color:var(--senal) }
+.barra__lista a:hover::after,.barra__lista a.esta-activo::after{ transform:scaleX(1) }
+
+.barra__cta{
+  flex:none; padding:9px 18px; border-radius:999px;
+  background:var(--senal); color:#17120A;
+  font-family:var(--display); font-weight:600; font-size:14px; letter-spacing:.03em;
+  text-decoration:none; white-space:nowrap;
+  transition:background var(--rapido) var(--sale), transform var(--rapido) var(--sale);
+}
+.barra__cta:hover{ background:var(--senal-viva); transform:translateY(-1px) }
+
+/* Aviso de pausa. Vive escondido y solo sale cuando el movimiento esta
+   parado. Es un boton, no un cartel: quien lo ve puede arreglarlo ahi mismo. */
+.barra__pausa{
+  display:none; align-items:center; gap:7px; flex:none;
+  padding:7px 14px; border-radius:999px;
+  background:var(--senal-tenue); border:1px solid var(--senal-linea);
+  color:var(--senal); cursor:pointer;
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.12em;
+  text-transform:uppercase; white-space:nowrap;
+  transition:background var(--rapido) var(--sale);
+}
+.barra__pausa:hover{ background:rgba(224,164,88,.22) }
+.barra__pausa__punto{
+  width:6px; height:6px; border-radius:50%; background:var(--senal); flex:none;
+}
+html.sin-movimiento .barra__pausa{ display:inline-flex }
+/* En una barra estrecha no cabe junto al nombre y el boton de contacto, asi
+   que ahi se queda solo el punto. */
+@media (max-width:860px){
+  html.sin-movimiento .barra__pausa{ padding:7px; font-size:0; gap:0 }
+}
+
+.barra__menu{ display:none }
+
+/* Por debajo de 860 no caben los cuatro enlaces junto al nombre y
+   el botón. En vez de quitar entradas —perder navegación es peor—
+   se pliegan en un panel que abre el botón. */
+@media (max-width:860px){
+  .barra__caja{ width:100%; padding:8px 8px 8px 12px }
+  /* El nombre a la izquierda y el par contacto+menú juntos a la derecha. Con
+     space-between el botón se quedaba flotando en mitad de la barra, sin
+     pertenecer a ningún lado. */
+  .barra__cta{ margin-left:auto }
+  .barra__lista{
+    position:absolute; left:0; right:0; top:calc(100% + 10px);
+    flex-direction:column; align-items:stretch; gap:0;
+    background:rgba(19,21,25,.96); border:1px solid var(--linea);
+    border-radius:var(--canto); padding:var(--e1);
+    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  }
+  .barra__lista[hidden]{ display:none }
+  .barra__lista a{ padding:12px var(--e3); border-radius:var(--canto-chico) }
+  .barra__lista a::after{ display:none }
+  .barra__lista a:hover{ background:rgba(255,255,255,.05) }
+  .barra__caja{ position:relative }
+  .barra__menu{
+    display:grid; place-items:center; width:38px; height:38px; flex:none;
+    background:transparent; border:1px solid var(--linea); border-radius:999px;
+    color:var(--tinta); cursor:pointer;
+  }
+  .barra__menu span{ display:block; width:15px; height:1px; background:currentColor; position:relative }
+  .barra__menu span::before,.barra__menu span::after{
+    content:""; position:absolute; left:0; width:15px; height:1px; background:currentColor;
+  }
+  .barra__menu span::before{ top:-5px } .barra__menu span::after{ top:5px }
+}
+@media (max-width:420px){
+  .barra__nombre{ display:none }
+  .barra__cta{ padding:9px 14px; font-size:13px }
+}
+
+/* ---------- Botones --------------------------------------------- */
+
+.botones{ display:flex; flex-wrap:wrap; gap:var(--e2) }
+.boton{
+  display:inline-flex; align-items:center; gap:var(--e1);
+  padding:12px 22px; border-radius:999px;
+  border:1px solid var(--linea-fuerte); background:transparent; color:var(--tinta);
+  font-family:var(--display); font-weight:600; font-size:15px; letter-spacing:.03em;
+  text-decoration:none; cursor:pointer;
+  transition:background var(--rapido) var(--sale),
+             border-color var(--rapido) var(--sale),
+             transform var(--rapido) var(--sale);
+}
+.boton:hover{ background:rgba(255,255,255,.06); border-color:var(--linea-fuerte); transform:translateY(-1px) }
+.boton--solido{ background:var(--senal); border-color:var(--senal); color:#17120A }
+.boton--solido:hover{ background:var(--senal-viva); border-color:var(--senal-viva) }
+
+/* La flecha se separa un poco al pasar por encima: dice "esto sale
+   de aquí" sin necesidad de escribirlo. */
+.flecha{ display:inline-block; transition:transform var(--medio) var(--sale) }
+a:hover .flecha{ transform:translate(3px,-3px) }
+
+/* El enlace de una ficha se subraya de izquierda a derecha al pasar por
+   encima. transform:scaleX no repinta el texto, solo la línea. */
+.obra__enlace{ position:relative }
+.obra__enlace::after{
+  content:""; position:absolute; left:0; right:14px; bottom:-3px; height:1px;
+  background:currentColor; transform:scaleX(0); transform-origin:left;
+  transition:transform var(--medio) var(--sale);
+}
+.obra__enlace:hover::after{ transform:scaleX(1) }
+
+/* ---------- Portada ---------------------------------------------- */
+
+.portada{ padding:var(--e8) 0 var(--e5) }
+.portada__reparto{
+  display:grid; gap:var(--e7);
+  /* 1,55 contra 0,9, no 1,16 contra 1. La foto tenia casi el mismo peso que
+     todo el texto junto y se comia el hero. Ahora acompaña en vez de mandar. */
+  grid-template-columns:minmax(0,1.55fr) minmax(0,0.9fr);
+  align-items:center;
+  min-height:480px;
+}
+.portada__panel{
+  padding:var(--e6);
+  border:1px solid var(--linea); border-radius:var(--canto);
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(224,164,88,.10) 0%, transparent 58%),
+    var(--panel);
+  display:flex; flex-direction:column; gap:var(--e4);
+}
+.portada__saludo{
+  font-family:var(--mono); font-size:clamp(15px, 13px + .5vw, 19px);
+  letter-spacing:.02em; margin:0; line-height:1.2;
+}
+/* La coma y el "soy" van PEGADOS al cursor y viajan con él en cada tecla. Se
+   probó primero reservando un ancho fijo para la palabra, con la idea de que
+   una cola quieta sería más tranquila. No lo es: el cursor queda flotando en
+   mitad de un hueco y toda palabra más corta que "Bonjour" deja un vacío antes
+   de la coma, que se lee como un fallo de maquetación y no como un terminal.
+   No volver a poner un min-width aquí. */
+.saludo{ display:inline-flex; align-items:baseline; white-space:pre }
+.saludo__palabra{ color:var(--senal); font-weight:500 }
+.saludo__cola{ color:var(--bruma-tenue) }
+/* El cursor solo existe cuando el script ha encendido el tecleo. Un cursor
+   parpadeando junto a un texto que no va a cambiar nunca es una mentira sobre
+   lo que hace la interfaz. */
+.saludo__cursor{ color:var(--senal); opacity:0; font-weight:400 }
+.saludo.esta-tecleando .saludo__cursor{
+  opacity:1; animation:cursor .7s step-end infinite;
+}
+/* step-end, no una curva: así parpadea como un cursor de terminal y no como un
+   brillo que se apaga. Es lo que hace typed.js. */
+@keyframes cursor{ 0%,100%{opacity:1} 50%{opacity:0} }
+@media (prefers-reduced-motion:reduce){
+  .saludo__cursor{ display:none }
+}
+
+.portada__lema{ font-size:clamp(20px,17px + .8vw, 26px); line-height:1.2; letter-spacing:-.01em }
+.portada__meta{
+  display:flex; align-items:baseline; gap:var(--e1); flex-wrap:wrap;
+  margin:0; font-size:var(--t-menor); color:var(--bruma-tenue);
+  padding-top:var(--e2); border-top:1px solid var(--linea);
+}
+.portada__meta strong{ color:var(--tinta); font-weight:600 }
+.portada__meta{ flex-direction:column; align-items:flex-start; gap:6px }
+.portada__estado{
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.14em;
+  text-transform:uppercase; color:var(--senal);
+}
+/* El punto que late: es el único sitio de la página que dice "disponible", y
+   un punto vivo lo dice más rápido que la palabra. */
+.portada__estado::before{
+  content:""; width:6px; height:6px; border-radius:50%; background:var(--senal);
+  box-shadow:0 0 0 0 var(--senal-linea); animation:pulso 2.4s ease-out infinite;
+}
+@keyframes pulso{
+  0%{ box-shadow:0 0 0 0 rgba(224,164,88,.5) }
+  70%{ box-shadow:0 0 0 7px rgba(224,164,88,0) }
+  100%{ box-shadow:0 0 0 0 rgba(224,164,88,0) }
+}
+@media (prefers-reduced-motion:reduce){ .portada__estado::before{ animation:none } }
+
+/* Cada palabra del titular sube desde debajo de su propia línea base. El
+   recorte lo lleva la caja exterior, así que nada asoma por arriba ni por
+   abajo mientras viaja. La clase la pone plantilla.js: sin JavaScript el
+   titular es texto normal y se ve entero. */
+.portada__nombre.esta-partido .palabra{
+  display:inline-block; overflow:hidden; vertical-align:bottom;
+}
+.portada__nombre.esta-partido .palabra__interior{
+  display:inline-block;
+  transform:translateY(105%);
+  transition:transform .9s var(--sale);
+}
+.portada__nombre.esta-entero .palabra__interior{ transform:none }
+@media (prefers-reduced-motion:reduce){
+  .portada__nombre.esta-partido .palabra__interior{ transform:none; transition:none }
+}
+
+/* Tamaño medio y proporcion clavada. El original es 720x900, o sea 4:5
+   exactos, asi que con aspect-ratio 4/5 object-fit:cover no recorta ni un
+   pixel: se ve la foto entera, solo mas pequeña. El tope de 340px es lo que la
+   mantiene en su sitio cuando la ventana crece. */
+.portada__imagen{
+  width:100%; max-width:340px; height:auto;
+  aspect-ratio:4/5; object-fit:cover;
+  margin-left:auto;
+  border:1px solid var(--linea); border-radius:var(--canto);
+}
+
+@media (max-width:900px){
+  .portada__reparto{ grid-template-columns:1fr; gap:var(--e4) }
+  .portada__panel{ padding:var(--e5) var(--e4) }
+  /* Apilada se centra y se queda aun mas pequeña: en un movil, un retrato a
+     todo el ancho empuja el primer titular fuera de la pantalla. */
+  .portada__imagen{ max-width:260px; margin:0 auto }
+}
+
+/* ---------- Mapa del trabajo ------------------------------------ */
+/* El grafo de ui/mapa.js, entre la portada y los trabajos. Va en su propia
+   banda y no encima de nada: así no tapa texto, no entra en el scroll de la
+   página y no puede robarle un clic a ningún botón. */
+.mapa__caja{
+  position:relative;
+  border:1px solid var(--linea); border-radius:var(--canto);
+  background:
+    radial-gradient(90% 120% at 50% 0%, rgba(224,164,88,.06) 0%, transparent 62%),
+    var(--panel);
+  overflow:hidden;
+}
+.mapa__lienzo{
+  display:block; width:100%; height:clamp(320px, 34vw, 460px);
+  touch-action:pan-y;          /* arrastrar un nodo no debe secuestrar el scroll */
+  cursor:grab;
+}
+.mapa__lienzo:active{ cursor:grabbing }
+.mapa__aviso{
+  display:none; margin:var(--e3) 0 0;
+  font-size:var(--t-menor); color:var(--bruma-tenue);
+}
+/* Por debajo de 760px no se monta: catorce etiquetas se amontonan y el grafo
+   se maneja pasando el ratón por encima, gesto que en una pantalla táctil no
+   existe. Queda el aviso, que dice dónde están los proyectos. */
+@media (max-width:759px){
+  .mapa__caja{ display:none }
+  .mapa__aviso{ display:block }
+}
+
+/* ---------- Carrusel de trabajos --------------------------------- */
+
+/* El overflow-x:auto de la pista no basta: su región desplazable se propaga
+   hacia arriba y la página acababa declarando 1.465px de ancho en un móvil de
+   375. No se podía arrastrar —eso lo recorta html— pero cualquier captura de
+   pantalla completa salía con media imagen en negro. Recortando aquí, el
+   desbordamiento muere donde nace. El margen de 8px deja respirar al empujón
+   de 4px que dan las fichas al pasar por encima. */
+.carrusel{ position:relative; min-width:0; overflow:clip; overflow-clip-margin:8px }
+/* min-width:0 y max-width:100% no son cinturon y tirantes. El minimo
+   automatico de una rejilla es su propio contenido, asi que sin esto la caja
+   del carrusel crecia hasta caber las seis fichas y el overflow-x:auto no
+   tenia nada que desplazar: en un movil de 375px la pagina declaraba 1.465px
+   de ancho, y una captura de pantalla completa salia con media imagen negra. */
+.carrusel__pista{
+  /* Una fila, no dos. Con dos filas y cuatro proyectos las fichas caben todas
+     en pantalla y el carrusel deja de desbordar: las flechas se desactivan
+     solas y deja de ser un carrusel. En una fila siempre asoma la siguiente. */
+  display:grid; grid-auto-flow:column; grid-template-rows:auto;
+  /* Ancho fijo, no minmax. Con minmax(300px,400px) las tres columnas se
+     repartían el contenedor y encajaban justo: la pista no desbordaba, las
+     flechas se desactivaban solas y el carrusel dejaba de ser un carrusel.
+     Con ficha fija siempre asoma la siguiente, que es lo que dice al visitante
+     que ahí hay más cosas. */
+  grid-auto-columns:400px; gap:var(--e4);
+  min-width:0; max-width:100%;
+  overflow-x:auto; overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory; scroll-padding:0;
+  padding-bottom:var(--e3);
+  scrollbar-width:thin; scrollbar-color:var(--linea-fuerte) transparent;
+}
+.carrusel__pista::-webkit-scrollbar{ height:6px }
+.carrusel__pista::-webkit-scrollbar-thumb{ background:var(--linea-fuerte); border-radius:999px }
+@media (max-width:700px){
+  .carrusel__pista{ grid-auto-columns:minmax(260px,84vw) }
+}
+
+.obra{
+  position:relative;
+  scroll-snap-align:start;
+  display:flex; flex-direction:column;
+  background:var(--panel); border:1px solid var(--linea);
+  border-radius:var(--canto); overflow:hidden;
+  transition:border-color var(--medio) var(--sale), transform var(--medio) var(--sale),
+             box-shadow var(--medio) var(--sale);
+}
+.obra:hover,.obra:focus-within{
+  border-color:var(--senal-linea);
+  transform:translateY(-4px);
+  box-shadow:0 20px 50px -30px rgba(0,0,0,.9);
+}
+/* Foco de luz bajo el puntero. Las dos coordenadas las escribe plantilla.js
+   como propiedades personalizadas: cambiarlas repinta este pseudoelemento y
+   nada más, no recalcula el diseño de la página. */
+.obra::before{
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  opacity:0; transition:opacity var(--medio) var(--sale);
+  background:radial-gradient(220px circle at var(--luz-x,50%) var(--luz-y,50%),
+                             rgba(224,164,88,.10), transparent 70%);
+}
+.obra:hover::before{ opacity:1 }
+/* El ladeo se queda en 3 grados; más y la ficha deja de leerse como ficha. */
+.obra.se-ladea{
+  transform:translateY(-4px) perspective(900px)
+            rotateY(var(--giro-y,0deg)) rotateX(var(--giro-x,0deg));
+}
+@media (prefers-reduced-motion:reduce){
+  .obra,.obra.se-ladea{ transform:none }
+  .obra::before{ display:none }
+}
+html.sin-movimiento .obra.se-ladea{ transform:none }
+/* Sin destino, sin promesa: ni se levanta, ni se ladea, ni se enciende el
+   borde. Todo eso dice "pulsame", y esta no lleva a ninguna parte. */
+.obra--sin-destino:hover,.obra--sin-destino:focus-within{
+  transform:none; border-color:var(--linea); box-shadow:none;
+}
+.obra--sin-destino::before{ display:none }
+.obra--sin-destino:hover .obra__portada{ transform:none }
+.obra__lienzo{ position:relative }
+.obra__lienzo{ overflow:hidden }
+.obra__portada{
+  width:100%; aspect-ratio:16/9; object-fit:cover;
+  border-bottom:1px solid var(--linea);
+  transition:transform var(--lento) var(--sale);
+}
+/* La portada crece un poco dentro de su marco mientras la ficha se levanta.
+   Es el detalle que más hace por que una ficha parezca viva, y cuesta una
+   línea: el recorte lo pone el marco, así que no se sale por ningún lado. */
+.obra:hover .obra__portada{ transform:scale(1.045) }
+
+/* La portada del TFM es la diapositiva de la defensa: lleva texto hasta cerca
+   del borde, así que se enseña entera. Su fondo ya es negro, de modo que el
+   poco aire que deja contain se funde con la ficha y no se nota. */
+.obra__portada--entera{ object-fit:contain; background:#000 }
+
+
+/* El boton de ir, al lado del titulo y no escondido en la esquina de la foto.
+   Y SIEMPRE visible, no solo al pasar por encima: es lo que dice que la ficha
+   lleva a alguna parte, y en una pantalla tactil no hay "pasar por encima".
+   Aparecia al hover, asi que en un movil no aparecia nunca. */
+.obra__ir-boton{
+  flex:none; width:38px; height:38px; border-radius:50%;
+  display:grid; place-items:center;
+  border:1px solid var(--linea-fuerte); color:var(--bruma);
+  font-size:15px; line-height:1;
+  transition:background var(--medio) var(--sale), color var(--medio) var(--sale),
+             border-color var(--medio) var(--sale), transform var(--medio) var(--sale);
+}
+.obra:hover .obra__ir-boton,.obra:focus-within .obra__ir-boton{
+  background:var(--senal); border-color:var(--senal); color:#17120A;
+  transform:translate(2px,-2px);
+}
+@media (prefers-reduced-motion:reduce){
+  .obra:hover .obra__portada{ transform:none }
+  .obra:hover .obra__ir-boton,.obra:focus-within .obra__ir-boton{ transform:none }
+}
+/* Aquí vivía .obra__distintivo, la píldora de estado de la ficha ("En
+   producción"). Pedro la mandó quitar entera, no vaciar, y ya no la emite
+   nadie: fuera también su CSS, o dentro de tres meses alguien la ve aquí y
+   supone que sigue en uso. Hay una prueba que impide que vuelva.
+*/
+.obra__cuerpo{ display:flex; flex-direction:column; gap:var(--e3); padding:var(--e4); flex:1 }
+/* center, no baseline: el boton es un circulo de 38px y con baseline se
+   colgaba de la linea del titulo en vez de centrarse con el bloque. */
+.obra__cabecera{ display:flex; align-items:center; justify-content:space-between; gap:var(--e3) }
+.obra__rotulos{ min-width:0 }
+.obra__titulo{ font-size:var(--t-h4); margin:0 }
+.obra__categoria{
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.16em;
+  text-transform:uppercase; color:var(--bruma-tenue); margin:6px 0 0;
+}
+
+/* EL ENLACE ESTIRADO. El ::after cubre la tarjeta entera, asi que se pulsa
+   donde sea; el enlace en si sigue siendo el titulo, con su texto de verdad,
+   que es lo que oye un lector de pantalla y lo que ve un buscador.
+   El z-index:3 lo pone por encima del foco de luz (::before, z-index:1). */
+.obra__ir{ color:inherit; text-decoration:none }
+.obra__ir::after{ content:""; position:absolute; inset:0; z-index:3 }
+.obra:hover .obra__ir{ color:var(--senal) }
+/* El foco se dibuja en la tarjeta, no en el texto: el area pulsable es la
+   tarjeta, y un recuadro solo alrededor del titulo mentiria sobre su tamaño. */
+.obra__ir:focus-visible{ outline:none }
+.obra:has(.obra__ir:focus-visible){
+  outline:2px solid var(--senal); outline-offset:3px;
+}
+
+/* NO ESTÁ EN USO, Y SE QUEDA A PROPÓSITO. Las cifras y los chips salieron de
+   la ficha el 27/08/2026: la ficha es corta y lo explicado vive en la página
+   del trabajo. Los datos siguen en contenido-plantilla.json ("lecturas",
+   "chips", "resumen") porque son el material de esas páginas, y este CSS se
+   queda con ellos para no tener que reescribirlo. Si dentro de unos meses
+   sigue sin usarse, bórralo: no es un descuido, es una apuesta.
+
+   Las cifras del proyecto, en mono y alineadas a la derecha: leídas en
+   columna se comparan de un vistazo. */
+.lecturas{ display:flex; flex-direction:column; border-top:1px solid var(--linea) }
+.lectura{
+  display:flex; align-items:baseline; justify-content:space-between; gap:var(--e2);
+  padding:7px 0; border-bottom:1px solid var(--linea);
+  font-family:var(--mono); font-size:var(--t-rotulo);
+}
+.lectura__clave{ color:var(--bruma-tenue) }
+.lectura__valor{ color:var(--tinta); font-variant-numeric:tabular-nums }
+.lectura--destacada .lectura__valor{ color:var(--senal) }
+.lectura--tenue{ opacity:.55 }
+
+.chips{ display:flex; flex-wrap:wrap; gap:6px }
+.chip{
+  padding:4px 9px; border-radius:999px;
+  background:var(--panel-alto); border:1px solid var(--linea);
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.06em;
+  color:var(--bruma);
+}
+.obra__nota{
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.08em;
+  text-transform:uppercase; color:var(--bruma-tenue); line-height:1.5;
+}
+.obra__pie{
+  display:flex; flex-wrap:wrap; gap:var(--e3);
+  margin-top:auto; padding-top:var(--e3); border-top:1px solid var(--linea);
+}
+.obra__enlace{
+  /* z-index:4 para quedar por encima del ::after que cubre la tarjeta. Sin
+     esto el enlace del pie es decorativo: el clic lo caza la tarjeta. Da
+     igual que hoy vayan al mismo sitio —manana uno ira a GitHub. */
+  position:relative; z-index:4;
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:var(--mono); font-size:var(--t-rotulo); letter-spacing:.06em;
+  text-decoration:none; color:var(--bruma);
+  transition:color var(--rapido) var(--sale);
+}
+.obra__enlace:hover{ color:var(--senal) }
+.obra__enlace--vivo{ color:var(--tinta) }
+
+.carrusel__mandos{ display:flex; align-items:center; gap:var(--e3); margin-top:var(--e3) }
+.carrusel__boton{
+  width:38px; height:38px; flex:none; display:grid; place-items:center;
+  border:1px solid var(--linea-fuerte); border-radius:999px;
+  background:transparent; color:var(--tinta); cursor:pointer;
+  transition:background var(--rapido) var(--sale), opacity var(--rapido) var(--sale);
+}
+.carrusel__boton:hover:not(:disabled){ background:rgba(255,255,255,.06) }
+.carrusel__boton:disabled{ opacity:.3; cursor:default }
+.carrusel__puntos{ display:flex; gap:6px; margin-left:auto }
+.carrusel__punto{
+  width:22px; height:3px; border-radius:999px; border:0; padding:0;
+  background:var(--linea-fuerte); cursor:pointer;
+  transition:background var(--medio) var(--sale);
+}
+.carrusel__punto[aria-current="true"]{ background:var(--senal) }
+
+/* ---------- Destrezas -------------------------------------------- */
+/* Rótulo estrecho a la izquierda y las fichas a la derecha: 170px
+   fijos, como en la referencia. */
+.fila-destreza{
+  display:grid; grid-template-columns:170px minmax(0,1fr); gap:var(--e4);
+  align-items:baseline;
+  padding:var(--e4) 0; border-top:1px solid var(--linea);
+}
+.fila-destreza:last-child{ border-bottom:1px solid var(--linea) }
+.fichas{ display:flex; flex-wrap:wrap; gap:var(--e1) }
+.ficha{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:7px 13px; border-radius:999px;
+  background:var(--panel-alto); border:1px solid var(--linea);
+  font-size:13px; font-weight:500; line-height:1.25; color:var(--tinta);
+  transition:border-color var(--rapido) var(--sale), transform var(--rapido) var(--sale);
+}
+.ficha:hover{ border-color:var(--senal-linea); transform:translateY(-2px) }
+.ficha__icono{ color:var(--senal); font-size:11px; line-height:1 }
+@media (max-width:768px){
+  .fila-destreza{ grid-template-columns:1fr; gap:var(--e2) }
+}
+
+/* ---------- Experiencia ------------------------------------------ */
+
+/* 420px y 4:3, que es la proporción EXACTA de la foto (1200x900). El hueco se
+   ajusta a la imagen y no al revés: así no hay recorte que discutir, ni con
+   cover ni con contain. Antes era una columna vertical de 340x530 pensada para
+   un retrato recortado, y la foto que eligió Pedro es apaisada: metida ahí
+   habría perdido casi la mitad del ancho. */
+.experiencia__reparto{
+  display:grid; grid-template-columns:420px minmax(0,1fr); gap:var(--e6);
+  align-items:start;
+}
+.experiencia__imagen{
+  width:100%; aspect-ratio:4/3; object-fit:contain;
+  border:1px solid var(--linea); border-radius:var(--canto);
+  position:sticky; top:110px;
+}
+@media (max-width:900px){
+  .experiencia__reparto{ grid-template-columns:1fr; gap:var(--e5) }
+  /* Misma proporción que en escritorio: la foto es 4:3 y el hueco es 4:3, aquí
+     y allí. Un móvil no es motivo para recortarla, solo para hacerla más
+     pequeña. El tope de 460px evita que en una tableta se coma la pantalla. */
+  .experiencia__imagen{
+    position:static; aspect-ratio:4/3;
+    max-width:460px; margin:0 auto;
+  }
+}
+
+/* <details> nativo: se abre sin JavaScript, se maneja con el
+   teclado solo y lo anuncia el lector de pantalla. Cualquier
+   acordeón hecho a mano sería peor en las tres cosas. */
+.puesto{ border-top:1px solid var(--linea) }
+.puesto:last-of-type{ border-bottom:1px solid var(--linea) }
+.puesto__resumen{
+  display:grid; grid-template-columns:minmax(0,1fr) auto auto;
+  align-items:baseline; gap:var(--e3);
+  padding:var(--e4) 0; cursor:pointer; list-style:none;
+}
+.puesto__resumen::-webkit-details-marker{ display:none }
+.puesto__resumen:hover .puesto__titulo{ color:var(--senal) }
+.puesto__titulo{
+  font-family:var(--display); font-weight:600; font-size:var(--t-h4);
+  letter-spacing:-.005em; transition:color var(--rapido) var(--sale);
+}
+.puesto__donde{
+  display:block; margin-top:3px;
+  font-size:var(--t-menor); color:var(--bruma-tenue);
+}
+.puesto__cuando{
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.14em;
+  text-transform:uppercase; color:var(--bruma-tenue); white-space:nowrap;
+}
+.galon{
+  width:9px; height:9px; flex:none;
+  border-right:1px solid var(--bruma); border-bottom:1px solid var(--bruma);
+  transform:rotate(45deg) translateY(-2px);
+  transition:transform var(--medio) var(--sale), border-color var(--rapido) var(--sale);
+}
+.puesto[open] .galon{ transform:rotate(-135deg) translateY(-2px) }
+summary:hover .galon{ border-color:var(--senal) }
+.puesto__cuerpo{ padding:0 0 var(--e4); max-width:66ch }
+@media (max-width:520px){
+  .puesto__resumen{ grid-template-columns:minmax(0,1fr) auto; row-gap:var(--e1) }
+  .puesto__cuando{ grid-column:1; grid-row:2 }
+}
+
+/* ---------- Formación: filas que se abren al pasar por encima ------- */
+/* Cuatro filas de altura fija con la información a la izquierda y una placa
+   con la imagen a la derecha, que entra deslizándose cuando la fila se abre.
+   La altura la gobierna plantilla.js fotograma a fotograma con un muelle.
+
+   EL COLAPSO VIVE DETRÁS DE .js. Sin JavaScript no se colapsa nada y las
+   cuatro filas se leen enteras: es la única forma de que un buscador, un
+   lector de pantalla o un navegador con el script bloqueado vean el contenido
+   completo. Los estilos en línea que escribe el muelle ganan a estas reglas.
+
+   LA ALTURA ES UNA PROPIEDAD DE DISEÑO y animarla no sale gratis. Es
+   inherente: no hay ninguna transformación que haga crecer una fila y recoloque
+   las de abajo. Con cuatro filas el coste es despreciable; con cuarenta no lo
+   sería. Todo lo demás —la placa y el detalle— se mueve con transform y
+   opacidad, que no recalculan nada. */
+
+.hitos{
+  border:1px solid var(--linea); border-radius:var(--canto);
+  overflow:hidden; background:var(--panel);
+}
+.hito{
+  position:relative; isolation:isolate; overflow:hidden;
+  border-bottom:1px solid var(--linea);
+}
+.hito:last-child{ border-bottom:0 }
+
+/* La placa. Se mueve con transform y no con width: el mismo recorrido, sin
+   meter una segunda propiedad de diseño en una animación que ya gobierna la
+   altura. */
+/* A SANGRE. La referencia que trajo Pedro tiene la foto tocando el borde de
+   arriba, el de la derecha y el de abajo de la fila, sin ningún marco: la
+   imagen es parte del bloque, no una miniatura dentro de él. El relleno que
+   había antes la despegaba de los tres bordes y la dejaba flotando pequeña en
+   mitad del panel, que es justo lo que Pedro señaló. */
+.hito__placa{
+  position:absolute; top:0; right:0; bottom:0; width:36%; z-index:0;
+  overflow:hidden; pointer-events:none;
+}
+/* Bloque, NO rejilla. Con display:grid la fila implícita se dimensiona sola
+   por su contenido, así que el height:100% de la imagen quedaba indeterminado
+   y caía a auto: la caja medía 658px dentro de una placa de 191 y el overflow
+   se comía la foto. Justo lo que veníamos a evitar. Como bloque, el 100%
+   resuelve contra una altura definida —la placa va con top y bottom— y
+   object-fit:contain ya centra el contenido por su cuenta. */
+/* contain, no cover: las fotos se ven ENTERAS.
+   Con cover la caja mandaba y la foto se adaptaba: se comía el birrete de un
+   graduado, el titular de un cartel o media cara. Con contain manda la foto y
+   se adapta la caja, que para eso es un hueco decorativo. Queda aire alrededor
+   —a veces bastante, con las verticales— y ese aire es el precio de que no se
+   pierda nada. Es el precio correcto. */
+.hito__placa img{
+  width:100%; height:100%;
+  object-fit:contain;
+  /* Pegada a la derecha, como en la referencia. Con contain la foto nunca
+     llena el hueco entero, y centrada dejaba una franja de panel a cada lado
+     que se leía como un error de maquetación. Todo el aire junto y al lado
+     del texto se lee como margen. */
+  object-position:center right;
+  filter:saturate(.95) contrast(1.02);
+}
+
+/* Un logotipo no es una foto. Este viene en negro sobre transparente, así que
+   sobre el panel oscuro no se vería: se le da la vuelta para que quede claro
+   sobre oscuro, y se le deja aire para que no toque los bordes. */
+/* 32px, no 56. Con 56 arriba y abajo, en una fila corta el hueco util se
+   quedaba en cero y la imagen no tenia donde encajarse. */
+/* Una MARCA no va a sangre: una foto tocando el borde se lee como una ventana
+   al mundo, y un logotipo tocando el borde se lee como un recorte mal hecho.
+   Estas dos van con aire alrededor, que es como se enseña un logotipo. */
+.hito__placa--logo,
+.hito__placa--marca{ padding:var(--e5) }
+/* También a la derecha, como las fotos: los cuatro bloques alinean su imagen
+   contra el mismo borde y eso es la mitad de la sensación de orden. El relleno
+   del contenedor les deja el aire que un logotipo necesita. */
+.hito__placa--logo img,
+.hito__placa--marca img{ object-position:center right }
+/* Cre8 viene sobre un gris claro y a todo trapo sería el rectángulo más
+   luminoso de la sección. Ni se invierte —es morado sobre gris, invertirlo lo
+   volvería verde— ni se deja crudo: se redondea, se baja y se enfría un poco
+   para que se apoye en el panel en vez de flotar encima. */
+/* Sin tope propio: el aire se lo da el relleno del contenedor, y con 24px se
+   queda a la altura de las fotos de al lado en vez de parecer una pegatina
+   suelta. Un tope en porcentaje encima del relleno lo encogía dos veces. */
+.hito__placa--marca{ padding:var(--e4) }
+.hito__placa--marca img{
+  border-radius:var(--canto); opacity:.82;
+  filter:saturate(.88) contrast(.96) brightness(.9);
+}
+/* Blanco puro invertido es lo más luminoso de toda la página y se comía la
+   fila entera. Al 72% se sigue leyendo y deja de gritar. */
+.hito__placa--logo img{ opacity:.72; filter:invert(1) brightness(.94) }
+/* La costura, ahora mucho más suave. Con cover la foto llegaba hasta el borde
+   izquierdo de la placa y hacía falta un degradado fuerte para que no pareciera
+   un corte a mitad de fila. Con contain la foto ya no toca ese borde, así que
+   un velo fuerte solo ensuciaría: queda una caída corta que separa la zona de
+   la imagen del texto. */
+.hito__placa::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(to right,
+    var(--panel), rgba(19,21,25,.35) 14%, rgba(19,21,25,0) 34%);
+}
+/* Sin imagen todavía: una placa de degradado ámbar, distinta a simple vista,
+   para que se note que falta y no parezca un fallo de carga. */
+.hito__placa--vacia{
+  background:
+    radial-gradient(circle at 70% 40%, rgba(224,164,88,.20), rgba(224,164,88,0) 66%);
+}
+.hito__placa--vacia::after{ display:none }
+
+.hito__dentro{
+  position:relative; z-index:2; height:100%; padding:0 var(--e4);
+  display:flex; flex-direction:column; justify-content:flex-start;
+}
+
+/* EXACTAMENTE la altura cerrada, y flex:none. El detalle de debajo solo está
+   oculto por opacidad, así que sigue ocupando sitio; si esta cabecera pudiera
+   encogerse, el título se saldría por arriba de una caja de 68px y quedaría
+   recortado. Clavarla y dejar que el detalle desborde hacia abajo es lo que
+   mantiene el título visible con la fila cerrada. */
+.hito__cabeza{
+  all:unset; box-sizing:border-box;
+  display:flex; flex-direction:column; justify-content:center; gap:4px;
+  width:100%; height:68px; flex:none; padding-right:38%; cursor:pointer;
+}
+.hito__cabeza:focus-visible{
+  outline:2px solid var(--senal); outline-offset:-3px; border-radius:8px;
+}
+.hito__titulo{
+  font-family:var(--display); font-weight:600; font-size:var(--t-h4);
+  letter-spacing:-.005em; color:var(--tinta);
+  transition:color var(--rapido) var(--sale);
+}
+.hito__cabeza:hover .hito__titulo{ color:var(--senal) }
+.hito__meta{
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.14em;
+  text-transform:uppercase; color:var(--bruma-tenue);
+  /* Una sola linea, siempre. La cabecera mide 68px clavados —eso es lo que
+     mantiene el titulo a la vista con la fila cerrada— y "Fontys Academy for
+     the Creative Economy · sep 2023 – feb 2024 · Tilburg, Países Bajos" se
+     partia en dos y se salia por abajo, encima de la fila de al lado. */
+  display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.hito__n{
+  position:absolute; top:24px; right:var(--e4); z-index:3;
+  font-family:var(--mono); font-size:var(--t-rotulo); letter-spacing:.1em;
+  color:var(--senal);
+  /* Ahora que la foto llega hasta el borde, el número cae encima de ella y no
+     sobre el panel. La sombra es lo único que lo sostiene cuando debajo hay
+     una zona clara —un birrete, un cielo— en vez de negro. */
+  text-shadow:0 1px 6px rgba(0,0,0,.8), 0 0 2px rgba(0,0,0,.6);
+}
+
+.hito__cuerpo{ padding-right:38%; padding-bottom:var(--e4) }
+.hito__puntos{
+  list-style:none; margin:var(--e2) 0 0; padding:0;
+  display:grid; gap:7px; max-width:64ch;
+}
+.hito__puntos li{
+  position:relative; padding-left:17px;
+  font-size:var(--t-menor); line-height:1.55; color:var(--bruma);
+}
+/* Un guion, no un punto: la lista es de logros, no de pasos, y una raya corta
+   pesa menos en una fila que ya tiene número, título, meta e imagen. */
+.hito__puntos li::before{
+  content:""; position:absolute; left:0; top:.62em;
+  width:8px; height:1.5px; background:var(--senal);
+}
+.etiquetas{ display:flex; flex-wrap:wrap; gap:6px; margin-top:var(--e2) }
+.etiqueta{
+  padding:4px 10px; border-radius:999px;
+  background:var(--panel-alto); border:1px solid var(--linea);
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.1em;
+  text-transform:uppercase; color:var(--bruma);
+}
+
+/* Estado cerrado. Lo aplica el script, nunca el HTML. */
+.hitos.js .hito{ height:68px }
+.hitos.js .hito__cuerpo{ opacity:0; transform:translateX(-8px) }
+.hitos.js .hito__placa{ opacity:0; transform:translateX(100%) }
+
+/* Por debajo de 900px la placa no cabe a la derecha: sería una rendija de 240
+   por 68, un 3,5 a 1 que se come el 59% de la foto. Y a esos anchos una fila
+   que se abre al pasar el ratón es un objetivo de toque disfrazado de hover,
+   así que las filas van abiertas y el muelle se apaga. El mismo número está en
+   plantilla.js.
+
+   Pero la imagen NO se va: se baja. Escondiéndola, un móvil veía la sección de
+   formación entera sin una sola foto, y los móviles son la mitad de quien va a
+   abrir esto desde LinkedIn. Debajo del texto, a lo ancho de la fila y con
+   altura fija, es donde una imagen cabe en una columna estrecha. Sigue siendo
+   decorativa —el texto de al lado ya lo cuenta todo—, por eso conserva su
+   aria-hidden y su alt vacío. */
+@media (max-width:899px){
+  .hito{ display:flex; flex-direction:column }
+  .hitos.js .hito__placa,
+  .hito__placa{
+    position:static; order:2; display:block;
+    width:auto; height:190px;
+    margin:var(--e2) var(--e3) var(--e3);
+    opacity:1; transform:none;
+  }
+  .hito__placa img{ object-position:center }
+  /* La costura sobra: aquí la imagen ya no linda con el texto por el lado. */
+  .hito__placa::after{ display:none }
+  .hito__placa--logo,
+  .hito__placa--marca{ padding:var(--e3) }
+  .hito__placa--vacia{ display:none }
+  .hito__cabeza{ height:auto; padding:var(--e3) 0 6px; padding-right:44px }
+  .hito__cuerpo{ padding-right:0 }
+  .hitos.js .hito{ height:auto !important }
+  .hitos.js .hito__cuerpo{ opacity:1 !important; transform:none !important }
+  .hito__n{ top:var(--e3); right:var(--e3) }
+  .hito__dentro{ padding:0 var(--e3) }
+}
+@media (prefers-reduced-motion:reduce){
+  .hito,.hito__cuerpo,.hito__placa{ transition:none !important }
+}
+
+/* ---------- Sobre mí --------------------------------------------- */
+
+/* La columna de texto se estrecha, pero NO se centra: arranca en el mismo
+   margen izquierdo que las demás secciones. Estrechar el contenedor entero
+   desplazaba también el número y el titular hacia el medio, y el ojo lo lee
+   como una sección descolgada del resto de la página. */
+.prosa{ display:flex; flex-direction:column; gap:var(--e4); max-width:var(--ancho-leer) }
+.prosa p{ margin:0; color:var(--bruma); font-size:var(--t-cuerpo); line-height:1.75 }
+
+/* ---------- Llamada final ---------------------------------------- */
+
+.llamada{ padding:var(--e8) 0 52px }
+.llamada__panel{
+  padding:72px var(--e5);
+  border:1px solid var(--linea); border-radius:var(--canto);
+  background:
+    radial-gradient(100% 120% at 50% 0%, rgba(224,164,88,.10) 0%, transparent 60%),
+    var(--panel);
+  display:flex; flex-direction:column; align-items:center; gap:var(--e4);
+  text-align:center;
+}
+.llamada__titular{ font-size:var(--t-h2); line-height:1.02; letter-spacing:-.015em; max-width:16ch }
+.llamada__panel .parrafo{ max-width:52ch }
+@media (max-width:620px){ .llamada__panel{ padding:48px var(--e4) } }
+
+/* ---------- Cursor de nodo ------------------------------------------ */
+/* Un anillo ambar que sigue al puntero con retraso, como el halo de un nodo de
+   la red. Sobre algo pulsable crece y le sale un punto en el centro.
+
+   NO SE ESCONDE EL CURSOR DEL SISTEMA, y esa es la diferencia con la
+   referencia, que hace cursor:none. Esconderlo se lleva por delante el cursor
+   grande, el de alto contraste y cualquier ajuste que alguien tenga puesto en
+   su sistema, y a cambio da una pieza decorativa. Aqui el cursor de verdad
+   sigue ahi y el anillo lo acompaña: se gana el detalle sin quitarle a nadie
+   su configuracion. */
+.nodo-cursor{
+  position:fixed; top:0; left:0; z-index:95;
+  width:30px; height:30px; margin:-15px 0 0 -15px;
+  border-radius:50%; border:1px solid var(--senal-linea);
+  pointer-events:none;            /* ni un clic, ni una seleccion de texto */
+  opacity:0;
+  transition:opacity .3s var(--sale), border-color var(--rapido) var(--sale),
+             background var(--rapido) var(--sale);
+  will-change:transform;
+}
+.nodo-cursor.esta-visible{ opacity:1 }
+.nodo-cursor::after{
+  content:""; position:absolute; inset:0; margin:auto;
+  width:3px; height:3px; border-radius:50%; background:var(--senal);
+  opacity:0; transition:opacity var(--rapido) var(--sale);
+}
+/* Sobre algo pulsable: el anillo se enciende y aparece el nucleo del nodo. */
+.nodo-cursor.esta-activo{
+  border-color:var(--senal);
+  background:rgba(224,164,88,.07);
+}
+.nodo-cursor.esta-activo::after{ opacity:1 }
+
+/* Ni en tactil, ni con movimiento reducido, ni con el movimiento parado: un
+   anillo que persigue al dedo no significa nada, y uno que se arrastra es
+   justo el tipo de movimiento que alguien pide no tener. */
+@media (hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){
+  .nodo-cursor{ display:none }
+}
+html.sin-movimiento .nodo-cursor{ display:none }
+
+/* ---------- CTA flotante ------------------------------------------- */
+/* La misma mecanica que la pildora de contacto de la referencia, con dos
+   detalles suyos que valen mas de lo que parecen:
+
+   · visibility, no solo transform. Un elemento fuera de pantalla movido con
+     transform SIGUE recibiendo el foco del tabulador: se tabula a un boton
+     invisible y el lector de pantalla lo anuncia. Con visibility:hidden deja
+     de existir hasta que toca.
+   · Se aparta cuando aparece la llamada final. Una pildora que dice "ponte en
+     contacto" tapando el boton de ponerse en contacto es a la vez redundante
+     y un estorbo.
+
+   Aqui es un enlace entero, no un boton dentro de una caja: el objetivo es
+   mucho mayor y el circulo sigue siendo la parte que dice donde pulsar. */
+.flotante{
+  position:fixed; right:var(--e4); bottom:var(--e4); z-index:70;
+  visibility:hidden; transform:translateY(140%);
+  display:flex; align-items:center; gap:var(--e3);
+  padding:10px 10px 10px var(--e4);
+  background:rgba(19,21,25,.92);
+  border:1px solid var(--senal-linea);
+  border-radius:999px;
+  box-shadow:0 18px 44px -20px rgba(0,0,0,.85);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  text-decoration:none;
+  transition:transform .5s var(--sale), visibility .5s,
+             border-color var(--medio) var(--sale),
+             box-shadow var(--medio) var(--sale);
+}
+.flotante.esta-visible{ visibility:visible; transform:translateY(0) }
+.flotante__texto{ display:flex; flex-direction:column; line-height:1.25 }
+.flotante__texto b{
+  font-family:var(--display); font-weight:600; font-size:15px;
+  letter-spacing:.02em; color:var(--tinta);
+}
+.flotante__texto span{
+  font-size:var(--t-rotulo); color:var(--bruma-tenue);
+  transition:color var(--rapido) var(--sale);
+}
+.flotante__icono{
+  width:46px; height:46px; flex:none; border-radius:50%;
+  display:grid; place-items:center;
+  background:var(--senal); color:#17120A; font-size:19px; line-height:1;
+  transition:transform var(--medio) var(--sale), background var(--rapido) var(--sale);
+}
+.flotante:hover{ border-color:var(--senal); box-shadow:0 22px 52px -18px rgba(224,164,88,.28) }
+.flotante:hover .flotante__texto span{ color:var(--bruma) }
+.flotante:hover .flotante__icono{ background:var(--senal-viva); transform:scale(1.07) }
+.flotante:focus-visible{ outline:2px solid var(--senal); outline-offset:4px }
+
+/* En movil solo el circulo: la pildora entera son 280px, casi un tercio de la
+   pantalla, y taparia contenido de verdad. */
+@media (max-width:620px){
+  .flotante{ padding:8px; gap:0; right:var(--e3); bottom:var(--e3) }
+  .flotante__texto{
+    max-width:0; opacity:0; overflow:hidden; white-space:nowrap;
+    transition:max-width var(--medio) var(--sale), opacity var(--medio) var(--sale);
+  }
+  .flotante__icono{ width:52px; height:52px }
+}
+@media (prefers-reduced-motion:reduce){
+  .flotante{ transition:visibility .01ms }
+  .flotante:hover .flotante__icono{ transform:none }
+}
+
+/* ---------- Pie --------------------------------------------------- */
+
+.pie{ padding:var(--e5) 0 var(--e6); border-top:1px solid var(--linea); margin-top:var(--e8) }
+.pie__reparto{
+  display:flex; flex-wrap:wrap; align-items:flex-start;
+  justify-content:space-between; gap:var(--e4);
+}
+.pie__nombre{ font-family:var(--display); font-weight:600; font-size:16px; letter-spacing:.02em }
+.pie__nota{ margin:4px 0 0; font-size:var(--t-rotulo); color:var(--bruma-tenue) }
+.pie__enlaces{ display:flex; flex-wrap:wrap; gap:var(--e4) }
+.pie__enlaces a{
+  font-size:var(--t-menor); color:var(--bruma); text-decoration:none;
+  transition:color var(--rapido) var(--sale);
+}
+.pie__enlaces a:hover{ color:var(--senal) }
+
+.pie__quieto{
+  margin-top:var(--e4);
+  display:inline-flex; align-items:center; gap:7px;
+  padding:6px 12px; border-radius:999px;
+  background:transparent; border:1px solid var(--linea); color:var(--bruma-tenue);
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.14em;
+  text-transform:uppercase; cursor:pointer;
+  transition:color var(--rapido) var(--sale), border-color var(--rapido) var(--sale);
+}
+.pie__quieto:hover:not(:disabled){ color:var(--tinta); border-color:var(--linea-fuerte) }
+.pie__quieto:disabled{ opacity:.6; cursor:default }
+.pie__punto{
+  width:6px; height:6px; border-radius:50%; background:var(--bruma-tenue);
+  transition:background var(--rapido) var(--sale);
+}
+html.sin-movimiento .pie__punto{ background:var(--senal) }

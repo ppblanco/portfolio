@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es" data-caso="tfm-lead-scoring">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- GENERADO por herramientas/hacer-caso.py desde contenido-tfm.json.
+     No lo edites a mano: se sobrescribe entero en cada ejecución. -->
+<title>Lead scoring y asistente RAG · Pedro Pérez Blanco</title>
+<meta name="description" content="Lead scoring sobre el CRM de admisiones de la Universidad Pontificia Comillas: trabajando el 30% de los contactos se captura el 96% de las entregas.">
+<meta name="theme-color" content="#0B0C0F">
+
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lead scoring y asistente RAG · Pedro Pérez Blanco">
+<meta property="og:description" content="Lead scoring sobre el CRM de admisiones de la Universidad Pontificia Comillas: trabajando el 30% de los contactos se captura el 96% de las entregas.">
+<meta property="og:image" content="https://pedro-perez-data.netlify.app/medios/og.jpg">
+<meta property="og:image:alt" content="Tarjeta con el nombre de Pedro Pérez Blanco y el titular del portfolio.">
+<meta property="og:url" content="https://pedro-perez-data.netlify.app/trabajos/tfm-lead-scoring.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="stylesheet" href="../ui/tipos.css">
+<link rel="stylesheet" href="../ui/plantilla.css">
+<!-- Después de plantilla.css, porque se apoya en sus tokens y solo añade lo
+     que es propio de una página de caso. -->
+<link rel="stylesheet" href="../ui/trabajo.css">
+<style>
+  /* Paleta de este trabajo. el ámbar del portfolio: es el trabajo insignia y no necesita separarse */
+  :root{
+    --senal:#E0A458;
+    --senal-viva:#EFBB74;
+    --senal-tenue:rgba(224,164,88,.14);
+    --senal-linea:rgba(224,164,88,.34);
+  }
+  /* El cursor NO cambia con el caso: es del sitio. Si cambiara,
+     al pasar de un trabajo a otro pareceria otro puntero. Hay
+     una prueba que lo compara con el del portfolio. */
+  .nodo-cursor{ border-color:rgba(224,164,88,.34) }
+  .nodo-cursor::after{ background:#E0A458 }
+  .nodo-cursor.esta-activo{ border-color:#E0A458;
+                            background:rgba(224,164,88,.07) }
+</style>
+</head>
+<body>
+
+<canvas class="fondo" id="fondo" aria-hidden="true"></canvas>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra" id="barra">
+  <nav class="barra__caja" aria-label="Secciones">
+    <a class="barra__marca" href="../index.html">
+      <span class="barra__iniciales" aria-hidden="true">PPB</span>
+      <span class="barra__nombre">Pedro Pérez Blanco</span>
+    </a>
+    <ul class="barra__lista" id="menu-lista"><li><a href="#s-problema" data-nav>El problema</a></li><li><a href="#s-recorrido" data-nav>El proceso</a></li><li><a href="#s-fases" data-nav>Las seis fases</a></li><li><a href="#s-modelo" data-nav>El modelo</a></li><li><a href="#s-abc" data-nav>A, B o C</a></li><li><a href="#s-tiempo" data-nav>El año siguiente</a></li><li><a href="#s-asistente" data-nav>El asistente</a></li></ul>
+    <button class="barra__pausa" id="reanudar" type="button">
+      <span class="barra__pausa__punto" aria-hidden="true"></span>Movimiento en pausa
+      <span class="oculto">, pulsa para reanudarlo</span>
+    </button>
+    <a class="barra__cta" href="../index.html#trabajo">Todos los trabajos</a>
+    <button class="barra__menu" id="menu" type="button"
+            aria-expanded="true" aria-controls="menu-lista">
+      <span aria-hidden="true"></span>
+      <span class="oculto">Abrir el menú</span>
+    </button>
+  </nav>
+  <div class="barra__avance" id="avance" aria-hidden="true"></div>
+</header>
+
+<main id="contenido">
+
+  <section class="caso-portada">
+    <div class="marco">
+      <a class="volver" href="../index.html#trabajo">
+        <span aria-hidden="true">&larr;</span> Todos los trabajos
+      </a>
+      
+      <div class="caso-portada__panel" data-revelar>
+        <p class="rotulo eyebrow">Modelado predictivo · IA aplicada</p>
+        <h1 class="caso-portada__titulo" data-partir>Lead scoring y asistente RAG</h1>
+        <p class="parrafo parrafo--lead">Trabajo de fin de máster para la Universidad Pontificia Comillas. Un modelo que ordena los contactos de admisiones por probabilidad de entregar la documentación de matrícula y los devuelve como A, B o C, más un asistente que responde las dudas repetidas. Evaluado sobre el histórico del CRM: los dos módulos todavía no se comunican entre sí ni están en producción.</p>
+        <div class="datos"><div class="dato"><span class="dato__k">Papel</span><span class="dato__v">Autor · trabajo individual</span></div><div class="dato"><span class="dato__k">Dirección</span><span class="dato__v">José Portela González</span></div><div class="dato"><span class="dato__k">Entrega</span><span class="dato__v">Junio de 2026 · MUBA, ICADE</span></div><div class="dato"><span class="dato__k">Herramientas</span><span class="dato__v">Python · scikit-learn · SHAP · Copilot Studio</span></div></div>
+      </div>
+      
+      <div class="cifras" data-revelar><div class="cifra"><span class="cifra__n">30%</span><span class="cifra__pie">de los contactos trabajados</span></div><div class="cifra"><span class="cifra__n">96%</span><span class="cifra__pie">de las entregas capturadas</span></div><div class="cifra"><span class="cifra__n">×6,8</span><span class="cifra__pie">lift de la categoría A</span></div></div>
+    </div>
+  </section>
+  <!-- El raíl de apartados. Son anclas de verdad, así que funciona con el
+       JavaScript bloqueado; lo único que añade el script es marcar en cuál
+       estás. Es un índice, no unas pestañas: el caso entero está en la
+       página. -->
+  <nav class="rail" id="rail" aria-label="Apartados de este trabajo">
+    <div class="marco rail__caja"><a href="#s-problema" data-rail>El problema</a><a href="#s-recorrido" data-rail>El proceso</a><a href="#s-fases" data-rail>Las seis fases</a><a href="#s-modelo" data-rail>El modelo</a><a href="#s-abc" data-rail>A, B o C</a><a href="#s-tiempo" data-rail>El año siguiente</a><a href="#s-asistente" data-rail>El asistente</a></div>
+  </nav>
+
+  <section class="caso" id="s-problema" data-caso="Problema">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--dividido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">El problema</p>
+          <h2 class="titulo-menor">El problema no era tener pocos leads. <em class="acento">Era el orden.</em></h2>
+          <p class="parrafo parrafo--lead">Un equipo de admisiones recibe más contactos de los que puede llamar en el plazo en que un contacto sigue caliente. Sin un criterio, se llama por orden de llegada, que es tanto como llamar al azar. La pregunta del trabajo no fue «cuántos vendrán», sino «a quién llamo primero», que es la que se puede responder por la mañana y ejecutar por la tarde.</p>
+          <p class="parrafo">El punto de partida fueron 30.593 registros del CRM de admisiones con 44 variables. Tras depurar duplicados, registros incompletos y contactos fuera del proceso, quedaron 24.365 leads utilizables.</p><p class="parrafo">El objetivo a predecir es haber entregado la documentación de matrícula: el paso que separa a quien se está informando de quien va en serio. Es una clase minoritaria, así que el problema está muy desbalanceado y eso condiciona todo lo que viene después.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Registros de partida</span><span class="lectura__valor">30.593</span></div><div class="lectura"><span class="lectura__clave">Variables</span><span class="lectura__valor">44</span></div><div class="lectura"><span class="lectura__clave">Leads tras la limpieza</span><span class="lectura__valor">24.365</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 380" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="50" y="30" width="540" height="64" rx="6" fill="var(--linea-fuerte)" opacity=".45"/><text x="66" y="79" class="g-num">30.593</text><text x="50" y="124" class="g-pie">registros de partida</text><rect x="50" y="152" width="335" height="64" rx="6" fill="var(--linea-fuerte)" opacity=".45"/><text x="66" y="201" class="g-num">44</text><text x="50" y="246" class="g-pie">variables por registro</text><rect x="50" y="274" width="432" height="64" rx="6" fill="var(--senal)" opacity=".9"/><text x="66" y="323" class="g-num">24.365</text><text x="50" y="368" class="g-pie">leads utilizables</text></svg>
+          <figcaption class="caso__pie">De los registros en bruto a los leads utilizables.</figcaption>
+          <p class="oculto">Diagrama de embudo: 30.593 registros de partida, 44 variables, y 24.365 leads utilizables tras la depuración.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-recorrido" data-caso="El proceso">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--invertido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">El proceso real</p>
+          <h2 class="titulo-menor">Un lead no llega: <em class="acento">recorre un embudo</em>.</h2>
+          <p class="parrafo parrafo--lead">Antes de modelar nada hay que saber por dónde pasa un candidato. Entra por un canal, queda registrado en el CRM, sube a zona MQL, se cualifica en zona SQL y termina —o no— presentando la solicitud en el Portal de Admisiones. El modelo no es una pieza aparte: vive dentro de la zona MQL, que es exactamente donde el equipo decide a quién llama primero.</p>
+          <p class="parrafo">La variable objetivo es la entrega de documentación, no la matrícula. Las notas son confidenciales y la matrícula depende de cosas que el candidato no controla; la documentación depende solo de él, y el CRM la registra sin ambigüedad. Predecir lo que no se puede observar limpiamente es la forma más rápida de construir un modelo que no sirve.</p><p class="parrafo">El Portal de Admisiones queda fuera del dataset a propósito: quien llega ahí convierte casi siempre, así que incluirlo distorsionaría la comparación. Es la última etapa del recorrido y la primera que hay que excluir del modelado.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Etapas del recorrido</span><span class="lectura__valor">5</span></div><div class="lectura"><span class="lectura__clave">CRM</span><span class="lectura__valor">Microsoft Dynamics 365</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Dónde entra el modelo</span><span class="lectura__valor">Zona MQL</span></div><div class="lectura"><span class="lectura__clave">Variable objetivo</span><span class="lectura__valor">Entrega de documentación</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 680" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="60" y="40" width="500" height="108" rx="8" fill="var(--senal)" opacity=".05"/><rect x="60" y="40" width="500" height="108" rx="8" fill="none" stroke="var(--senal)" stroke-width="1.4" opacity=".45"/><text class="g-pie" x="80" y="68">Canales</text><text class="g-pie" x="80" y="102" opacity=".72">Web · Eventos ·</text><text class="g-pie" x="80" y="136" opacity=".72">Publicidad · Tradicional</text><line x1="310.0" y1="148" x2="310.0" y2="169" stroke="var(--senal)" stroke-width="2.4" opacity=".4"/><line class="tramo" x1="310.0" y1="148" x2="310.0" y2="169" stroke="var(--senal)" stroke-width="2" style="--i:0"/><path d="M303.0 165 L310.0 176 L317.0 165 Z" fill="var(--senal)" opacity=".7"/><rect x="60" y="176" width="500" height="74" rx="8" fill="var(--senal)" opacity=".13"/><rect x="60" y="176" width="500" height="74" rx="8" fill="none" stroke="var(--senal)" stroke-width="1.4" opacity=".85"/><text class="g-pie" x="80" y="204">CRM Dynamics</text><text class="g-pie" x="80" y="238" opacity=".72">Registra el lead</text><line x1="310.0" y1="250" x2="310.0" y2="271" stroke="var(--senal)" stroke-width="2.4" opacity=".4"/><line class="tramo" x1="310.0" y1="250" x2="310.0" y2="271" stroke="var(--senal)" stroke-width="2" style="--i:1"/><path d="M303.0 267 L310.0 278 L317.0 267 Z" fill="var(--senal)" opacity=".7"/><rect x="60" y="278" width="500" height="108" rx="8" fill="var(--senal)" opacity=".13"/><rect x="60" y="278" width="500" height="108" rx="8" fill="none" stroke="var(--senal)" stroke-width="1.4" opacity=".85"/><text class="g-pie" x="80" y="306">Zona MQL</text><text class="g-pie" x="80" y="340" opacity=".72">Alta → Nurturing →</text><text class="g-pie" x="80" y="374" opacity=".72">Scoring A/B/C</text><line x1="310.0" y1="386" x2="310.0" y2="407" stroke="var(--senal)" stroke-width="2.4" opacity=".4"/><line class="tramo" x1="310.0" y1="386" x2="310.0" y2="407" stroke="var(--senal)" stroke-width="2" style="--i:2"/><path d="M303.0 403 L310.0 414 L317.0 403 Z" fill="var(--senal)" opacity=".7"/><rect x="60" y="414" width="500" height="74" rx="8" fill="var(--senal)" opacity=".05"/><rect x="60" y="414" width="500" height="74" rx="8" fill="none" stroke="var(--senal)" stroke-width="1.4" opacity=".45"/><text class="g-pie" x="80" y="442">Zona SQL</text><text class="g-pie" x="80" y="476" opacity=".72">Cualificación → Evaluación</text><line x1="310.0" y1="488" x2="310.0" y2="509" stroke="var(--senal)" stroke-width="2.4" opacity=".4"/><line class="tramo" x1="310.0" y1="488" x2="310.0" y2="509" stroke="var(--senal)" stroke-width="2" style="--i:3"/><path d="M303.0 505 L310.0 516 L317.0 505 Z" fill="var(--senal)" opacity=".7"/><rect x="60" y="516" width="500" height="108" rx="8" fill="var(--senal)" opacity=".30"/><rect x="60" y="516" width="500" height="108" rx="8" fill="none" stroke="var(--senal)" stroke-width="1.4" opacity=".85"/><rect x="60" y="526" width="4" height="88" rx="2" fill="var(--senal)"/><text class="g-pie" x="80" y="544">Portal de Admisiones</text><text class="g-pie" x="80" y="578" opacity=".92">Solicitud de admisión</text><text class="g-pie" x="80" y="612" opacity=".92">CONVERSIÓN</text><text class="g-pie" x="60" y="666" opacity=".75">de la captación a la solicitud</text></svg>
+          <figcaption class="caso__pie">El recorrido real de un lead en admisiones, del canal de entrada a la solicitud. El scoring A, B o C ocurre en la zona MQL, y la última etapa es la conversión.</figcaption>
+          <p class="oculto">Cadena de cinco etapas encadenadas de arriba abajo. Primera, Canales: web, eventos, publicidad y tradicional. Segunda, CRM Dynamics, que registra el lead. Tercera, zona MQL: alta, nurturing y scoring en categorías A, B o C, que es donde actúa el modelo. Cuarta, zona SQL: cualificación y evaluación. Y quinta, Portal de Admisiones: solicitud de admisión, que es la conversión.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-fases" data-caso="Las seis fases">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--dividido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Cómo se hizo</p>
+          <h2 class="titulo-menor">Seis fases, y cada una <em class="acento">condiciona la siguiente</em>.</h2>
+          <p class="parrafo parrafo--lead">El trabajo no se hizo de una vez: se hizo en seis fases, y el orden importa porque cada decisión cierra puertas a la de después. Elegir la variable objetivo antes de mirar los modelos, y fijar los cortes de categoría sobre entrenamiento y no sobre test, son las dos que más sostienen todo lo demás.</p>
+          <p class="parrafo">Las tres primeras fases son de modelado y responden a «¿funciona?». Las tres últimas responden a «¿sirve?»: una probabilidad convertida en categorías que un equipo puede usar, una comprobación de que el modelo aguanta el curso siguiente, y un segundo módulo que descarga al equipo de las dudas repetidas.</p><p class="parrafo">La validación temporal está al final por un motivo: es la única fase que puede invalidar a las anteriores. Un modelo que gana en test y se cae al curso siguiente no es un modelo, es una foto.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Fases del trabajo</span><span class="lectura__valor">6</span></div><div class="lectura"><span class="lectura__clave">Modelos comparados</span><span class="lectura__valor">3</span></div><div class="lectura"><span class="lectura__clave">Validación</span><span class="lectura__valor">5-fold estratificada</span></div><div class="lectura"><span class="lectura__clave">Módulos entregados</span><span class="lectura__valor">2</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 506" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><line x1="88" y1="38" x2="88" y2="450" stroke="var(--senal-linea)" stroke-width="2"/><g class="parada" tabindex="0" style="--i:0"><g class="parada__cuerpo"><circle cx="88" cy="64" r="13" fill="var(--fondo)" stroke="var(--senal-linea)" stroke-width="1.5"/><circle class="parada__punto" cx="88" cy="64" r="6" fill="var(--senal)"/><text class="g-pie" x="126" y="58">El dataset</text><text class="g-pie" x="126" y="92" opacity=".72">24.365 leads · 44 variables</text></g></g><g class="parada" tabindex="0" style="--i:1"><g class="parada__cuerpo"><circle cx="88" cy="136" r="13" fill="var(--fondo)" stroke="var(--senal-linea)" stroke-width="1.5"/><circle class="parada__punto" cx="88" cy="136" r="6" fill="var(--senal)"/><text class="g-pie" x="126" y="130">Entrenamiento</text><text class="g-pie" x="126" y="164" opacity=".72">3 modelos · validación 5-fold</text></g></g><g class="parada" tabindex="0" style="--i:2"><g class="parada__cuerpo"><circle cx="88" cy="208" r="13" fill="var(--fondo)" stroke="var(--senal-linea)" stroke-width="1.5"/><circle class="parada__punto" cx="88" cy="208" r="6" fill="var(--senal)"/><text class="g-pie" x="126" y="202">Resultados en test</text><text class="g-pie" x="126" y="236" opacity=".72">Random Forest · PR-AUC 0,691</text></g></g><g class="parada" tabindex="0" style="--i:3"><g class="parada__cuerpo"><circle cx="88" cy="280" r="13" fill="var(--fondo)" stroke="var(--senal-linea)" stroke-width="1.5"/><circle class="parada__punto" cx="88" cy="280" r="6" fill="var(--senal)"/><text class="g-pie" x="126" y="274">Categorías A, B y C</text><text class="g-pie" x="126" y="308" opacity=".72">A + B · 95,82% capturado</text></g></g><g class="parada" tabindex="0" style="--i:4"><g class="parada__cuerpo"><circle cx="88" cy="352" r="13" fill="var(--fondo)" stroke="var(--senal-linea)" stroke-width="1.5"/><circle class="parada__punto" cx="88" cy="352" r="6" fill="var(--senal)"/><text class="g-pie" x="126" y="346">Validación temporal</text><text class="g-pie" x="126" y="380" opacity=".72">caída de 0,0105 sin reentrenar</text></g></g><g class="parada" tabindex="0" style="--i:5"><g class="parada__cuerpo"><circle cx="88" cy="424" r="13" fill="var(--fondo)" stroke="var(--senal-linea)" stroke-width="1.5"/><circle class="parada__punto" cx="88" cy="424" r="6" fill="var(--senal)"/><text class="g-pie" x="126" y="418">Asistente con RAG</text><text class="g-pie" x="126" y="452" opacity=".72">Copilot Studio · con fallback</text></g></g><g class="ascensor" style="--paradas:6"><circle class="ascensor__halo" cx="88" cy="64" r="20" fill="var(--senal)" opacity=".16"/><circle class="ascensor__nucleo" cx="88" cy="64" r="9" fill="none" stroke="var(--senal)" stroke-width="2.5"/></g><text class="g-pie" x="126" y="492" opacity=".75">el trabajo, fase a fase</text></svg>
+          <figcaption class="caso__pie">Las seis fases del trabajo, en el orden en que se hicieron. La luz marca por dónde va el recorrido; las seis se leen sin esperar a que llegue.</figcaption>
+          <p class="oculto">Recorrido vertical con las seis fases del trabajo, en orden: el dataset, con 24.365 leads y 44 variables; el entrenamiento, con 3 modelos y validación 5-fold; los resultados en test, con Random Forest y un PR-AUC de 0,691; las categorías A, B y C, con A más B capturando el 95,82% de las entregas; la validación temporal, con una caída de 0,0105 sin reentrenar; y el asistente con RAG sobre Copilot Studio, con protocolo de derivación a una persona.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-modelo" data-caso="Modelo">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--ancho">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">El modelo</p>
+          <h2 class="titulo-menor">Un Random Forest, y <em class="acento">la métrica correcta</em>.</h2>
+          <p class="parrafo parrafo--lead">Con una clase positiva minoritaria, la exactitud es una trampa: un modelo que dijera «no» a todo acertaría casi siempre y no serviría para nada. La métrica que manda aquí es el PR-AUC, que solo mira la clase que interesa. En test el modelo llega a 0,691 de PR-AUC y 0,947 de ROC-AUC.</p>
+          <p class="parrafo">Se probaron varias familias antes de quedarse con Random Forest. Ganó por dos razones prácticas: aguanta bien el desbalanceo con pesos por clase y no se descompone cuando una variable tiene huecos, que en un CRM real es la norma y no la excepción.</p><p class="parrafo">El modelo no se entrega como una caja negra. Con SHAP se ve qué empuja cada predicción, y lo que más pesa son tres familias de variables: la actividad del contacto —eventos a los que asiste, peticiones que hace, visitas que registra—, el canal por el que entró y su zona de residencia.</p>
+          <div class="lecturas"><div class="lectura lectura--destacada"><span class="lectura__clave">PR-AUC en test</span><span class="lectura__valor">0,691</span></div><div class="lectura"><span class="lectura__clave">ROC-AUC en test</span><span class="lectura__valor">0,947</span></div><div class="lectura"><span class="lectura__clave">Algoritmo</span><span class="lectura__valor">Random Forest</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 336" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><text class="g-pie" x="335" y="64" text-anchor="middle" opacity=".7">CV</text><text class="g-pie" x="455" y="64" text-anchor="middle" opacity=".7">Test</text><text class="g-pie" x="575" y="64" text-anchor="middle" opacity=".7">Caída</text><rect x="280" y="72" width="110" height="60" rx="6" fill="var(--senal)" opacity="0.090"/><rect x="280" y="72" width="110" height="60" rx="6" fill="none" stroke="var(--senal-linea)" stroke-width="1" opacity=".5"/><text class="g-pie" x="335" y="110" text-anchor="middle">0,577</text><rect x="280" y="150" width="110" height="60" rx="6" fill="var(--senal)" opacity="0.360"/><rect x="280" y="150" width="110" height="60" rx="6" fill="none" stroke="var(--senal-linea)" stroke-width="1" opacity=".5"/><text class="g-pie" x="335" y="188" text-anchor="middle">0,698</text><rect x="280" y="228" width="110" height="60" rx="6" fill="var(--senal)" opacity="0.353"/><rect x="280" y="228" width="110" height="60" rx="6" fill="none" stroke="var(--senal-linea)" stroke-width="1" opacity=".5"/><text class="g-pie" x="335" y="266" text-anchor="middle">0,695</text><rect x="400" y="72" width="110" height="60" rx="6" fill="var(--senal)" opacity="0.090"/><rect x="400" y="72" width="110" height="60" rx="6" fill="none" stroke="var(--senal-linea)" stroke-width="1" opacity=".5"/><text class="g-pie" x="455" y="110" text-anchor="middle">0,564</text><rect x="400" y="150" width="110" height="60" rx="6" fill="var(--senal)" opacity="0.360"/><rect x="400" y="150" width="110" height="60" rx="6" fill="none" stroke="var(--senal-linea)" stroke-width="1" opacity=".5"/><text class="g-pie" x="455" y="188" text-anchor="middle">0,691</text><rect x="400" y="228" width="110" height="60" rx="6" fill="var(--senal)" opacity="0.347"/><rect x="400" y="228" width="110" height="60" rx="6" fill="none" stroke="var(--senal-linea)" stroke-width="1" opacity=".5"/><text class="g-pie" x="455" y="266" text-anchor="middle">0,685</text><rect x="520" y="72" width="110" height="60" rx="6" fill="var(--senal)" opacity="0.090"/><rect x="520" y="72" width="110" height="60" rx="6" fill="none" stroke="var(--senal-linea)" stroke-width="1" opacity=".5"/><text class="g-pie" x="575" y="110" text-anchor="middle">0,013</text><rect x="520" y="150" width="110" height="60" rx="6" fill="var(--senal)" opacity="0.360"/><rect x="520" y="150" width="110" height="60" rx="6" fill="none" stroke="var(--senal-linea)" stroke-width="1" opacity=".5"/><text class="g-pie" x="575" y="188" text-anchor="middle">0,007</text><rect x="520" y="228" width="110" height="60" rx="6" fill="var(--senal)" opacity="0.225"/><rect x="520" y="228" width="110" height="60" rx="6" fill="none" stroke="var(--senal-linea)" stroke-width="1" opacity=".5"/><text class="g-pie" x="575" y="266" text-anchor="middle">0,010</text><text class="g-pie" x="40" y="110" opacity=".78">Reg. logística</text><rect x="26" y="146" width="4" height="68" rx="2" fill="var(--senal)"/><text class="g-pie" x="40" y="188" opacity="1">Random Forest</text><text class="g-pie" x="40" y="266" opacity=".78">Grad. Boosting</text><text class="g-pie" x="40" y="324" opacity=".75">mejor de la columna, más encendido</text></svg>
+          <figcaption class="caso__pie">PR-AUC de los tres modelos en validación cruzada y en test, y la caída entre una y otra. En la caída el mejor es el más pequeño, y por eso es el que va más encendido.</figcaption>
+          <p class="oculto">Matriz de tres modelos por tres métricas. Regresión logística: PR-AUC 0,577 en validación cruzada, 0,564 en test, caída de 0,013. Random Forest, el elegido: 0,698, 0,691 y caída de 0,007. Gradient Boosting: 0,695, 0,685 y caída de 0,010. En las dos primeras columnas gana el valor más alto; en la caída, el más bajo.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-abc" data-caso="A, B o C">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--centrado">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">La salida</p>
+          <h2 class="titulo-menor">Un comercial no llama a una <em class="acento">probabilidad</em>.</h2>
+          <p class="parrafo parrafo--lead">El modelo devuelve una probabilidad, pero nadie organiza una mañana de llamadas con cuatro decimales. La salida que usa el equipo son tres categorías por percentiles: A, B y C. Y ahí está el resultado que justifica todo lo demás: trabajando el 30,35% de los contactos —las categorías A y B— se captura el 95,82% de las entregas de documentación.</p>
+          <p class="parrafo">La categoría A es el 8,06% del volumen y convierte 6,8 veces por encima de la media. Es la lista de la primera hora de la mañana.</p><p class="parrafo">La C no se tira: se le manda información y se la deja madurar. Lo que cambia no es a quién se atiende, sino en qué orden y con cuánto esfuerzo, que es la única variable que un equipo pequeño controla de verdad.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Categoría A · del volumen</span><span class="lectura__valor">8,06%</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Categoría A · lift sobre la media</span><span class="lectura__valor">×6,8</span></div><div class="lectura"><span class="lectura__clave">A + B · del volumen</span><span class="lectura__valor">30,35%</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">A + B · de las entregas</span><span class="lectura__valor">95,82%</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 396" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><text x="50" y="60" class="g-rotulo">Del volumen de contactos</text><rect x="50" y="80" width="540" height="62" rx="8" fill="var(--linea-fuerte)" opacity=".32"/><rect x="50" y="80" width="163.9" height="62" rx="8" fill="var(--senal)" opacity=".55"/><text x="232" y="128" class="g-num" text-anchor="start">30,35%</text><text x="50" y="176" class="g-pie">A + B</text><text x="50" y="230" class="g-rotulo">De las entregas</text><rect x="50" y="250" width="540" height="62" rx="8" fill="var(--linea-fuerte)" opacity=".32"/><rect x="50" y="250" width="517.4" height="62" rx="8" fill="var(--senal)" opacity=".92"/><text x="549" y="298" class="g-num g-num--sobre" text-anchor="end">95,82%</text><text x="50" y="346" class="g-pie">capturadas por A + B</text></svg>
+          <figcaption class="caso__pie">Qué parte del volumen hay que trabajar y qué parte de las entregas de documentación se lleva.</figcaption>
+          <p class="oculto">Dos barras comparadas: las categorías A y B son el 30,35% del volumen de contactos y capturan el 95,82% de las entregas de documentación.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-tiempo" data-caso="El año siguiente">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--invertido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Validación temporal</p>
+          <h2 class="titulo-menor">La prueba que separa un modelo de clase <em class="acento">de uno de producción</em>.</h2>
+          <p class="parrafo parrafo--lead">Partir los datos al azar y medir ahí es cómodo, pero no dice nada sobre si el modelo seguirá sirviendo el curso que viene. Así que se probó contra la campaña siguiente, sin reentrenar y sin verla durante el entrenamiento. El PR-AUC baja 0,0105.</p>
+          <p class="parrafo">Poco más de una centésima es una caída pequeña, pero conviene decir exactamente de qué: es una métrica global, y lo que enseña es que el orden general aguanta de una campaña a la siguiente. No demuestra que la lista concreta de una mañana salga igual; eso sería otra medición, y no está hecha.</p><p class="parrafo">Para el mantenimiento sirve como cota, no como permiso: un curso sin reentrenar no deja el modelo inservible. Lo prudente sigue siendo reentrenar cada campaña, porque la prueba cubre un salto, no varios.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">PR-AUC en test</span><span class="lectura__valor">0,6911</span></div><div class="lectura"><span class="lectura__clave">PR-AUC en la campaña siguiente</span><span class="lectura__valor">0,6806</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Caída sin reentrenar</span><span class="lectura__valor">−0,0105</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 310" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="M 52.0 205 A 108 108 0 0 1 268.0 205" fill="none" stroke="var(--linea-fuerte)" stroke-width="14" stroke-linecap="round" opacity=".4"/><path d="M 52.0 205 A 108 108 0 0 1 268.0 205" fill="none" stroke="var(--senal)" stroke-width="14" stroke-linecap="round" stroke-dasharray="234.5 339.3"/><text x="160" y="199" class="g-num g-num--grande" text-anchor="middle">0,6911</text><text x="160" y="249" class="g-rotulo" text-anchor="middle">PR-AUC</text><text x="160" y="288" class="g-pie" text-anchor="middle">en test</text><path d="M 372.0 205 A 108 108 0 0 1 588.0 205" fill="none" stroke="var(--linea-fuerte)" stroke-width="14" stroke-linecap="round" opacity=".4"/><path d="M 372.0 205 A 108 108 0 0 1 588.0 205" fill="none" stroke="var(--senal)" stroke-width="14" stroke-linecap="round" stroke-dasharray="230.9 339.3"/><text x="480" y="199" class="g-num g-num--grande" text-anchor="middle">0,6806</text><text x="480" y="249" class="g-rotulo" text-anchor="middle">PR-AUC</text><text x="480" y="288" class="g-pie" text-anchor="middle">campaña siguiente</text></svg>
+          <figcaption class="caso__pie">El mismo modelo, sin volver a entrenarlo, sobre la campaña siguiente.</figcaption>
+          <p class="oculto">Dos medidores casi idénticos: PR-AUC de 0,6911 en el conjunto de test y de 0,6806 sobre la campaña siguiente sin reentrenar, una caída de 0,0105.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-asistente" data-caso="El asistente">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--editorial">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Segundo módulo</p>
+          <h2 class="titulo-menor">Y un asistente para las <em class="acento">preguntas de siempre</em>.</h2>
+          <p class="parrafo parrafo--lead">Priorizar la lista no sirve de nada si el equipo se pasa la mañana contestando las mismas cuatro dudas. El segundo módulo es un asistente con arquitectura RAG montado en Copilot Studio sobre la documentación oficial de admisión a grado.</p>
+          <p class="parrafo">RAG y no un modelo entrenado a medida por una razón concreta: las respuestas se fundamentan en el documento oficial vigente en vez de en lo que un modelo recuerde. Cuando cambia la normativa se cambia el documento y el asistente cambia con él. Fundamentar reduce las respuestas inventadas, no las elimina: la propia plataforma lo advierte.</p><p class="parrafo">Cubre cuatro categorías temáticas y tiene un protocolo de fallback explícito: si la pregunta se sale de lo que puede responder con la documentación, deriva a una persona en vez de improvisar. Un asistente de admisiones que se inventa un plazo hace más daño que uno que no contesta. Está validado en el panel de Copilot Studio, no con candidatos reales: las tasas de resolución y de derivación quedan definidas y pendientes de medir.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Arquitectura</span><span class="lectura__valor">RAG sobre documentación oficial</span></div><div class="lectura"><span class="lectura__clave">Plataforma</span><span class="lectura__valor">Copilot Studio</span></div><div class="lectura"><span class="lectura__clave">Categorías temáticas</span><span class="lectura__valor">4</span></div><div class="lectura"><span class="lectura__clave">Fuera de alcance</span><span class="lectura__valor">Deriva a una persona</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 382" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><line x1="274" y1="166" x2="202" y2="166" stroke="var(--senal)" stroke-width="1.6" opacity=".45"/><line x1="366" y1="166" x2="428" y2="166" stroke="var(--senal)" stroke-width="1.6" opacity=".45"/><line x1="320" y1="120" x2="320" y2="80" stroke="var(--senal)" stroke-width="1.6" opacity=".45"/><line x1="320" y1="212" x2="320" y2="246" stroke="var(--senal)" stroke-width="1.6" opacity=".45" stroke-dasharray="5 4"/><rect x="104" y="26" width="432" height="54" rx="12" fill="var(--senal)" opacity=".07"/><rect x="104" y="26" width="432" height="54" rx="12" fill="none" stroke="var(--senal)" stroke-width="1.3" opacity=".55"/><text class="g-pie g-pie--nodo" x="320" y="66" text-anchor="middle">Base de conocimiento</text><rect x="18" y="136" width="184" height="54" rx="12" fill="var(--senal)" opacity=".07"/><rect x="18" y="136" width="184" height="54" rx="12" fill="none" stroke="var(--senal)" stroke-width="1.3" opacity=".55"/><text class="g-pie g-pie--nodo" x="110" y="176" text-anchor="middle">Pregunta</text><rect x="428" y="136" width="204" height="54" rx="12" fill="var(--senal)" opacity=".07"/><rect x="428" y="136" width="204" height="54" rx="12" fill="none" stroke="var(--senal)" stroke-width="1.3" opacity=".55"/><text class="g-pie g-pie--nodo" x="530" y="176" text-anchor="middle">Respuesta</text><rect x="198" y="246" width="244" height="54" rx="12" fill="var(--senal)" opacity=".07"/><rect x="198" y="246" width="244" height="54" rx="12" fill="none" stroke="var(--senal)" stroke-width="1.3" opacity=".55" stroke-dasharray="5 4"/><text class="g-pie g-pie--nodo" x="320" y="286" text-anchor="middle">Una persona</text><circle cx="320" cy="166" r="46" fill="var(--senal)" opacity=".16"/><circle cx="320" cy="166" r="46" fill="none" stroke="var(--senal)" stroke-width="1.8"/><text class="g-pie g-pie--nodo" x="320" y="178" text-anchor="middle">RAG</text><text class="g-pie" x="320" y="328" text-anchor="middle" opacity=".72">si no sabe, deriva</text><text class="g-pie" x="320" y="362" text-anchor="middle" opacity=".75">el asistente, en cuatro piezas</text></svg>
+          <figcaption class="caso__pie">El segundo módulo, en esquema: la pregunta entra y la respuesta se construye sobre la base de conocimiento, no sobre lo que el modelo recuerde. Si no da para responder, deriva a una persona.</figcaption>
+          <p class="oculto">Esquema radial del asistente con RAG en el centro y cuatro piezas alrededor: arriba la base de conocimiento, a la izquierda la pregunta, a la derecha la respuesta y, por debajo y con línea de puntos, una persona del equipo, a la que se deriva cuando la documentación no da para responder.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="caso caso--cierre" id="s-cierre">
+    <div class="marco">
+      <div class="cierre" data-revelar>
+        <p class="rotulo eyebrow">Lo que no está aquí</p>
+        <h2 class="titulo-menor">La memoria <em class="acento">no circula</em>, y es parte del trabajo.</h2>
+        <p class="parrafo">Este proyecto se hizo con datos reales del CRM de admisiones de una universidad. En esta página están las métricas del modelo, el reparto por categorías y la validación temporal, que son resultados del modelo y no dicen nada de nadie.</p><p class="parrafo">Lo que no está, y no va a estar: la tasa de conversión de la universidad, qué canales de captación le funcionan mejor, los umbrales concretos que separan A de B, y por supuesto ningún registro. Eso es información de negocio de Comillas y no es mía para publicarla.</p><p class="parrafo">La presentación de la defensa sí está, pero en una versión pública: he retirado el embudo de captación, el análisis por canal y por colegio de procedencia, la tasa de conversión de la universidad y los percentiles que fijan los cortes de A y B. Lo que queda son resultados del modelo, que no dicen nada de nadie.</p><p class="parrafo">La memoria completa la enseño en persona. Si estás valorando el trabajo y necesitas ver el detalle, escríbeme y lo vemos.</p>
+        <div class="botones"><a class="boton boton--solido" href="https://github.com/ppblanco/admissions-lead-scoring-rag" target="_blank" rel="noopener">Ver el código en GitHub <span class="flecha" aria-hidden="true">↗</span></a><a class="boton " href="mailto:pedro.perez.blanco@outlook.es">Escríbeme <span class="flecha" aria-hidden="true">↗</span></a></div>
+      </div>
+      
+        <figure class="visor" data-revelar>
+          <figcaption class="visor__barra visor__barra--alta">
+            <span class="visor__rotulo">TFM · Presentación de la defensa</span>
+            <span class="visor__meta">PDF · versión pública · 18 páginas · 807 KB</span>
+          </figcaption>
+
+          <div class="visor__lienzo">
+            <a class="visor__fachada" href="tfm-presentacion.pdf"
+               target="_blank" rel="noopener"
+               data-visor="TFM · Presentación de la defensa, 18 páginas">
+              <img class="visor__portada" src="../medios/informes/tfm-portada.jpg"
+                   width="1001" height="563"
+                   loading="lazy" decoding="async"
+                   alt="Portada de la presentación: «Sistema de Lead Scoring y Asistente Virtual con RAG para la captación de estudiantes en la Universidad Pontificia Comillas», con el sello de la universidad, el autor Pedro Pérez Blanco, el tutor José Portela González y la convocatoria de junio de 2026.">
+              <span class="visor__cta">Ver la presentación
+                <span class="visor__peso">807 KB</span>
+                <span class="oculto" data-visor-nota>, se abre en otra pestaña</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="visor__barra visor__barra--baja">
+            <a class="visor__accion" href="tfm-presentacion.pdf"
+               download="tfm-presentacion-pedro-perez-blanco.pdf">
+              <span class="visor__icono" aria-hidden="true">&#8595;</span>Descargar la presentación
+              <span class="visor__peso">807 KB</span>
+            </a>
+            <a class="visor__accion visor__accion--fin" href="tfm-presentacion.pdf"
+               target="_blank" rel="noopener">
+              Abrir en pantalla completa <span class="flecha" aria-hidden="true">↗</span>
+              <span class="oculto">, se abre en otra pestaña</span>
+            </a>
+          </div>
+        </figure>
+    </div>
+  </section>
+
+  <section class="caso caso--siguiente">
+    <div class="marco">
+      <a class="siguiente" href="videojuegos.html">
+        <span class="siguiente__rotulo">Siguiente trabajo</span>
+        <span class="siguiente__titulo">Predicción de ventas de videojuegos</span>
+        <span class="siguiente__flecha" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- Las dos piezas que faltaban aquí y sí estaban en el portfolio, y por eso
+     el ratón no se comportaba igual al abrir un trabajo. El anillo lo dibuja
+     plantilla.js, que ya venía cargado; sin este div no tenía dónde. -->
+<div class="nodo-cursor" id="nodo-cursor" aria-hidden="true"></div>
+
+<a class="flotante" id="flotante" href="mailto:pedro.perez.blanco@outlook.es" aria-label="Escribir a Pedro Pérez Blanco por correo">
+  <span class="flotante__texto">
+    <b>Ponte en contacto</b>
+    <span>Escríbeme cuando quieras</span>
+  </span>
+  <span class="flotante__icono" aria-hidden="true">&#9993;</span>
+</a>
+
+<footer class="pie">
+  <div class="marco">
+    <div class="pie__reparto">
+      <div>
+        <p class="pie__nombre">Pedro Pérez Blanco</p>
+        <p class="pie__nota">Analista de marketing y datos · Madrid</p>
+        <button class="pie__quieto" id="quieto" type="button" aria-pressed="false">
+          <span class="pie__punto" aria-hidden="true"></span><span data-texto>Parar movimiento</span>
+        </button>
+      </div>
+      <div class="pie__enlaces">
+        <a class="pie__enlace" href="../index.html">Volver al portfolio <span class="flecha" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../ui/fondo.js" defer></script>
+<script src="../ui/plantilla.js" defer></script>
+</body>
+</html>

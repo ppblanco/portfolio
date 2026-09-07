@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es" data-caso="deep-learning">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- GENERADO por herramientas/hacer-caso.py desde contenido-deeplearning.json.
+     No lo edites a mano: se sobrescribe entero en cada ejecución. -->
+<title>Predicción de demanda con redes recurrentes · Pedro Pérez Blanco</title>
+<meta name="description" content="Cuatro arquitecturas recurrentes comparadas contra una media móvil para predecir demanda diaria. El LSTM gana, pero por un margen que conviene no exagerar.">
+<meta name="theme-color" content="#0B0C0F">
+
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Predicción de demanda con redes recurrentes · Pedro Pérez Blanco">
+<meta property="og:description" content="Cuatro arquitecturas recurrentes comparadas contra una media móvil para predecir demanda diaria. El LSTM gana, pero por un margen que conviene no exagerar.">
+<meta property="og:image" content="https://pedro-perez-data.netlify.app/medios/og.jpg">
+<meta property="og:image:alt" content="Tarjeta con el nombre de Pedro Pérez Blanco y el titular del portfolio.">
+<meta property="og:url" content="https://pedro-perez-data.netlify.app/trabajos/deep-learning.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="stylesheet" href="../ui/tipos.css">
+<link rel="stylesheet" href="../ui/plantilla.css">
+<!-- Después de plantilla.css, porque se apoya en sus tokens y solo añade lo
+     que es propio de una página de caso. -->
+<link rel="stylesheet" href="../ui/trabajo.css">
+<style>
+  /* Paleta de este trabajo. azul 202-217°, el 44% del vídeo: la señal que avanza */
+  :root{
+    --senal:#5C93DC;
+    --senal-viva:#83B0E9;
+    --senal-tenue:rgba(92,147,220,.14);
+    --senal-linea:rgba(92,147,220,.34);
+  }
+  /* El cursor NO cambia con el caso: es del sitio. Si cambiara,
+     al pasar de un trabajo a otro pareceria otro puntero. Hay
+     una prueba que lo compara con el del portfolio. */
+  .nodo-cursor{ border-color:rgba(224,164,88,.34) }
+  .nodo-cursor::after{ background:#E0A458 }
+  .nodo-cursor.esta-activo{ border-color:#E0A458;
+                            background:rgba(224,164,88,.07) }
+</style>
+</head>
+<body>
+
+<canvas class="fondo" id="fondo" aria-hidden="true"></canvas>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra" id="barra">
+  <nav class="barra__caja" aria-label="Secciones">
+    <a class="barra__marca" href="../index.html">
+      <span class="barra__iniciales" aria-hidden="true">PPB</span>
+      <span class="barra__nombre">Pedro Pérez Blanco</span>
+    </a>
+    <ul class="barra__lista" id="menu-lista"><li><a href="#s-problema" data-nav>El problema</a></li><li><a href="#s-particion" data-nav>La partición</a></li><li><a href="#s-modelos" data-nav>Las arquitecturas</a></li><li><a href="#s-resultados" data-nav>Los resultados</a></li><li><a href="#s-limites" data-nav>Lo que no prueba</a></li></ul>
+    <button class="barra__pausa" id="reanudar" type="button">
+      <span class="barra__pausa__punto" aria-hidden="true"></span>Movimiento en pausa
+      <span class="oculto">, pulsa para reanudarlo</span>
+    </button>
+    <a class="barra__cta" href="../index.html#trabajo">Todos los trabajos</a>
+    <button class="barra__menu" id="menu" type="button"
+            aria-expanded="true" aria-controls="menu-lista">
+      <span aria-hidden="true"></span>
+      <span class="oculto">Abrir el menú</span>
+    </button>
+  </nav>
+  <div class="barra__avance" id="avance" aria-hidden="true"></div>
+</header>
+
+<main id="contenido">
+
+  <section class="caso-portada caso-portada--animada"><div class="relieve" aria-hidden="true"><img class="relieve__quieta" src="../medios/video/deep-learning-poster.jpg" width="1440" height="810" alt="" decoding="async"><video id="portada-video" muted loop playsinline preload="none" poster="../medios/video/deep-learning-poster.jpg" data-src="../medios/video/deep-learning.mp4"></video><span class="relieve__velo"></span></div>
+    <div class="marco">
+      <a class="volver" href="../index.html#trabajo">
+        <span aria-hidden="true">&larr;</span> Todos los trabajos
+      </a>
+      <div class="cristal"><span class="cristal__fx" aria-hidden="true"><span class="cristal__cara"></span><span class="cristal__filo cristal__filo--t"></span><span class="cristal__filo cristal__filo--b"></span><span class="cristal__filo cristal__filo--i"></span><span class="cristal__filo cristal__filo--d"></span></span><div class="cristal__dentro">
+      <div class="caso-portada__panel" data-revelar>
+        <p class="rotulo eyebrow">Deep learning · Series temporales</p>
+        <h1 class="caso-portada__titulo" data-partir>Predicción de demanda con redes recurrentes</h1>
+        <p class="parrafo parrafo--lead">Cinco años de ventas diarias, cuatro arquitecturas recurrentes y una media móvil de siete días haciendo de línea de base. La pregunta no era cuál gana, sino si alguna gana lo suficiente como para que compense su complejidad.</p>
+        <div class="datos"><div class="dato"><span class="dato__k">Papel</span><span class="dato__v">Equipo de tres · trabajo conjunto</span></div><div class="dato"><span class="dato__k">Autores</span><span class="dato__v">Marcos Fernández · Pedro Pérez · Alfredo Martín</span></div><div class="dato"><span class="dato__k">Año</span><span class="dato__v">2026 · MUBA, ICADE</span></div><div class="dato"><span class="dato__k">Herramientas</span><span class="dato__v">Python · TensorFlow · Keras · pandas</span></div></div>
+      </div>
+      </div></div>
+      <div class="cifras" data-revelar><div class="cifra"><span class="cifra__n">56</span><span class="cifra__pie">entrenamientos</span></div><div class="cifra"><span class="cifra__n">20,95%</span><span class="cifra__pie">de MAPE del mejor modelo</span></div><div class="cifra"><span class="cifra__n">274</span><span class="cifra__pie">días de test</span></div></div>
+    </div>
+  </section>
+  <!-- El raíl de apartados. Son anclas de verdad, así que funciona con el
+       JavaScript bloqueado; lo único que añade el script es marcar en cuál
+       estás. Es un índice, no unas pestañas: el caso entero está en la
+       página. -->
+  <nav class="rail" id="rail" aria-label="Apartados de este trabajo">
+    <div class="marco rail__caja"><a href="#s-problema" data-rail>El problema</a><a href="#s-particion" data-rail>La partición</a><a href="#s-modelos" data-rail>Las arquitecturas</a><a href="#s-resultados" data-rail>Los resultados</a><a href="#s-limites" data-rail>Lo que no prueba</a></div>
+  </nav>
+
+  <section class="caso" id="s-problema" data-caso="El problema">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--invertido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">El problema</p>
+          <h2 class="titulo-menor">Predecir mañana <em class="acento">sin mirar mañana</em>.</h2>
+          <p class="parrafo parrafo--lead">Una serie temporal impone dos reglas que no existen en un problema tabular corriente. La partición no puede ser aleatoria, porque mezclar días mete el futuro dentro del entrenamiento. Y el conjunto de test se toca una sola vez, al final.</p>
+          <p class="parrafo">La serie se convierte en un problema supervisado por ventanas deslizantes: las ventas de los últimos w días predicen las del siguiente. Se probaron ventanas de 7, 30 y 90 días.</p><p class="parrafo">El escalado se ajusta solo con el tramo de entrenamiento. Ajustarlo sobre la serie completa filtraría el rango futuro hacia el pasado, que es una fuga silenciosa y muy fácil de cometer.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Datos</span><span class="lectura__valor">913.000 filas, 2013 – 2017</span></div><div class="lectura"><span class="lectura__clave">Serie modelada</span><span class="lectura__valor">Una combinación tienda-producto</span></div><div class="lectura"><span class="lectura__clave">Ventanas probadas</span><span class="lectura__valor">7, 30 y 90 días</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Horizonte</span><span class="lectura__valor">Un día</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 415" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="16" y="64" width="190" height="96" rx="8" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><text x="111" y="101" class="g-rotulo" text-anchor="middle">Serie</text><text x="111" y="140" class="g-rotulo" text-anchor="middle">diaria</text><rect x="223" y="64" width="190" height="96" rx="8" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><text x="318" y="101" class="g-rotulo" text-anchor="middle">Ventana</text><text x="318" y="140" class="g-rotulo" text-anchor="middle">deslizante</text><rect x="430" y="64" width="190" height="96" rx="8" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><text x="525" y="101" class="g-rotulo" text-anchor="middle">Red</text><text x="525" y="140" class="g-rotulo" text-anchor="middle">recurrente</text><path d="M 206 112 l 17 0 m -6 -5 l 6 5 l -6 5" fill="none" stroke="var(--senal)" stroke-width="1.5"/><path d="M 413 112 l 17 0 m -6 -5 l 6 5 l -6 5" fill="none" stroke="var(--senal)" stroke-width="1.5"/><path d="M 318 160 L 318 247 L 430 247" fill="none" stroke="var(--senal)" stroke-width="1.5" stroke-dasharray="5 5" opacity=".8"/><rect x="430" y="208" width="190" height="79" rx="8" fill="none" stroke="var(--senal)" stroke-width="1.5" opacity=".8"/><text x="525" y="255" class="g-rotulo" text-anchor="middle">Mañana</text><text x="320" y="331" class="g-pie" text-anchor="middle">El escalado se aprende solo</text><text x="320" y="368" class="g-pie" text-anchor="middle">con el pasado.</text></svg>
+          <figcaption class="caso__pie">De la serie a la predicción del día siguiente.</figcaption>
+          <p class="oculto">Diagrama: la serie diaria se corta en ventanas deslizantes, entran en una red recurrente y sale la predicción del día siguiente.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-particion" data-caso="La partición">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--ancho">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">La partición</p>
+          <h2 class="titulo-menor">El test se toca <em class="acento">una sola vez</em>.</h2>
+          <p class="parrafo parrafo--lead">70 % de los días para entrenar, 15 % para validar y 15 % —274 días— para test. En orden cronológico, sin barajar. Todos los modelos y la línea de base se miden sobre exactamente los mismos 274 días, que es lo que hace comparable la tabla final.</p>
+          <p class="parrafo">La elección de arquitectura e hiperparámetros se hace mirando validación, nunca test. Si el test participa en la decisión deja de ser una estimación honesta y se convierte en otro conjunto de entrenamiento con más pasos.</p><p class="parrafo">Todos los modelos usan EarlyStopping sobre la pérdida de validación, así que el número de épocas lo decide la propia validación en lugar de fijarse a ojo.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Entrenamiento</span><span class="lectura__valor">Primer 70 % de los días</span></div><div class="lectura"><span class="lectura__clave">Validación</span><span class="lectura__valor">Siguiente 15 %</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Test</span><span class="lectura__valor">Último 15 % · 274 días</span></div><div class="lectura"><span class="lectura__clave">Criterio de parada</span><span class="lectura__valor">EarlyStopping en validación</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="40.0" y="70" width="392.0" height="150" fill="var(--senal)" opacity="0.050"/><text class="g-pie" x="236" y="52" text-anchor="middle">Entrenamiento</text><text class="g-pie" x="236" y="252" text-anchor="middle" opacity=".75">70% de los días</text><rect x="432.0" y="70" width="84.0" height="150" fill="var(--senal)" opacity="0.095"/><line x1="432.0" y1="62" x2="432.0" y2="228" stroke="var(--linea-fuerte)" stroke-width="1" stroke-dasharray="4 4"/><text class="g-pie" x="474" y="52" text-anchor="middle">Val.</text><text class="g-pie" x="474" y="252" text-anchor="middle" opacity=".75">15%</text><rect x="516.0" y="70" width="84.0" height="150" fill="var(--senal)" opacity="0.140"/><line x1="516.0" y1="62" x2="516.0" y2="228" stroke="var(--linea-fuerte)" stroke-width="1" stroke-dasharray="4 4"/><text class="g-pie" x="558" y="52" text-anchor="middle">Test</text><text class="g-pie" x="558" y="252" text-anchor="middle" opacity=".75">15%</text><polyline points="40.0,168.0 45.0,152.9 50.0,139.7 55.0,129.8 60.0,124.1 65.0,122.6 70.0,124.6 75.0,128.6 80.0,133.2 85.0,136.8 90.0,138.4 95.0,137.7 100.0,135.1 105.0,131.8 110.0,129.3 115.0,129.1 120.0,132.3 125.0,139.7 130.0,150.8 135.0,164.8 140.0,180.0 145.0,194.5 150.0,206.6 155.0,214.7 160.0,218.5 165.0,217.9 170.0,214.1 175.0,208.5 180.0,202.6 185.0,198.0 190.0,195.5 195.0,195.4 200.0,197.0 205.0,199.1 210.0,200.3 215.0,199.0 220.0,194.2 225.0,185.6 230.0,173.6 235.0,159.3 240.0,144.5 245.0,131.0 250.0,120.6 255.0,114.4 260.0,112.9 265.0,115.6 270.0,121.4 275.0,128.6 280.0,135.7 285.0,141.3 290.0,144.5 295.0,145.4 300.0,144.6 305.0,143.5 310.0,143.5 315.0,146.0 320.0,151.9 325.0,161.4 330.0,173.9 335.0,188.0 340.0,202.0 345.0,214.0 350.0,222.4 355.0,226.3 360.0,225.4 365.0,220.5 370.0,212.8 375.0,204.0 380.0,195.8 385.0,189.5 390.0,185.7 395.0,184.2 400.0,184.4 405.0,184.8 410.0,183.9 415.0,180.5 420.0,173.8 425.0,163.8 430.0,151.3 435.0,137.8 440.0,125.1 445.0,114.9 450.0,108.7 455.0,107.3 460.0,110.6 465.0,117.8 470.0,127.3 475.0,137.4 480.0,146.5 485.0,153.4 490.0,157.6 495.0,159.3 500.0,159.6 505.0,159.7 510.0,161.1 515.0,165.1 520.0,172.3 525.0,182.3 530.0,194.4 535.0,206.9 540.0,218.0 545.0,226.1 550.0,229.8 555.0,228.6 560.0,222.9 565.0,213.6 570.0,202.5 575.0,191.2 580.0,181.5 585.0,174.3 590.0,170.1 595.0,168.3 600.0,168.0" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity=".85" stroke-linejoin="round"/><g class="ventana"><rect x="40" y="78" width="72.8" height="134" rx="3" fill="var(--senal)" opacity=".16"/><rect x="40" y="78" width="72.8" height="134" rx="3" fill="none" stroke="var(--senal)" stroke-width="1.6"/><rect class="celda" x="47.0" y="84" width="11.7" height="6" rx="2" fill="var(--senal)" style="--i:0"/><rect class="celda" x="61.7" y="84" width="11.7" height="6" rx="2" fill="var(--senal)" style="--i:1"/><rect class="celda" x="76.4" y="84" width="11.7" height="6" rx="2" fill="var(--senal)" style="--i:2"/><rect class="celda" x="91.1" y="84" width="11.7" height="6" rx="2" fill="var(--senal)" style="--i:3"/></g></svg>
+          <figcaption class="caso__pie">La ventana recorre la serie: el modelo nunca ve el total, ve un tramo que avanza. Y avanza siempre hacia el futuro.</figcaption>
+          <p class="oculto">Una serie temporal dividida en tres tramos consecutivos: entrenamiento con el 70% de los días, validación con el 15% y test con el 15%, que son 274 días. Encima, una ventana deslizante recorre la serie de izquierda a derecha. La onda dibujada ilustra la forma de una serie con estacionalidad; no son las ventas reales.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-modelos" data-caso="Las arquitecturas">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--dividido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Las arquitecturas</p>
+          <h2 class="titulo-menor">Cuatro redes y <em class="acento">una media móvil</em>.</h2>
+          <p class="parrafo parrafo--lead">SimpleRNN, LSTM, GRU y Bidirectional LSTM, contra una media móvil de siete días. La media móvil no es un adorno: si una red recurrente no la supera, no está aportando nada.</p>
+          <p class="parrafo">La búsqueda de hiperparámetros fue en dos fases y siempre midiendo sobre validación. Primero una rejilla de arquitectura —tres ventanas por tres activaciones, nueve combinaciones por modelo, 36 entrenamientos—. Después el tamaño de lote, cuatro valores sobre la mejor configuración de cada uno, 16 entrenamientos más.</p><p class="parrafo">Con los cuatro finales son 56 entrenamientos en total. Los tres modelos con puerta eligieron ventana de 7 días; solo SimpleRNN se quedó con 90.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">SimpleRNN</span><span class="lectura__valor">Ventana 90 · LeakyReLU · lote 128</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">LSTM</span><span class="lectura__valor">Ventana 7 · relu · lote 16</span></div><div class="lectura"><span class="lectura__clave">GRU</span><span class="lectura__valor">Ventana 7 · relu · lote 32</span></div><div class="lectura"><span class="lectura__clave">Bi-LSTM</span><span class="lectura__valor">Ventana 7 · relu · lote 128</span></div><div class="lectura"><span class="lectura__clave">Línea de base</span><span class="lectura__valor">Media móvil de 7 días</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 380" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="50" y="30" width="486" height="64" rx="6" fill="var(--linea-fuerte)" opacity=".45"/><text x="66" y="79" class="g-num">36</text><text x="50" y="124" class="g-pie">de rejilla</text><rect x="50" y="152" width="216" height="64" rx="6" fill="var(--linea-fuerte)" opacity=".45"/><text x="66" y="201" class="g-num">16</text><text x="50" y="246" class="g-pie">de tamaño de lote</text><rect x="50" y="274" width="65" height="64" rx="6" fill="var(--senal)" opacity=".9"/><text x="66" y="323" class="g-num">4</text><text x="50" y="368" class="g-pie">finales</text></svg>
+          <figcaption class="caso__pie">56 entrenamientos, todos decididos con validación.</figcaption>
+          <p class="oculto">Escalones: 36 entrenamientos de rejilla, 16 de tamaño de lote y 4 finales.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-resultados" data-caso="Los resultados">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--centrado">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Los resultados</p>
+          <h2 class="titulo-menor">Las puertas sirven. <em class="acento">La recurrencia simple no</em>.</h2>
+          <p class="parrafo parrafo--lead">LSTM, GRU y Bi-LSTM baten a la media móvil. SimpleRNN no: con un MAE de 5,125 queda por debajo de los 4,867 de la línea de base. Es el resultado más limpio del trabajo, porque es exactamente lo que se espera de estas arquitecturas.</p>
+          <p class="parrafo">El mejor es el LSTM, con un MAE de 4,550 sobre los 274 días de test. La mejora sobre la línea de base son 0,32 unidades, sobre una venta media de 23,9: algo más del uno por ciento.</p><p class="parrafo">Su ventaja sobre el Bi-LSTM es de 0,037 unidades, un 0,15 % de la venta media. Con una sola semilla por configuración, una diferencia así no basta para declarar un ganador: haría falta repetir cada entrenamiento varias veces y comparar distribuciones. El trabajo lo dice en vez de proclamar un vencedor.</p><p class="parrafo">Conviene además leer las dos métricas por separado. El MAPE divide por el valor real, así que baja cuando la serie tiene más volumen aunque el modelo no haya mejorado; por eso el MAPE de test sale mejor que el de validación en los cuatro. El MAE está en unidades vendidas y no depende del nivel de la serie: es la métrica sobre la que se sostienen las conclusiones.</p>
+          <div class="lecturas"><div class="lectura lectura--destacada"><span class="lectura__clave">LSTM</span><span class="lectura__valor">MAPE 20,95 % · MAE 4,550</span></div><div class="lectura"><span class="lectura__clave">GRU</span><span class="lectura__valor">MAPE 21,42 % · MAE 4,622</span></div><div class="lectura"><span class="lectura__clave">Bi-LSTM</span><span class="lectura__valor">MAPE 21,70 % · MAE 4,587</span></div><div class="lectura"><span class="lectura__clave">SimpleRNN</span><span class="lectura__valor">MAPE 23,13 % · MAE 5,125</span></div><div class="lectura"><span class="lectura__clave">Media móvil (7 días)</span><span class="lectura__valor">MAPE 23,30 % · MAE 4,867</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 329" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><line x1="50" y1="250" x2="590" y2="250" stroke="var(--linea)" stroke-width="1"/><rect x="76" y="124" width="84" height="126" rx="5" fill="var(--senal)" opacity=".92"/><text x="118" y="110" class="g-num" text-anchor="middle">4,55</text><text x="118" y="282" class="g-rotulo" text-anchor="middle">LSTM</text><rect x="211" y="123" width="84" height="127" rx="5" fill="var(--senal)" opacity=".45"/><text x="252" y="109" class="g-num" text-anchor="middle">4,59</text><text x="252" y="282" class="g-rotulo" text-anchor="middle">Bi-LSTM</text><rect x="346" y="115" width="84" height="135" rx="5" fill="var(--senal)" opacity=".45"/><text x="388" y="101" class="g-num" text-anchor="middle">4,87</text><text x="388" y="282" class="g-rotulo" text-anchor="middle">Base</text><rect x="481" y="108" width="84" height="142" rx="5" fill="var(--senal)" opacity=".45"/><text x="522" y="94" class="g-num" text-anchor="middle">5,13</text><text x="522" y="282" class="g-rotulo" text-anchor="middle">RNN</text></svg>
+          <figcaption class="caso__pie">MAE en test, sobre los mismos 274 días. Más bajo es mejor. El GRU queda entre el Bi-LSTM y la línea de base.</figcaption>
+          <p class="oculto">Barras del error absoluto medio en test: LSTM 4,550; Bi-LSTM 4,587; GRU 4,622; media móvil 4,867; SimpleRNN 5,125. La media móvil es la línea de base.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-limites" data-caso="Lo que no prueba">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--editorial">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Los límites</p>
+          <h2 class="titulo-menor">Una semilla <em class="acento">no decide un ganador</em>.</h2>
+          <p class="parrafo parrafo--lead">La limitación principal es de método: cada configuración se entrenó una sola vez. Eso basta para separar a SimpleRNN del resto, pero no para distinguir al LSTM del Bi-LSTM.</p>
+          <p class="parrafo">El trabajo modela una única serie tienda-producto. Los resultados valen para ella; no se han validado sobre las 500 series del dataset.</p><p class="parrafo">El horizonte es de un día. Una planificación de inventario real necesita predecir semanas, y eso es un problema distinto y más duro.</p><p class="parrafo">Y no hay variables externas: ni festivos, ni promociones, ni precio. En demanda minorista suelen explicar buena parte de la variación.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Repeticiones por configuración</span><span class="lectura__valor">Una</span></div><div class="lectura"><span class="lectura__clave">Series modeladas</span><span class="lectura__valor">Una de 500</span></div><div class="lectura"><span class="lectura__clave">Horizonte</span><span class="lectura__valor">Un día</span></div><div class="lectura"><span class="lectura__clave">Variables externas</span><span class="lectura__valor">Ninguna</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 598" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><circle cx="74" cy="48" r="20" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity="1"/><path d="M 64 48 l 8 8 l 14 -16" fill="none" stroke="var(--senal)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="46" class="g-rotulo">Se confirma</text><text x="116" y="85" class="g-pie">La partición es</text><text x="116" y="122" class="g-pie">cronológica</text><circle cx="74" cy="191" r="20" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity="1"/><path d="M 64 191 l 8 8 l 14 -16" fill="none" stroke="var(--senal)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="189" class="g-rotulo">Se confirma</text><text x="116" y="228" class="g-pie">El modelo se elige</text><text x="116" y="265" class="g-pie">con validación</text><circle cx="74" cy="334" r="20" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.8" opacity=".8"/><path d="M 65 325 l 18 18 m 0 -18 l -18 18" fill="none" stroke="var(--linea-fuerte)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="332" class="g-rotulo">Se cae</text><text x="116" y="371" class="g-pie">La diferencia entre LSTM</text><text x="116" y="408" class="g-pie">y Bi-LSTM es sólida</text><circle cx="74" cy="477" r="20" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.8" opacity=".8"/><path d="M 65 468 l 18 18 m 0 -18 l -18 18" fill="none" stroke="var(--linea-fuerte)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="475" class="g-rotulo">Se cae</text><text x="116" y="514" class="g-pie">Los resultados valen</text><text x="116" y="551" class="g-pie">para las 500 series</text></svg>
+          <figcaption class="caso__pie">Lo que el trabajo sostiene y lo que no.</figcaption>
+          <p class="oculto">Veredictos: la partición es cronológica, sí; el modelo se elige con validación, sí; la diferencia entre LSTM y Bi-LSTM es sólida, no; los resultados valen para las 500 series, no.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="caso caso--cierre" id="s-cierre">
+    <div class="marco">
+      <div class="cierre" data-revelar>
+        <p class="rotulo eyebrow">El trabajo</p>
+        <h2 class="titulo-menor">Fue un trabajo <em class="acento">de tres</em>.</h2>
+        <p class="parrafo">Proyecto conjunto de Marcos Fernández, Pedro Pérez y Alfredo Martín para la asignatura de Deep Learning del máster. Los archivos del proyecto no documentan un reparto de tareas, así que no se atribuye ninguna parte concreta a un autor.</p><p class="parrafo">La conclusión que más me interesa del trabajo no es cuál gana, sino que se puede decir «esta diferencia es demasiado pequeña para afirmar nada» y que eso también es un resultado.</p>
+        <div class="botones"><a class="boton boton--solido" href="https://github.com/ppblanco/retail-demand-forecasting-rnn" target="_blank" rel="noopener">Ver el código en GitHub <span class="flecha" aria-hidden="true">↗</span></a><a class="boton " href="mailto:pedro.perez.blanco@outlook.es">Escríbeme <span class="flecha" aria-hidden="true">↗</span></a></div>
+      </div>
+      
+        <figure class="visor" data-revelar>
+          <figcaption class="visor__barra visor__barra--alta">
+            <span class="visor__rotulo">Predicción de demanda · Presentación</span>
+            <span class="visor__meta">PDF · 16 páginas · 1,2 MB</span>
+          </figcaption>
+
+          <div class="visor__lienzo">
+            <a class="visor__fachada" href="deep-learning-presentacion.pdf"
+               target="_blank" rel="noopener"
+               data-visor="Predicción de demanda · Presentación, 16 páginas">
+              <img class="visor__portada" src="../medios/informes/deep-learning-portada.jpg"
+                   width="1001" height="563"
+                   loading="lazy" decoding="async"
+                   alt="Primera página de la presentación del trabajo de deep learning sobre predicción de demanda con redes recurrentes.">
+              <span class="visor__cta">Ver la presentación
+                <span class="visor__peso">1,2 MB</span>
+                <span class="oculto" data-visor-nota>, se abre en otra pestaña</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="visor__barra visor__barra--baja">
+            <a class="visor__accion" href="deep-learning-presentacion.pdf"
+               download="deep-learning-presentacion.pdf">
+              <span class="visor__icono" aria-hidden="true">&#8595;</span>Descargar presentación
+              <span class="visor__peso">1,2 MB</span>
+            </a>
+            <a class="visor__accion visor__accion--fin" href="deep-learning-presentacion.pdf"
+               target="_blank" rel="noopener">
+              Abrir en pantalla completa <span class="flecha" aria-hidden="true">↗</span>
+              <span class="oculto">, se abre en otra pestaña</span>
+            </a>
+          </div>
+        </figure>
+    </div>
+  </section>
+
+  <section class="caso caso--siguiente">
+    <div class="marco">
+      <a class="siguiente" href="letterboxd.html">
+        <span class="siguiente__rotulo">Siguiente trabajo</span>
+        <span class="siguiente__titulo">Letterboxd · De qué habla quien reseña cine</span>
+        <span class="siguiente__flecha" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- Las dos piezas que faltaban aquí y sí estaban en el portfolio, y por eso
+     el ratón no se comportaba igual al abrir un trabajo. El anillo lo dibuja
+     plantilla.js, que ya venía cargado; sin este div no tenía dónde. -->
+<div class="nodo-cursor" id="nodo-cursor" aria-hidden="true"></div>
+
+<a class="flotante" id="flotante" href="mailto:pedro.perez.blanco@outlook.es" aria-label="Escribir a Pedro Pérez Blanco por correo">
+  <span class="flotante__texto">
+    <b>Ponte en contacto</b>
+    <span>Escríbeme cuando quieras</span>
+  </span>
+  <span class="flotante__icono" aria-hidden="true">&#9993;</span>
+</a>
+
+<footer class="pie">
+  <div class="marco">
+    <div class="pie__reparto">
+      <div>
+        <p class="pie__nombre">Pedro Pérez Blanco</p>
+        <p class="pie__nota">Analista de marketing y datos · Madrid</p>
+        <button class="pie__quieto" id="quieto" type="button" aria-pressed="false">
+          <span class="pie__punto" aria-hidden="true"></span><span data-texto>Parar movimiento</span>
+        </button>
+      </div>
+      <div class="pie__enlaces">
+        <a class="pie__enlace" href="../index.html">Volver al portfolio <span class="flecha" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../ui/fondo.js" defer></script>
+<script src="../ui/plantilla.js" defer></script>
+</body>
+</html>

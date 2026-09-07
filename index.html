@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- GENERADO por herramientas/hacer-plantilla.py desde contenido-plantilla.json.
+     No lo edites a mano: se sobrescribe entero en cada ejecución. -->
+<title>Pedro Pérez Blanco · Analista de marketing y datos</title>
+<meta name="description" content="Portfolio de Pedro Pérez Blanco, analista de marketing y datos: seis casos de machine learning, NLP, deep learning y estrategia de marca.">
+<meta name="author" content="Pedro Pérez Blanco">
+<meta name="google-site-verification" content="DOORDlz7cONmXe1ia2Wyl8JYohyL6mozDuZVAdRpIoE">
+<meta name="theme-color" content="#0B0C0F">
+
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Pedro Pérez Blanco">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="Pedro Pérez Blanco · Analista de marketing y datos">
+<meta property="og:description" content="Portfolio de Pedro Pérez Blanco, analista de marketing y datos: seis casos de machine learning, NLP, deep learning y estrategia de marca.">
+<meta property="og:image" content="https://pedro-perez-data.netlify.app/medios/og.jpg">
+<meta property="og:image:alt" content="Tarjeta con el nombre de Pedro Pérez Blanco y el titular del portfolio.">
+<meta property="og:url" content="https://pedro-perez-data.netlify.app/index.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preload" href="tipos/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="tipos/barlow-400.woff2" as="font" type="font/woff2" crossorigin>
+
+<link rel="stylesheet" href="ui/tipos.css">
+<link rel="stylesheet" href="ui/plantilla.css">
+</head>
+<body>
+
+<!-- La red de datos del fondo. Va aquí, antes que nada, porque es lo que hay
+     detrás de todo; el CSS la fija a la ventana y la saca del flujo. Es
+     decoración pura: aria-hidden para que ningún lector de pantalla la
+     anuncie, y ui/fondo.js no la monta siquiera si el sistema pide menos
+     movimiento. -->
+<canvas class="fondo" id="fondo" aria-hidden="true"></canvas>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra" id="barra">
+  <nav class="barra__caja" aria-label="Secciones">
+    <a class="barra__marca" href="#contenido">
+      <span class="barra__iniciales" aria-hidden="true">PP</span>
+      <span class="barra__nombre">Pedro Pérez Blanco</span>
+    </a>
+    <ul class="barra__lista" id="menu-lista"><li><a href="#trabajo" data-nav>Trabajo</a></li><li><a href="#destrezas" data-nav>Herramientas</a></li><li><a href="#experiencia" data-nav>Experiencia</a></li><li><a href="#formacion" data-nav>Formación</a></li><li><a href="#sobre-mi" data-nav>Sobre mí</a></li></ul>
+    <!-- Solo aparece con el movimiento parado. Sin esto, la unica forma de
+         volver a encenderlo es el boton del pie, que esta al 99% de la pagina:
+         quien pause sin querer ve una web muerta y no sabe por que. -->
+    <button class="barra__pausa" id="reanudar" type="button">
+      <span class="barra__pausa__punto" aria-hidden="true"></span>Movimiento en pausa
+      <span class="oculto">, pulsa para reanudarlo</span>
+    </button>
+    <a class="barra__cta" href="#contacto">Contacto</a>
+    <button class="barra__menu" id="menu" type="button"
+            aria-expanded="true" aria-controls="menu-lista">
+      <span aria-hidden="true"></span>
+      <span class="oculto">Abrir el menú</span>
+    </button>
+  </nav>
+  <div class="barra__avance" id="avance" aria-hidden="true"></div>
+</header>
+
+<main id="contenido">
+
+<!-- ================= PORTADA ================= -->
+<section class="portada">
+  <div class="marco">
+    <div class="portada__reparto">
+      <div class="portada__panel" data-revelar>
+        <!-- El saludo se escribe y se corrige solo. La mitad animada va
+             aria-hidden: un nodo cuyo texto cambia cada 80ms es ruido en el
+             árbol de accesibilidad, y el cursor es un signo de puntuación que
+             nadie necesita oír. Al lado va la versión quieta, para ellos.
+             "Hola" viene ya escrito en el HTML: así la línea nunca está vacía
+             antes de que corra el script, ni con movimiento reducido. -->
+        <p class="portada__saludo">
+          <span class="oculto">Hola, soy</span>
+          <span class="saludo" id="saludo" aria-hidden="true"
+                data-saludos="[&quot;Hola&quot;, &quot;Hello&quot;, &quot;Bonjour&quot;, &quot;Ciao&quot;, &quot;Olá&quot;, &quot;Hallo&quot;, &quot;Salut&quot;, &quot;Hej&quot;]">
+            <span class="saludo__palabra" id="saludo-palabra">Hola</span
+            ><span class="saludo__cursor">|</span
+            ><span class="saludo__cola">, soy</span>
+          </span>
+        </p>
+        <h1 class="portada__nombre" data-partir>Pedro Pérez Blanco</h1>
+        <p class="portada__lema">El 96% de las entregas trabajando el <em class="acento">30%</em> de los leads.</p>
+        <p class="parrafo parrafo--lead">Analista de marketing y datos. Construí el sistema de lead scoring del CRM de admisiones de la Universidad Pontificia Comillas como trabajo de fin de máster. Vengo de marketing, y por eso el modelo devuelve A, B o C en vez de una probabilidad con cuatro decimales: un comercial no llama a un 0,7413.</p>
+        <div class="botones">
+          <a class="boton boton--solido" href="#trabajo">Ver mi trabajo</a>
+          <a class="boton" href="#contacto">Hablemos</a>
+        </div>
+        <p class="portada__meta">
+          <span><strong>Máster en Business Analytics</strong> · Universidad Pontificia Comillas · ICADE, Madrid ’26</span>
+          <span class="portada__estado">Madrid · disponible desde ya</span>
+        </p>
+      </div>
+      <img class="portada__imagen" src="medios/retrato.jpg" width="720" height="900"
+           decoding="async" alt="Retrato de Pedro Pérez Blanco." data-revelar>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MAPA DEL TRABAJO ================= -->
+<!-- El grafo es el mismo de index.html: ui/mapa.js, la misma física y los
+     mismos catorce nodos. Aquí va entre la portada y los trabajos porque es
+     justo la transición que hace: enseña que los seis proyectos comparten
+     herramientas, y cada nodo baja a la ficha de su proyecto. -->
+<section class="seccion mapa" id="mapa">
+  <div class="marco">
+    <div class="seccion__cabecera" data-revelar>
+      <p class="rotulo eyebrow">Cómo se tocan los trabajos</p>
+      <h2 class="titulo-menor">Seis proyectos, las mismas <em class="acento">herramientas</em></h2>
+      <p class="parrafo seccion__intro">Pasa el ratón por un nodo para encender lo que comparte, arrástralo si te apetece, y pulsa un proyecto para abrir su página.</p>
+    </div>
+    <div class="mapa__caja" data-revelar>
+      <canvas class="mapa__lienzo" id="mapa-portfolio"
+              role="img" aria-label="Grafo de los seis proyectos y las herramientas que comparten"></canvas>
+    </div>
+    <p class="mapa__aviso">El mapa necesita ratón y sitio para leerse. Los seis proyectos están justo debajo.</p>
+  </div>
+</section>
+
+<!-- ================= 01 · TRABAJO ================= -->
+<section class="seccion" id="trabajo">
+  <div class="marco">
+    
+    <div class="seccion__cabecera" data-revelar>
+      <p class="rotulo eyebrow">
+        <span class="rotulo__n">01</span> · Trabajo seleccionado
+      </p>
+      <h2 class="titulo-mayor">Seis proyectos, un mismo <em class="acento">hábito</em></h2>
+      <p class="parrafo seccion__intro">Coger datos reales, sacar de ellos una decisión que alguien pueda tomar el lunes, y decir con la misma claridad qué funciona y qué no.</p>
+    </div>
+    <div class="carrusel" data-revelar>
+      <div class="carrusel__pista" id="pista-trabajos" tabindex="0"
+           role="region" aria-label="Proyectos, se desplaza a lo ancho">
+        
+        <article class="obra" id="obra-tfm">
+          <div class="obra__lienzo">
+            <img class="obra__portada obra__portada--entera"
+                 src="medios/fotos/Lead%20scoring%20y%20asistente%20RAG.png" width="1000" height="620"
+                 loading="lazy" decoding="async" alt="Portada de la defensa del trabajo de fin de máster: «Sistema de Lead Scoring y Asistente Virtual con RAG para la captación de estudiantes en la Universidad Pontificia Comillas», con el sello de Comillas.">
+          </div>
+          <div class="obra__cuerpo">
+            <div class="obra__cabecera">
+              <div class="obra__rotulos">
+                <h3 class="obra__titulo"><a class="obra__ir" href="trabajos/tfm-lead-scoring.html" data-accion="trabajo_tfm">Lead scoring y asistente RAG</a></h3>
+                <p class="obra__categoria">Modelado predictivo · IA aplicada · 2026</p>
+              </div>
+              <span class="obra__ir-boton" aria-hidden="true">↗</span>
+            </div>
+            <div class="obra__pie"><a class="obra__enlace obra__enlace--vivo" href="trabajos/tfm-lead-scoring.html" data-accion="trabajo_tfm">Ver el trabajo <span class="flecha" aria-hidden="true">↗</span></a></div>
+          </div>
+        </article>
+        <article class="obra" id="obra-videojuegos">
+          <div class="obra__lienzo">
+            <img class="obra__portada"
+                 src="medios/fotos/Predicci%C3%B3n%20de%20ventas%20de%20videojuegos.jpg" width="1000" height="620"
+                 loading="lazy" decoding="async" alt="Montón de consolas y juegos retro: una Super Nintendo, varias Game Boy y cartuchos de Pokémon, Zelda y Mario.">
+          </div>
+          <div class="obra__cuerpo">
+            <div class="obra__cabecera">
+              <div class="obra__rotulos">
+                <h3 class="obra__titulo"><a class="obra__ir" href="trabajos/videojuegos.html" data-accion="trabajo_videojuegos">Predicción de ventas de videojuegos</a></h3>
+                <p class="obra__categoria">Aprendizaje supervisado · 2026</p>
+              </div>
+              <span class="obra__ir-boton" aria-hidden="true">↗</span>
+            </div>
+            <div class="obra__pie"><a class="obra__enlace obra__enlace--vivo" href="trabajos/videojuegos.html" data-accion="trabajo_videojuegos">Ver el trabajo <span class="flecha" aria-hidden="true">↗</span></a></div>
+          </div>
+        </article>
+        <article class="obra" id="obra-deeplearning">
+          <div class="obra__lienzo">
+            <img class="obra__portada"
+                 src="medios/informes/deep-learning-portada.jpg" width="1000" height="620"
+                 loading="lazy" decoding="async" alt="Primera página de la presentación del trabajo de predicción de demanda con redes recurrentes.">
+          </div>
+          <div class="obra__cuerpo">
+            <div class="obra__cabecera">
+              <div class="obra__rotulos">
+                <h3 class="obra__titulo"><a class="obra__ir" href="trabajos/deep-learning.html" data-accion="trabajo_deeplearning">Predicción de demanda con redes recurrentes</a></h3>
+                <p class="obra__categoria">Deep learning · Series temporales · 2026</p>
+              </div>
+              <span class="obra__ir-boton" aria-hidden="true">↗</span>
+            </div>
+            <div class="obra__pie"><a class="obra__enlace obra__enlace--vivo" href="trabajos/deep-learning.html" data-accion="trabajo_deeplearning">Ver el trabajo <span class="flecha" aria-hidden="true">↗</span></a></div>
+          </div>
+        </article>
+        <article class="obra" id="obra-letterboxd">
+          <div class="obra__lienzo">
+            <img class="obra__portada"
+                 src="medios/informes/letterboxd-portada.jpg" width="1000" height="620"
+                 loading="lazy" decoding="async" alt="Primera página de la presentación del trabajo de topic modeling sobre reseñas de Letterboxd.">
+          </div>
+          <div class="obra__cuerpo">
+            <div class="obra__cabecera">
+              <div class="obra__rotulos">
+                <h3 class="obra__titulo"><a class="obra__ir" href="trabajos/letterboxd.html" data-accion="trabajo_letterboxd">Letterboxd · De qué habla quien reseña cine</a></h3>
+                <p class="obra__categoria">Datos no estructurados · PLN · 2026</p>
+              </div>
+              <span class="obra__ir-boton" aria-hidden="true">↗</span>
+            </div>
+            <div class="obra__pie"><a class="obra__enlace obra__enlace--vivo" href="trabajos/letterboxd.html" data-accion="trabajo_letterboxd">Ver el trabajo <span class="flecha" aria-hidden="true">↗</span></a></div>
+          </div>
+        </article>
+        <article class="obra" id="obra-lipton">
+          <div class="obra__lienzo">
+            <img class="obra__portada"
+                 src="medios/fotos/Lipton%20%C2%B7%20The%20Summer%20Shake%20Up.jpg" width="1000" height="620"
+                 loading="lazy" decoding="async" alt="Lata de Lipton Ice Tea Lemon sobre hielo, rodeada de rodajas de limón y hojas de menta.">
+          </div>
+          <div class="obra__cuerpo">
+            <div class="obra__cabecera">
+              <div class="obra__rotulos">
+                <h3 class="obra__titulo"><a class="obra__ir" href="trabajos/lipton.html" data-accion="trabajo_lipton">Lipton · The Summer Shake Up</a></h3>
+                <p class="obra__categoria">Estrategia de marca · 2024</p>
+              </div>
+              <span class="obra__ir-boton" aria-hidden="true">↗</span>
+            </div>
+            <div class="obra__pie"><a class="obra__enlace obra__enlace--vivo" href="trabajos/lipton.html" data-accion="trabajo_lipton">Ver el trabajo <span class="flecha" aria-hidden="true">↗</span></a></div>
+          </div>
+        </article>
+        <article class="obra" id="obra-apuestas">
+          <div class="obra__lienzo">
+            <img class="obra__portada"
+                 src="medios/fotos/Ganar%20a%20la%20casa%20de%20apuestas.jpg" width="1000" height="620"
+                 loading="lazy" decoding="async" alt="Rótulo iluminado de una casa de apuestas Sportium, «Apostes Esportives», visto desde abajo.">
+          </div>
+          <div class="obra__cuerpo">
+            <div class="obra__cabecera">
+              <div class="obra__rotulos">
+                <h3 class="obra__titulo"><a class="obra__ir" href="trabajos/apuestas.html" data-accion="trabajo_apuestas">Ganar a la casa de apuestas</a></h3>
+                <p class="obra__categoria">Análisis exploratorio · 2026</p>
+              </div>
+              <span class="obra__ir-boton" aria-hidden="true">↗</span>
+            </div>
+            <div class="obra__pie"><a class="obra__enlace obra__enlace--vivo" href="trabajos/apuestas.html" data-accion="trabajo_apuestas">Ver el trabajo <span class="flecha" aria-hidden="true">↗</span></a></div>
+          </div>
+        </article>
+      </div>
+      <div class="carrusel__mandos">
+        <button class="carrusel__boton" id="carrusel-atras" type="button">
+          <span aria-hidden="true">←</span><span class="oculto">Grupo anterior</span>
+        </button>
+        <button class="carrusel__boton" id="carrusel-alante" type="button">
+          <span aria-hidden="true">→</span><span class="oculto">Grupo siguiente</span>
+        </button>
+        <div class="carrusel__puntos" id="carrusel-puntos" hidden></div>
+      </div>
+    </div>
+    <p class="parrafo aviso" data-revelar>Cada proyecto tiene su página: cómo se planteó, qué salió y, sobre todo, qué no salió. La memoria del TFM lleva datos del CRM de Comillas y no puede circular, así que esa la enseño en persona.</p>
+  </div>
+</section>
+
+<!-- ================= 02 · DESTREZAS ================= -->
+<section class="seccion" id="destrezas">
+  <div class="marco">
+    
+    <div class="seccion__cabecera" data-revelar>
+      <p class="rotulo eyebrow">
+        <span class="rotulo__n">02</span> · Con qué trabajo
+      </p>
+      <h2 class="titulo-menor">Lo que uso de verdad, no una lista de todo lo que he <em class="acento">tocado</em></h2>
+      
+    </div>
+    <div data-revelar>
+      
+      <div class="fila-destreza">
+        <p class="rotulo rotulo--micro">Datos</p>
+        <div class="fichas"><span class="ficha"><span class="ficha__icono" aria-hidden="true">◆</span>Python</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">◆</span>SQL</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">◆</span>scikit-learn</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">◆</span>SHAP</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">◆</span>pandas</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">◆</span>MongoDB</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">◆</span>TensorFlow · Keras</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">◆</span>spaCy · Gensim</span></div>
+      </div>
+      <div class="fila-destreza">
+        <p class="rotulo rotulo--micro">Visualización</p>
+        <div class="fichas"><span class="ficha"><span class="ficha__icono" aria-hidden="true">●</span>Power BI</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">●</span>Tableau</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">●</span>Plotly</span></div>
+      </div>
+      <div class="fila-destreza">
+        <p class="rotulo rotulo--micro">IA aplicada</p>
+        <div class="fichas"><span class="ficha"><span class="ficha__icono" aria-hidden="true">◈</span>RAG · Copilot Studio</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">◈</span>Claude Code</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">◈</span>Claude Cowork</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">◈</span>ChatGPT</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">◈</span>Automatización de procesos</span></div>
+      </div>
+      <div class="fila-destreza">
+        <p class="rotulo rotulo--micro">Marketing digital</p>
+        <div class="fichas"><span class="ficha"><span class="ficha__icono" aria-hidden="true">▲</span>Análisis de competencia</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">▲</span>Publicidad online</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">▲</span>Redes sociales</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">▲</span>Creación de contenido</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">▲</span>WordPress</span></div>
+      </div>
+      <div class="fila-destreza">
+        <p class="rotulo rotulo--micro">Idiomas</p>
+        <div class="fichas"><span class="ficha"><span class="ficha__icono" aria-hidden="true">■</span>Español · nativo</span><span class="ficha"><span class="ficha__icono" aria-hidden="true">■</span>Inglés · C1 Cambridge</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 · EXPERIENCIA ================= -->
+<section class="seccion" id="experiencia">
+  <div class="marco">
+    
+    <div class="seccion__cabecera" data-revelar>
+      <p class="rotulo eyebrow">
+        <span class="rotulo__n">03</span> · Experiencia
+      </p>
+      <h2 class="titulo-mayor">Marketing primero, datos <em class="acento">después</em></h2>
+      <p class="parrafo seccion__intro">Ese orden explica por qué el modelo devuelve A, B o C en lugar de una probabilidad: he estado del lado del que tiene que coger el teléfono.</p>
+    </div>
+    <div class="experiencia__reparto">
+      <img class="experiencia__imagen" src="medios/fotos/experiencia.jpg" width="1200" height="900"
+           loading="lazy" decoding="async" alt="Pedro Pérez Blanco, de traje, en el campus de la Universidad Pontificia Comillas el día de la graduación del máster." data-revelar>
+      <div data-revelar>
+        
+        <details class="puesto" open>
+          <summary class="puesto__resumen">
+            <span>
+              <span class="puesto__titulo">Proyecto de datos</span>
+              <span class="puesto__donde">Universidad Pontificia Comillas · Madrid</span>
+            </span>
+            <span class="puesto__cuando">jul 2026</span>
+            <span class="galon" aria-hidden="true"></span>
+          </summary>
+          <div class="puesto__cuerpo">
+            <p class="parrafo">Colaboración para llevar a producción el sistema de lead scoring y el asistente RAG del trabajo de fin de máster, esta vez con los datos oficiales del CRM de admisiones. Trabajo con datos reales y confidenciales, con las restricciones que eso impone.</p>
+          </div>
+        </details>
+        <details class="puesto">
+          <summary class="puesto__resumen">
+            <span>
+              <span class="puesto__titulo">Becario de marketing</span>
+              <span class="puesto__donde">MBE · Master in Business Entrepreneurship · Madrid</span>
+            </span>
+            <span class="puesto__cuando">feb – jul 2025</span>
+            <span class="galon" aria-hidden="true"></span>
+          </summary>
+          <div class="puesto__cuerpo">
+            <p class="parrafo">Investigación de competencia y de mercado, diseño de campañas de captación y creación de contenido para redes. También los materiales de promoción y comunicación de los proyectos emprendedores del programa.</p>
+          </div>
+        </details>
+        <details class="puesto">
+          <summary class="puesto__resumen">
+            <span>
+              <span class="puesto__titulo">Cofundador</span>
+              <span class="puesto__donde">Cre8 Marketing Agency · Tilburg, Países Bajos</span>
+            </span>
+            <span class="puesto__cuando">sep 2023 – feb 2024</span>
+            <span class="galon" aria-hidden="true"></span>
+          </summary>
+          <div class="puesto__cuerpo">
+            <p class="parrafo">Agencia cofundada durante el Erasmus. Campaña publicitaria online completa para un cliente real, Slijterij56: estrategia, contenido y gestión de redes, de principio a fin.</p>
+          </div>
+        </details>
+        <details class="puesto">
+          <summary class="puesto__resumen">
+            <span>
+              <span class="puesto__titulo">Logistics assistant</span>
+              <span class="puesto__donde">CLASSEN Group · Tilburg, Países Bajos</span>
+            </span>
+            <span class="puesto__cuando">oct 2023 – feb 2024</span>
+            <span class="galon" aria-hidden="true"></span>
+          </summary>
+          <div class="puesto__cuerpo">
+            <p class="parrafo">Gestión de inventarios y apoyo en operaciones logísticas, en un entorno internacional y en inglés, compaginado con el intercambio.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 · FORMACIÓN ================= -->
+<section class="seccion" id="formacion">
+  <div class="marco">
+    
+    <div class="seccion__cabecera" data-revelar>
+      <p class="rotulo eyebrow">
+        <span class="rotulo__n">04</span> · Formación
+      </p>
+      <h2 class="titulo-menor">Dónde he <em class="acento">estudiado</em></h2>
+      
+    </div>
+    <div class="hitos" id="hitos" data-revelar>
+      
+        <div class="hito" data-fila>
+          <span class="hito__placa" aria-hidden="true"><img src="medios/fotos/M%C3%A1ster%20Universitario%20en%20Business%20Analytics.jpeg" loading="lazy" decoding="async" alt=""></span>
+          <div class="hito__dentro">
+            <button class="hito__cabeza" type="button"
+                    aria-expanded="false" aria-controls="formacion-1">
+              <span class="hito__titulo">Máster Universitario en Business Analytics</span>
+              <span class="hito__meta">Universidad Pontificia Comillas · ICADE · oct 2025 – jul 2026 · Madrid</span>
+            </button>
+            <div class="hito__cuerpo" id="formacion-1">
+              <ul class="hito__puntos"><li>Primer puesto en el concurso del módulo de Visualización de Datos, con la campaña solidaria «Reyes Magos de Verdad».</li><li>Machine learning supervisado y no supervisado, deep learning, big data y datos no estructurados (NLP).</li><li>Programación en Python, fuentes y bases de datos, y visualización.</li><li>Analítica aplicada a marketing, finanzas y logística.</li><li>Trabajo de fin de máster: sistema de lead scoring y asistente virtual con RAG para la captación de estudiantes.</li></ul>
+              <div class="etiquetas"><span class="etiqueta">Python</span><span class="etiqueta">Machine learning</span><span class="etiqueta">NLP</span><span class="etiqueta">Big data</span></div>
+            </div>
+          </div>
+          <span class="hito__n" aria-hidden="true">01</span>
+        </div>
+        <div class="hito" data-fila>
+          <span class="hito__placa" aria-hidden="true"><img src="medios/fotos/Grado%20en%20Marketing%20%2B%20Diploma%20en%20Habilidades%20Directivas.jpeg" loading="lazy" decoding="async" alt=""></span>
+          <div class="hito__dentro">
+            <button class="hito__cabeza" type="button"
+                    aria-expanded="false" aria-controls="formacion-2">
+              <span class="hito__titulo">Grado en Marketing + Diploma en Habilidades Directivas</span>
+              <span class="hito__meta">ESIC University · sep 2021 – jun 2025 · Madrid</span>
+            </button>
+            <div class="hito__cuerpo" id="formacion-2">
+              <ul class="hito__puntos"><li>Marketing estratégico y digital.</li><li>Diploma de especialización en habilidades directivas.</li></ul>
+              <div class="etiquetas"><span class="etiqueta">Marketing estratégico</span><span class="etiqueta">Marketing digital</span></div>
+            </div>
+          </div>
+          <span class="hito__n" aria-hidden="true">02</span>
+        </div>
+        <div class="hito" data-fila>
+          <span class="hito__placa hito__placa--marca" aria-hidden="true"><img src="medios/fotos/Creative%20Advertising%20%C2%B7%20intercambio%20Erasmus.jpeg" loading="lazy" decoding="async" alt=""></span>
+          <div class="hito__dentro">
+            <button class="hito__cabeza" type="button"
+                    aria-expanded="false" aria-controls="formacion-3">
+              <span class="hito__titulo">Creative Advertising · intercambio Erasmus</span>
+              <span class="hito__meta">Fontys Academy for the Creative Economy · sep 2023 – feb 2024 · Tilburg, Países Bajos</span>
+            </button>
+            <div class="hito__cuerpo" id="formacion-3">
+              <ul class="hito__puntos"><li>Proyecto estratégico para Lipton Ice Tea, presentado al concurso Ad Venture de Edcom.</li><li>Cofundación de Cre8 Marketing Agency durante el intercambio.</li></ul>
+              <div class="etiquetas"><span class="etiqueta">Publicidad creativa</span><span class="etiqueta">Erasmus</span></div>
+            </div>
+          </div>
+          <span class="hito__n" aria-hidden="true">03</span>
+        </div>
+        <div class="hito" data-fila>
+          <span class="hito__placa hito__placa--logo" aria-hidden="true"><img src="medios/fotos/Idiomas%20y%20formaci%C3%B3n%20complementaria.webp" loading="lazy" decoding="async" alt=""></span>
+          <div class="hito__dentro">
+            <button class="hito__cabeza" type="button"
+                    aria-expanded="false" aria-controls="formacion-4">
+              <span class="hito__titulo">Idiomas y formación complementaria</span>
+              <span class="hito__meta">Cambridge · Anthropic · Comillas · HubSpot · 2021 – 2026</span>
+            </button>
+            <div class="hito__cuerpo" id="formacion-4">
+              <ul class="hito__puntos"><li>Inglés C1 Advanced, Cambridge (2021). Español nativo.</li><li>Claude Code in Action, Claude Academy — Anthropic (2026).</li><li>Usos de la IA Generativa (MOOC013), Universidad Pontificia Comillas (2025).</li><li>Introducción al Business Analytics (MOOC011), Universidad Pontificia Comillas (2025).</li><li>Inbound Marketing, HubSpot Academy (2024).</li></ul>
+              <div class="etiquetas"><span class="etiqueta">Inglés C1</span><span class="etiqueta">IA generativa</span><span class="etiqueta">Business analytics</span><span class="etiqueta">Inbound marketing</span></div>
+            </div>
+          </div>
+          <span class="hito__n" aria-hidden="true">04</span>
+        </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 · SOBRE MÍ ================= -->
+<section class="seccion" id="sobre-mi">
+  <div class="marco">
+    
+    <div class="seccion__cabecera" data-revelar>
+      <p class="rotulo eyebrow">
+        <span class="rotulo__n">05</span> · Sobre mí
+      </p>
+      <h2 class="titulo-menor">De marketing a <em class="acento">datos</em></h2>
+      
+    </div>
+    <div class="prosa" data-revelar>
+      <p>Vengo de marketing. Estudié el grado en ESIC, me fui de Erasmus a Países Bajos y allí cofundé una agencia con la que llevamos una campaña entera para un cliente real. Sé lo que cuesta traer a alguien, y sé lo que se siente cuando la lista de contactos es larga y el tiempo corto.</p><p>El máster en Business Analytics vino después, y por eso lo uso de otra forma. Cuando construí el sistema de lead scoring para Comillas, la decisión importante no fue qué modelo entrenar: fue que la salida tenía que ser A, B o C, y no una probabilidad con cuatro decimales. Un comercial no llama a un 0,7413. Llama a los de la lista A.</p><p>Los problemas que más disfruto son los que terminan en una decisión concreta: a quién llamar, qué campaña parar, dónde no merece la pena insistir. Por eso trabajo con SHAP y no solo con métricas: si quien tiene que usar el modelo no entiende por qué prioriza un contacto, no lo va a usar.</p><p>Busco un sitio donde esas dos cosas cuenten a la vez: entender el embudo antes de modelarlo, y saber explicar el modelo a quien tiene que tomar la decisión.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LLAMADA FINAL ================= -->
+<section class="llamada" id="contacto">
+  <div class="marco">
+    <div class="llamada__panel" data-revelar>
+      <h2 class="llamada__titular">Si le encaja, <em class="acento">hablamos</em>.</h2>
+      <p class="parrafo">Estoy en Madrid y disponible desde ya. Escríbame o llámeme y le cuento el proyecto con calma.</p>
+      <div class="botones">
+        <a class="boton boton--solido" href="mailto:pedro.perez.blanco@outlook.es">Escribirme <span class="flecha" aria-hidden="true">↗</span></a>
+        <a class="boton" href="tel:+34626146431"><span aria-hidden="true">☎</span> Teléfono</a><a class="boton" href="https://linkedin.com/in/pedroperezblanco"><span aria-hidden="true">in</span> LinkedIn</a><a class="boton" href="medios/cv-pedro-perez-blanco-es.pdf" download="Pedro Perez Blanco - CV (ES).pdf"><span aria-hidden="true">↓</span> CV en español</a><a class="boton" href="medios/cv-pedro-perez-blanco-en.pdf" download="Pedro Perez Blanco - CV (EN).pdf"><span aria-hidden="true">↓</span> CV in English</a><a class="boton" href="https://github.com/ppblanco"><span aria-hidden="true">{ }</span> GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- El anillo que acompaña al puntero. Va vacio: lo unico que hace es
+     seguirlo, y ui/plantilla.js solo lo enciende si hay raton de verdad. -->
+<div class="nodo-cursor" id="nodo-cursor" aria-hidden="true"></div>
+
+<!-- Llamada flotante. Nace invisible de verdad (visibility, no solo
+     transform): asi no se puede tabular a un enlace que no esta en pantalla.
+     Se aparta sola cuando aparece la llamada final del contacto. -->
+<a class="flotante" id="flotante" href="mailto:pedro.perez.blanco@outlook.es" aria-label="Escribir a Pedro Pérez Blanco por correo">
+  <span class="flotante__texto">
+    <b>Ponte en contacto</b>
+    <span>Escríbeme cuando quieras</span>
+  </span>
+  <span class="flotante__icono" aria-hidden="true">&#9993;</span>
+</a>
+
+<footer class="pie">
+  <div class="marco">
+    <div class="pie__reparto">
+      <div>
+        <p class="pie__nombre">Pedro Pérez Blanco</p>
+        <p class="pie__nota">© 2026 Pedro Pérez Blanco · Analista de marketing y datos · Madrid</p>
+        <button class="pie__quieto" id="quieto" type="button" aria-pressed="false">
+          <span class="pie__punto" aria-hidden="true"></span><span data-texto>Parar movimiento</span>
+        </button>
+      </div>
+      <div class="pie__enlaces">
+        <a class="" href="mailto:pedro.perez.blanco@outlook.es"><span aria-hidden="true">@</span> Correo</a><a class="" href="tel:+34626146431"><span aria-hidden="true">☎</span> Teléfono</a><a class="" href="https://linkedin.com/in/pedroperezblanco"><span aria-hidden="true">in</span> LinkedIn</a><a class="" href="medios/cv-pedro-perez-blanco-es.pdf" download="Pedro Perez Blanco - CV (ES).pdf"><span aria-hidden="true">↓</span> CV en español</a><a class="" href="medios/cv-pedro-perez-blanco-en.pdf" download="Pedro Perez Blanco - CV (EN).pdf"><span aria-hidden="true">↓</span> CV in English</a><a class="" href="https://github.com/ppblanco"><span aria-hidden="true">{ }</span> GitHub</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="ui/fondo.js" defer></script>
+<script src="ui/mapa.js" defer></script>
+<script src="ui/plantilla.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,542 @@
+{
+  "_leeme": "Todo el texto de trabajos/tfm-lead-scoring.html sale de aquí. Edita y ejecuta 'python herramientas/hacer-caso.py'. No edites el HTML a mano: se sobrescribe entero. REGLA DE CONFIDENCIALIDAD: aquí solo pueden entrar métricas del modelo, el 30/96, el lift de la categoría A y la validación temporal. NO pueden entrar la tasa de conversión global de Comillas, qué canales funcionan mejor, los umbrales concretos ni ningún registro del CRM. Hay una prueba que lo comprueba: pruebas/casos.spec.js, grupo 'Confidencialidad'.",
+  "meta": {
+    "titulo_pestana": "Lead scoring y asistente RAG · Pedro Pérez Blanco",
+    "descripcion": "Lead scoring sobre el CRM de admisiones de la Universidad Pontificia Comillas: trabajando el 30% de los contactos se captura el 96% de las entregas.",
+    "dominio": "pedro-perez-data.netlify.app"
+  },
+  "volver": {
+    "texto": "Todos los trabajos",
+    "href": "../index.html#trabajo"
+  },
+  "hero": {
+    "categoria": "Modelado predictivo · IA aplicada",
+    "titulo": "Lead scoring y asistente RAG",
+    "sub": "Trabajo de fin de máster para la Universidad Pontificia Comillas. Un modelo que ordena los contactos de admisiones por probabilidad de entregar la documentación de matrícula y los devuelve como A, B o C, más un asistente que responde las dudas repetidas. Evaluado sobre el histórico del CRM: los dos módulos todavía no se comunican entre sí ni están en producción.",
+    "datos": [
+      {
+        "k": "Papel",
+        "v": "Autor · trabajo individual"
+      },
+      {
+        "k": "Dirección",
+        "v": "José Portela González"
+      },
+      {
+        "k": "Entrega",
+        "v": "Junio de 2026 · MUBA, ICADE"
+      },
+      {
+        "k": "Herramientas",
+        "v": "Python · scikit-learn · SHAP · Copilot Studio"
+      }
+    ],
+    "cifras": [
+      {
+        "valor": "30%",
+        "pie": "de los contactos trabajados"
+      },
+      {
+        "valor": "96%",
+        "pie": "de las entregas capturadas"
+      },
+      {
+        "valor": "×6,8",
+        "pie": "lift de la categoría A"
+      }
+    ]
+  },
+  "rail": [
+    {
+      "texto": "El problema",
+      "ancla": "s-problema"
+    },
+    {
+      "texto": "El proceso",
+      "ancla": "s-recorrido"
+    },
+    {
+      "texto": "Las seis fases",
+      "ancla": "s-fases"
+    },
+    {
+      "texto": "El modelo",
+      "ancla": "s-modelo"
+    },
+    {
+      "texto": "A, B o C",
+      "ancla": "s-abc"
+    },
+    {
+      "texto": "El año siguiente",
+      "ancla": "s-tiempo"
+    },
+    {
+      "texto": "El asistente",
+      "ancla": "s-asistente"
+    }
+  ],
+  "secciones": [
+    {
+      "id": "s-problema",
+      "etiqueta": "Problema",
+      "eyebrow": "El problema",
+      "titulo_antes": "El problema no era tener pocos leads.",
+      "titulo_acento": "Era el orden.",
+      "lead": "Un equipo de admisiones recibe más contactos de los que puede llamar en el plazo en que un contacto sigue caliente. Sin un criterio, se llama por orden de llegada, que es tanto como llamar al azar. La pregunta del trabajo no fue «cuántos vendrán», sino «a quién llamo primero», que es la que se puede responder por la mañana y ejecutar por la tarde.",
+      "parrafos": [
+        "El punto de partida fueron 30.593 registros del CRM de admisiones con 44 variables. Tras depurar duplicados, registros incompletos y contactos fuera del proceso, quedaron 24.365 leads utilizables.",
+        "El objetivo a predecir es haber entregado la documentación de matrícula: el paso que separa a quien se está informando de quien va en serio. Es una clase minoritaria, así que el problema está muy desbalanceado y eso condiciona todo lo que viene después."
+      ],
+      "ledger": [
+        {
+          "clave": "Registros de partida",
+          "valor": "30.593"
+        },
+        {
+          "clave": "Variables",
+          "valor": "44"
+        },
+        {
+          "clave": "Leads tras la limpieza",
+          "valor": "24.365"
+        }
+      ],
+      "grafico": {
+        "tipo": "escalones",
+        "datos": [
+          {
+            "valor": "30.593",
+            "etiqueta": "registros de partida",
+            "parte": 1.0
+          },
+          {
+            "valor": "44",
+            "etiqueta": "variables por registro",
+            "parte": 0.62
+          },
+          {
+            "valor": "24.365",
+            "etiqueta": "leads utilizables",
+            "parte": 0.8
+          }
+        ]
+      },
+      "figcaption": "De los registros en bruto a los leads utilizables.",
+      "sr": "Diagrama de embudo: 30.593 registros de partida, 44 variables, y 24.365 leads utilizables tras la depuración.",
+      "composicion": "dividido"
+    },
+    {
+      "id": "s-recorrido",
+      "etiqueta": "El proceso",
+      "eyebrow": "El proceso real",
+      "titulo_antes": "Un lead no llega:",
+      "titulo_acento": "recorre un embudo",
+      "titulo_despues": ".",
+      "composicion": "invertido",
+      "lead": "Antes de modelar nada hay que saber por dónde pasa un candidato. Entra por un canal, queda registrado en el CRM, sube a zona MQL, se cualifica en zona SQL y termina —o no— presentando la solicitud en el Portal de Admisiones. El modelo no es una pieza aparte: vive dentro de la zona MQL, que es exactamente donde el equipo decide a quién llama primero.",
+      "parrafos": [
+        "La variable objetivo es la entrega de documentación, no la matrícula. Las notas son confidenciales y la matrícula depende de cosas que el candidato no controla; la documentación depende solo de él, y el CRM la registra sin ambigüedad. Predecir lo que no se puede observar limpiamente es la forma más rápida de construir un modelo que no sirve.",
+        "El Portal de Admisiones queda fuera del dataset a propósito: quien llega ahí convierte casi siempre, así que incluirlo distorsionaría la comparación. Es la última etapa del recorrido y la primera que hay que excluir del modelado."
+      ],
+      "ledger": [
+        {
+          "clave": "Etapas del recorrido",
+          "valor": "5"
+        },
+        {
+          "clave": "CRM",
+          "valor": "Microsoft Dynamics 365"
+        },
+        {
+          "clave": "Dónde entra el modelo",
+          "valor": "Zona MQL",
+          "destacada": true
+        },
+        {
+          "clave": "Variable objetivo",
+          "valor": "Entrega de documentación"
+        }
+      ],
+      "grafico": {
+        "tipo": "recorrido",
+        "datos": [
+          {
+            "etiqueta": "Canales",
+            "detalle": "Web · Eventos ·|Publicidad · Tradicional"
+          },
+          {
+            "etiqueta": "CRM Dynamics",
+            "detalle": "Registra el lead",
+            "enfasis": "medio"
+          },
+          {
+            "etiqueta": "Zona MQL",
+            "detalle": "Alta → Nurturing →|Scoring A/B/C",
+            "enfasis": "medio"
+          },
+          {
+            "etiqueta": "Zona SQL",
+            "detalle": "Cualificación → Evaluación"
+          },
+          {
+            "etiqueta": "Portal de Admisiones",
+            "detalle": "Solicitud de admisión|CONVERSIÓN",
+            "enfasis": "fuerte"
+          }
+        ]
+      },
+      "figcaption": "El recorrido real de un lead en admisiones, del canal de entrada a la solicitud. El scoring A, B o C ocurre en la zona MQL, y la última etapa es la conversión.",
+      "sr": "Cadena de cinco etapas encadenadas de arriba abajo. Primera, Canales: web, eventos, publicidad y tradicional. Segunda, CRM Dynamics, que registra el lead. Tercera, zona MQL: alta, nurturing y scoring en categorías A, B o C, que es donde actúa el modelo. Cuarta, zona SQL: cualificación y evaluación. Y quinta, Portal de Admisiones: solicitud de admisión, que es la conversión."
+    },
+    {
+      "id": "s-fases",
+      "etiqueta": "Las seis fases",
+      "eyebrow": "Cómo se hizo",
+      "titulo_antes": "Seis fases, y cada una",
+      "titulo_acento": "condiciona la siguiente",
+      "titulo_despues": ".",
+      "composicion": "dividido",
+      "lead": "El trabajo no se hizo de una vez: se hizo en seis fases, y el orden importa porque cada decisión cierra puertas a la de después. Elegir la variable objetivo antes de mirar los modelos, y fijar los cortes de categoría sobre entrenamiento y no sobre test, son las dos que más sostienen todo lo demás.",
+      "parrafos": [
+        "Las tres primeras fases son de modelado y responden a «¿funciona?». Las tres últimas responden a «¿sirve?»: una probabilidad convertida en categorías que un equipo puede usar, una comprobación de que el modelo aguanta el curso siguiente, y un segundo módulo que descarga al equipo de las dudas repetidas.",
+        "La validación temporal está al final por un motivo: es la única fase que puede invalidar a las anteriores. Un modelo que gana en test y se cae al curso siguiente no es un modelo, es una foto."
+      ],
+      "ledger": [
+        {
+          "clave": "Fases del trabajo",
+          "valor": "6"
+        },
+        {
+          "clave": "Modelos comparados",
+          "valor": "3"
+        },
+        {
+          "clave": "Validación",
+          "valor": "5-fold estratificada"
+        },
+        {
+          "clave": "Módulos entregados",
+          "valor": "2"
+        }
+      ],
+      "grafico": {
+        "tipo": "ascensor",
+        "datos": [
+          {
+            "etiqueta": "El dataset",
+            "dato": "24.365 leads · 44 variables"
+          },
+          {
+            "etiqueta": "Entrenamiento",
+            "dato": "3 modelos · validación 5-fold"
+          },
+          {
+            "etiqueta": "Resultados en test",
+            "dato": "Random Forest · PR-AUC 0,691"
+          },
+          {
+            "etiqueta": "Categorías A, B y C",
+            "dato": "A + B · 95,82% capturado"
+          },
+          {
+            "etiqueta": "Validación temporal",
+            "dato": "caída de 0,0105 sin reentrenar"
+          },
+          {
+            "etiqueta": "Asistente con RAG",
+            "dato": "Copilot Studio · con fallback"
+          }
+        ]
+      },
+      "figcaption": "Las seis fases del trabajo, en el orden en que se hicieron. La luz marca por dónde va el recorrido; las seis se leen sin esperar a que llegue.",
+      "sr": "Recorrido vertical con las seis fases del trabajo, en orden: el dataset, con 24.365 leads y 44 variables; el entrenamiento, con 3 modelos y validación 5-fold; los resultados en test, con Random Forest y un PR-AUC de 0,691; las categorías A, B y C, con A más B capturando el 95,82% de las entregas; la validación temporal, con una caída de 0,0105 sin reentrenar; y el asistente con RAG sobre Copilot Studio, con protocolo de derivación a una persona."
+    },
+    {
+      "id": "s-modelo",
+      "etiqueta": "Modelo",
+      "eyebrow": "El modelo",
+      "titulo_antes": "Un Random Forest, y",
+      "titulo_acento": "la métrica correcta",
+      "titulo_despues": ".",
+      "lead": "Con una clase positiva minoritaria, la exactitud es una trampa: un modelo que dijera «no» a todo acertaría casi siempre y no serviría para nada. La métrica que manda aquí es el PR-AUC, que solo mira la clase que interesa. En test el modelo llega a 0,691 de PR-AUC y 0,947 de ROC-AUC.",
+      "parrafos": [
+        "Se probaron varias familias antes de quedarse con Random Forest. Ganó por dos razones prácticas: aguanta bien el desbalanceo con pesos por clase y no se descompone cuando una variable tiene huecos, que en un CRM real es la norma y no la excepción.",
+        "El modelo no se entrega como una caja negra. Con SHAP se ve qué empuja cada predicción, y lo que más pesa son tres familias de variables: la actividad del contacto —eventos a los que asiste, peticiones que hace, visitas que registra—, el canal por el que entró y su zona de residencia."
+      ],
+      "ledger": [
+        {
+          "clave": "PR-AUC en test",
+          "valor": "0,691",
+          "destacada": true
+        },
+        {
+          "clave": "ROC-AUC en test",
+          "valor": "0,947"
+        },
+        {
+          "clave": "Algoritmo",
+          "valor": "Random Forest"
+        }
+      ],
+      "grafico": {
+        "tipo": "matriz",
+        "datos": {
+          "columnas": [
+            {
+              "etiqueta": "CV"
+            },
+            {
+              "etiqueta": "Test"
+            },
+            {
+              "etiqueta": "Caída",
+              "menor_mejor": true
+            }
+          ],
+          "filas": [
+            {
+              "etiqueta": "Reg. logística",
+              "valores": [
+                0.577,
+                0.564,
+                0.013
+              ],
+              "textos": [
+                "0,577",
+                "0,564",
+                "0,013"
+              ]
+            },
+            {
+              "etiqueta": "Random Forest",
+              "destacada": true,
+              "valores": [
+                0.698,
+                0.691,
+                0.007
+              ],
+              "textos": [
+                "0,698",
+                "0,691",
+                "0,007"
+              ]
+            },
+            {
+              "etiqueta": "Grad. Boosting",
+              "valores": [
+                0.695,
+                0.685,
+                0.01
+              ],
+              "textos": [
+                "0,695",
+                "0,685",
+                "0,010"
+              ]
+            }
+          ]
+        }
+      },
+      "figcaption": "PR-AUC de los tres modelos en validación cruzada y en test, y la caída entre una y otra. En la caída el mejor es el más pequeño, y por eso es el que va más encendido.",
+      "sr": "Matriz de tres modelos por tres métricas. Regresión logística: PR-AUC 0,577 en validación cruzada, 0,564 en test, caída de 0,013. Random Forest, el elegido: 0,698, 0,691 y caída de 0,007. Gradient Boosting: 0,695, 0,685 y caída de 0,010. En las dos primeras columnas gana el valor más alto; en la caída, el más bajo.",
+      "composicion": "ancho"
+    },
+    {
+      "id": "s-abc",
+      "etiqueta": "A, B o C",
+      "eyebrow": "La salida",
+      "titulo_antes": "Un comercial no llama a una",
+      "titulo_acento": "probabilidad",
+      "titulo_despues": ".",
+      "lead": "El modelo devuelve una probabilidad, pero nadie organiza una mañana de llamadas con cuatro decimales. La salida que usa el equipo son tres categorías por percentiles: A, B y C. Y ahí está el resultado que justifica todo lo demás: trabajando el 30,35% de los contactos —las categorías A y B— se captura el 95,82% de las entregas de documentación.",
+      "parrafos": [
+        "La categoría A es el 8,06% del volumen y convierte 6,8 veces por encima de la media. Es la lista de la primera hora de la mañana.",
+        "La C no se tira: se le manda información y se la deja madurar. Lo que cambia no es a quién se atiende, sino en qué orden y con cuánto esfuerzo, que es la única variable que un equipo pequeño controla de verdad."
+      ],
+      "ledger": [
+        {
+          "clave": "Categoría A · del volumen",
+          "valor": "8,06%"
+        },
+        {
+          "clave": "Categoría A · lift sobre la media",
+          "valor": "×6,8",
+          "destacada": true
+        },
+        {
+          "clave": "A + B · del volumen",
+          "valor": "30,35%"
+        },
+        {
+          "clave": "A + B · de las entregas",
+          "valor": "95,82%",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "comparacion",
+        "datos": [
+          {
+            "valor": 30.35,
+            "etiqueta": "Del volumen de contactos",
+            "pie": "A + B"
+          },
+          {
+            "valor": 95.82,
+            "etiqueta": "De las entregas",
+            "pie": "capturadas por A + B"
+          }
+        ]
+      },
+      "figcaption": "Qué parte del volumen hay que trabajar y qué parte de las entregas de documentación se lleva.",
+      "sr": "Dos barras comparadas: las categorías A y B son el 30,35% del volumen de contactos y capturan el 95,82% de las entregas de documentación.",
+      "composicion": "centrado"
+    },
+    {
+      "id": "s-tiempo",
+      "etiqueta": "El año siguiente",
+      "eyebrow": "Validación temporal",
+      "titulo_antes": "La prueba que separa un modelo de clase",
+      "titulo_acento": "de uno de producción",
+      "titulo_despues": ".",
+      "lead": "Partir los datos al azar y medir ahí es cómodo, pero no dice nada sobre si el modelo seguirá sirviendo el curso que viene. Así que se probó contra la campaña siguiente, sin reentrenar y sin verla durante el entrenamiento. El PR-AUC baja 0,0105.",
+      "parrafos": [
+        "Poco más de una centésima es una caída pequeña, pero conviene decir exactamente de qué: es una métrica global, y lo que enseña es que el orden general aguanta de una campaña a la siguiente. No demuestra que la lista concreta de una mañana salga igual; eso sería otra medición, y no está hecha.",
+        "Para el mantenimiento sirve como cota, no como permiso: un curso sin reentrenar no deja el modelo inservible. Lo prudente sigue siendo reentrenar cada campaña, porque la prueba cubre un salto, no varios."
+      ],
+      "ledger": [
+        {
+          "clave": "PR-AUC en test",
+          "valor": "0,6911"
+        },
+        {
+          "clave": "PR-AUC en la campaña siguiente",
+          "valor": "0,6806"
+        },
+        {
+          "clave": "Caída sin reentrenar",
+          "valor": "−0,0105",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "medidores",
+        "datos": [
+          {
+            "valor": 0.6911,
+            "texto": "0,6911",
+            "etiqueta": "PR-AUC",
+            "pie": "en test"
+          },
+          {
+            "valor": 0.6806,
+            "texto": "0,6806",
+            "etiqueta": "PR-AUC",
+            "pie": "campaña siguiente"
+          }
+        ]
+      },
+      "figcaption": "El mismo modelo, sin volver a entrenarlo, sobre la campaña siguiente.",
+      "sr": "Dos medidores casi idénticos: PR-AUC de 0,6911 en el conjunto de test y de 0,6806 sobre la campaña siguiente sin reentrenar, una caída de 0,0105.",
+      "composicion": "invertido"
+    },
+    {
+      "id": "s-asistente",
+      "etiqueta": "El asistente",
+      "eyebrow": "Segundo módulo",
+      "titulo_antes": "Y un asistente para las",
+      "titulo_acento": "preguntas de siempre",
+      "titulo_despues": ".",
+      "lead": "Priorizar la lista no sirve de nada si el equipo se pasa la mañana contestando las mismas cuatro dudas. El segundo módulo es un asistente con arquitectura RAG montado en Copilot Studio sobre la documentación oficial de admisión a grado.",
+      "parrafos": [
+        "RAG y no un modelo entrenado a medida por una razón concreta: las respuestas se fundamentan en el documento oficial vigente en vez de en lo que un modelo recuerde. Cuando cambia la normativa se cambia el documento y el asistente cambia con él. Fundamentar reduce las respuestas inventadas, no las elimina: la propia plataforma lo advierte.",
+        "Cubre cuatro categorías temáticas y tiene un protocolo de fallback explícito: si la pregunta se sale de lo que puede responder con la documentación, deriva a una persona en vez de improvisar. Un asistente de admisiones que se inventa un plazo hace más daño que uno que no contesta. Está validado en el panel de Copilot Studio, no con candidatos reales: las tasas de resolución y de derivación quedan definidas y pendientes de medir."
+      ],
+      "ledger": [
+        {
+          "clave": "Arquitectura",
+          "valor": "RAG sobre documentación oficial"
+        },
+        {
+          "clave": "Plataforma",
+          "valor": "Copilot Studio"
+        },
+        {
+          "clave": "Categorías temáticas",
+          "valor": "4"
+        },
+        {
+          "clave": "Fuera de alcance",
+          "valor": "Deriva a una persona"
+        }
+      ],
+      "grafico": {
+        "tipo": "nodos",
+        "datos": {
+          "centro": "RAG",
+          "arriba": "Base de conocimiento",
+          "izq": "Pregunta",
+          "der": "Respuesta",
+          "abajo": "Una persona",
+          "nota": "si no sabe, deriva",
+          "pie": "el asistente, en cuatro piezas"
+        }
+      },
+      "figcaption": "El segundo módulo, en esquema: la pregunta entra y la respuesta se construye sobre la base de conocimiento, no sobre lo que el modelo recuerde. Si no da para responder, deriva a una persona.",
+      "sr": "Esquema radial del asistente con RAG en el centro y cuatro piezas alrededor: arriba la base de conocimiento, a la izquierda la pregunta, a la derecha la respuesta y, por debajo y con línea de puntos, una persona del equipo, a la que se deriva cuando la documentación no da para responder.",
+      "composicion": "editorial"
+    }
+  ],
+  "cierre": {
+    "eyebrow": "Lo que no está aquí",
+    "titulo_antes": "La memoria",
+    "titulo_acento": "no circula",
+    "titulo_despues": ", y es parte del trabajo.",
+    "parrafos": [
+      "Este proyecto se hizo con datos reales del CRM de admisiones de una universidad. En esta página están las métricas del modelo, el reparto por categorías y la validación temporal, que son resultados del modelo y no dicen nada de nadie.",
+      "Lo que no está, y no va a estar: la tasa de conversión de la universidad, qué canales de captación le funcionan mejor, los umbrales concretos que separan A de B, y por supuesto ningún registro. Eso es información de negocio de Comillas y no es mía para publicarla.",
+      "La presentación de la defensa sí está, pero en una versión pública: he retirado el embudo de captación, el análisis por canal y por colegio de procedencia, la tasa de conversión de la universidad y los percentiles que fijan los cortes de A y B. Lo que queda son resultados del modelo, que no dicen nada de nadie.",
+      "La memoria completa la enseño en persona. Si estás valorando el trabajo y necesitas ver el detalle, escríbeme y lo vemos."
+    ],
+    "botones": [
+      {
+        "texto": "Ver el código en GitHub",
+        "href": "https://github.com/ppblanco/admissions-lead-scoring-rag",
+        "nueva_pestana": true
+      },
+      {
+        "texto": "Escríbeme",
+        "href": "mailto:pedro.perez.blanco@outlook.es"
+      }
+    ],
+    "informe": {
+      "titulo": "TFM · Presentación de la defensa",
+      "tipo": "PDF · versión pública",
+      "descarga": "tfm-presentacion-pedro-perez-blanco.pdf",
+      "alt": "Portada de la presentación: «Sistema de Lead Scoring y Asistente Virtual con RAG para la captación de estudiantes en la Universidad Pontificia Comillas», con el sello de la universidad, el autor Pedro Pérez Blanco, el tutor José Portela González y la convocatoria de junio de 2026.",
+      "cta": "Ver la presentación",
+      "descargar": "Descargar la presentación",
+      "ampliar": "Abrir en pantalla completa",
+      "archivo": "tfm-presentacion.pdf",
+      "portada": "../medios/informes/tfm-portada.jpg",
+      "ancho": 1001,
+      "alto": 563,
+      "paginas": 18,
+      "peso": "807 KB",
+      "octetos": 825905
+    }
+  },
+  "siguiente": {
+    "rotulo": "Siguiente trabajo",
+    "titulo": "Predicción de ventas de videojuegos",
+    "href": "videojuegos.html"
+  },
+  "paleta": {
+    "_porque": "el ámbar del portfolio: es el trabajo insignia y no necesita separarse",
+    "senal": "#E0A458",
+    "senal_viva": "#EFBB74",
+    "senal_tenue": "rgba(224,164,88,.14)",
+    "senal_linea": "rgba(224,164,88,.34)"
+  }
+}

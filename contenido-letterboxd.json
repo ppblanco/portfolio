@@ -1,0 +1,421 @@
+{
+  "_leeme": "Todo el texto de trabajos/letterboxd.html sale de aquí. Edita y vuelve a ejecutar herramientas/hacer-caso.py.",
+  "meta": {
+    "titulo_pestana": "Letterboxd · Topic modeling · Pedro Pérez Blanco",
+    "descripcion": "LDA sobre reseñas de cine de Letterboxd. Tres de los seis tópicos no eran temas, eran idiomas. De ahí salió un experimento que no estaba en el encargo.",
+    "dominio": "pedro-perez-data.netlify.app"
+  },
+  "volver": {
+    "texto": "Todos los trabajos",
+    "href": "../index.html#trabajo"
+  },
+  "hero": {
+    "tipo": "animada",
+    "categoria": "Datos no estructurados · PLN",
+    "titulo": "Letterboxd · De qué habla quien reseña cine",
+    "sub": "Topic modeling sobre reseñas de películas estrenadas en 2024. El modelo encontró seis tópicos, y al mirarlos de cerca resultó que la mitad no hablaban de cine: separaban idiomas. Eso convirtió un hallazgo incómodo en la pregunta siguiente.",
+    "datos": [
+      {
+        "k": "Papel",
+        "v": "Equipo de tres · trabajo conjunto"
+      },
+      {
+        "k": "Autores",
+        "v": "Alfredo Martín · Marcos Fernández · Pedro Pérez"
+      },
+      {
+        "k": "Año",
+        "v": "2026 · MUBA, ICADE"
+      },
+      {
+        "k": "Herramientas",
+        "v": "Python · spaCy · NLTK · Gensim · pyLDAvis"
+      }
+    ],
+    "cifras": [
+      {
+        "valor": "3 de 6",
+        "pie": "tópicos eran idiomas"
+      },
+      {
+        "valor": "48",
+        "pie": "idiomas en el corpus"
+      },
+      {
+        "valor": "32,3%",
+        "pie": "de reseñas en tópicos de idioma"
+      }
+    ],
+    "video": {
+      "src": "../medios/video/letterboxd.mp4",
+      "poster": "../medios/video/letterboxd-poster.jpg"
+    }
+  },
+  "rail": [
+    {
+      "texto": "El corpus",
+      "ancla": "s-corpus"
+    },
+    {
+      "texto": "El preprocesado",
+      "ancla": "s-nlp"
+    },
+    {
+      "texto": "El hallazgo",
+      "ancla": "s-hallazgo"
+    },
+    {
+      "texto": "El experimento",
+      "ancla": "s-experimento"
+    },
+    {
+      "texto": "Lo que no prueba",
+      "ancla": "s-limites"
+    }
+  ],
+  "secciones": [
+    {
+      "id": "s-corpus",
+      "etiqueta": "El corpus",
+      "eyebrow": "El corpus",
+      "titulo_antes": "De 847.000 películas",
+      "titulo_acento": "a 12.000 reseñas",
+      "titulo_despues": ".",
+      "lead": "El dataset de partida son 1,12 GB y 847.209 películas de Letterboxd, cada una con hasta diez reseñas. Filtrando por año de estreno quedan 40.486 películas de 2024 y 119.096 reseñas con texto, que bajan a 111.798 al deduplicar.",
+      "parrafos": [
+        "Sobre esas ~112.000 se trabaja con una muestra aleatoria de 12.000 reseñas con semilla fija —11.968 tras normalizar—. No es un recorte de conveniencia disimulado: procesar el corpus entero pasa de una hora solo en lematización y etiquetado, y el notebook está pensado para poder ejecutarse de principio a fin en unos minutos. Basta cambiar una constante para usarlo completo.",
+        "Hay además una discrepancia que no hemos sabido explicar. El trabajo entregado en su día decía 38.531 reseñas de 2024; ejecutando hoy el mismo filtro sobre el mismo dataset salen 119.096. Descartamos que sea un artefacto del agrupado, y ahí se quedó: el dataset no está versionado y no se puede comprobar qué había entonces.",
+        "Del dataset se usan el título, el año, la nota media y el texto. El nombre de usuario no se extrae en ningún momento: son personas reales y el trabajo iba a acabar en un repositorio público."
+      ],
+      "ledger": [
+        {
+          "clave": "Películas en la fuente",
+          "valor": "847.209"
+        },
+        {
+          "clave": "Estrenadas en 2024",
+          "valor": "40.486"
+        },
+        {
+          "clave": "Reseñas tras deduplicar",
+          "valor": "111.798"
+        },
+        {
+          "clave": "Muestra analizada",
+          "valor": "11.968",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "escalones",
+        "datos": [
+          {
+            "valor": "847.209",
+            "etiqueta": "películas en la fuente",
+            "parte": 1.0
+          },
+          {
+            "valor": "111.798",
+            "etiqueta": "reseñas de 2024",
+            "parte": 0.62
+          },
+          {
+            "valor": "11.968",
+            "etiqueta": "muestra con semilla fija",
+            "parte": 0.34
+          }
+        ]
+      },
+      "figcaption": "Del dataset completo a la muestra reproducible.",
+      "sr": "Escalones: 847.209 películas en la fuente, 111.798 reseñas de películas de 2024 tras deduplicar y una muestra de 11.968.",
+      "composicion": "editorial"
+    },
+    {
+      "id": "s-nlp",
+      "etiqueta": "El preprocesado",
+      "eyebrow": "El preprocesado",
+      "titulo_antes": "Trece palabras",
+      "titulo_acento": "por reseña",
+      "titulo_despues": ".",
+      "lead": "Las reseñas de Letterboxd son cortas, irónicas y llenas de jerga. La mediana está en 16 palabras. Eso condiciona todo lo que se puede hacer después, porque casi ninguna técnica de PLN está pensada para textos tan breves.",
+      "parrafos": [
+        "El pipeline es el habitual: normalización, tokenización con NLTK, stopwords —del inglés, de industria y multilingües—, y lematización con spaCy más un diccionario de correcciones propias.",
+        "El etiquetado gramatical se hizo con tres métodos sobre el mismo texto para poder compararlos: spaCy, el perceptrón de NLTK y Flair. Este último, mucho más lento, solo sobre una muestra de 500 reseñas.",
+        "Se midió también la diversidad léxica con el Type-Token Ratio, y ahí hay una trampa que conviene declarar: sube de 0,918 a 0,965 tras el preprocesado, pero las reseñas pasan de 27,7 a 14,5 palabras, y el TTR sube casi solo cuando el texto se acorta. La subida no demuestra por sí sola más riqueza léxica."
+      ],
+      "ledger": [
+        {
+          "clave": "Mediana de palabras",
+          "valor": "16 por reseña"
+        },
+        {
+          "clave": "Etiquetadores comparados",
+          "valor": "spaCy · NLTK · Flair"
+        },
+        {
+          "clave": "TTR antes / después",
+          "valor": "0,918 → 0,965"
+        },
+        {
+          "clave": "Palabras antes / después",
+          "valor": "27,7 → 14,5",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "comparacion",
+        "datos": [
+          {
+            "valor": 27.7,
+            "etiqueta": "Palabras por reseña",
+            "pie": "antes"
+          },
+          {
+            "valor": 14.5,
+            "etiqueta": "Palabras por reseña",
+            "pie": "después"
+          }
+        ]
+      },
+      "figcaption": "El preprocesado deja los textos a la mitad. El TTR sube por eso.",
+      "sr": "Comparación: 27,7 palabras por reseña antes del preprocesado y 14,5 después.",
+      "composicion": "dividido"
+    },
+    {
+      "id": "s-hallazgo",
+      "etiqueta": "El hallazgo",
+      "eyebrow": "El hallazgo",
+      "titulo_antes": "La mitad de los tópicos",
+      "titulo_acento": "no hablaban de cine",
+      "titulo_despues": ".",
+      "lead": "LDA con seis tópicos sobre el corpus completo. Tres de ellos —el de alemán e italiano, el de ruso y persa, el de francés y portugués— no separan temas: separan idiomas. Se llevan el 32,3 % de las reseñas.",
+      "parrafos": [
+        "El criterio para llamarlo «tópico de idioma» no es que sus palabras suenen extranjeras, que sería una impresión. Es que más de la mitad de las reseñas que caen en él no están en inglés, y eso se mide: 92,4 %, 71,0 % y 96,5 % respectivamente.",
+        "El corpus tiene 48 idiomas y solo el 62,4 % de las reseñas están en inglés. La lista de stopwords multilingües del trabajo original eran 28 palabras escritas a mano, que no cubren ni de lejos el francés, el portugués, el español o el indonesio que hay ahí dentro.",
+        "Con once tópicos en lugar de seis el problema empeora: son siete de once los que separan idiomas. Más tópicos no dan más temas, dan más idiomas."
+      ],
+      "ledger": [
+        {
+          "clave": "Idiomas detectados",
+          "valor": "48"
+        },
+        {
+          "clave": "Reseñas en inglés",
+          "valor": "62,4 %"
+        },
+        {
+          "clave": "Tópicos de idioma (K=6)",
+          "valor": "3 de 6",
+          "destacada": true
+        },
+        {
+          "clave": "Tópicos de idioma (K=11)",
+          "valor": "7 de 11"
+        }
+      ],
+      "grafico": {
+        "tipo": "tira",
+        "datos": [
+          {
+            "etiqueta": "T0",
+            "valor": 29.7,
+            "texto": "29,7%",
+            "pie": "cine|inglés"
+          },
+          {
+            "etiqueta": "T1",
+            "valor": 7.8,
+            "texto": "7,8%",
+            "pie": "alemán|italiano",
+            "idioma": true
+          },
+          {
+            "etiqueta": "T2",
+            "valor": 9.1,
+            "texto": "9,1%",
+            "pie": "festivales"
+          },
+          {
+            "etiqueta": "T3",
+            "valor": 6.2,
+            "texto": "6,2%",
+            "pie": "ruso|persa",
+            "idioma": true
+          },
+          {
+            "etiqueta": "T4",
+            "valor": 18.3,
+            "texto": "18,3%",
+            "pie": "francés|portugués",
+            "idioma": true
+          },
+          {
+            "etiqueta": "T5",
+            "valor": 28.9,
+            "texto": "28,9%",
+            "pie": "cine|narrativa"
+          }
+        ]
+      },
+      "figcaption": "Los seis tópicos como seis fotogramas. Tres de ellos no hablan de cine: separan idiomas, y se llevan el 32,3% del corpus.",
+      "sr": "Seis fotogramas, uno por tópico, con el porcentaje de reseñas que le corresponde: T0 el 29,7% sobre cine en inglés; T1 el 7,8% en alemán e italiano; T2 el 9,1% sobre festivales; T3 el 6,2% en ruso y persa; T4 el 18,3% en francés y portugués; T5 el 28,9% sobre narrativa en inglés. Los tópicos T1, T3 y T4 separan idiomas en lugar de temas y van marcados con un punto.",
+      "composicion": "ancho"
+    },
+    {
+      "id": "s-experimento",
+      "etiqueta": "El experimento",
+      "eyebrow": "El experimento",
+      "titulo_antes": "Filtrar el idioma",
+      "titulo_acento": "no mejora la métrica",
+      "titulo_despues": ".",
+      "lead": "La pregunta obvia era qué pasa si se filtra. Se repitió todo el modelado sobre las 7.465 reseñas en inglés, con el mismo preprocesado, el mismo barrido de K y los mismos hiperparámetros. Lo único que cambia es el corpus.",
+      "parrafos": [
+        "Y el resultado va en contra de lo esperado: la coherencia baja. Con K=6, 0,5107 frente a 0,6038. Y no es un K concreto: el corpus filtrado puntúa por debajo en 12 de los 14 valores del barrido.",
+        "Se comprobó que no fuera un efecto del tamaño —el corpus filtrado tiene un 38 % menos de documentos—: submuestreando el multilingüe a las mismas 7.465 reseñas, doce veces, el filtrado queda por debajo de las doce. Aun así la dispersión de la métrica entre submuestras es mayor que la propia diferencia, así que lo honesto es decir que filtrar no mejora la coherencia, no que la empeore.",
+        "Pero la coherencia no era el objetivo. Emparejando los tópicos de los dos corpus por vocabulario compartido, los tres de idioma no tienen ningún equivalente en el filtrado. Filtrar deja de gastar la mitad de los tópicos en separar lenguas. La lección de fondo es sobre la métrica: las palabras de un mismo idioma co-ocurren siempre, así que un tópico puede ser perfectamente coherente y perfectamente inútil."
+      ],
+      "ledger": [
+        {
+          "clave": "Corpus multilingüe",
+          "valor": "11.968 reseñas · c_v 0,6038"
+        },
+        {
+          "clave": "Corpus solo inglés",
+          "valor": "7.465 reseñas · c_v 0,5107"
+        },
+        {
+          "clave": "K en que gana el filtrado",
+          "valor": "2 de 14"
+        },
+        {
+          "clave": "Tópicos de idioma tras filtrar",
+          "valor": "Ninguno",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "pantalla",
+        "datos": [
+          {
+            "valor": 0.6038,
+            "texto": "0,6038",
+            "etiqueta": "Multilingüe"
+          },
+          {
+            "valor": 0.5107,
+            "texto": "0,5107",
+            "etiqueta": "Solo inglés"
+          }
+        ]
+      },
+      "figcaption": "Coherencia c_v con seis tópicos en los dos corpus. Baja al filtrar a inglés; la interpretabilidad sube.",
+      "sr": "Dos coherencias c_v con seis tópicos, proyectadas una al lado de la otra: 0,6038 en el corpus multilingüe y 0,5107 en el corpus filtrado a inglés.",
+      "composicion": "invertido"
+    },
+    {
+      "id": "s-limites",
+      "etiqueta": "Lo que no prueba",
+      "eyebrow": "Los límites",
+      "titulo_antes": "Una cifra que",
+      "titulo_acento": "nadie puede reproducir",
+      "titulo_despues": ".",
+      "lead": "El trabajo entregado usaba LdaMulticore, que reparte los documentos entre procesos y los incorpora según terminan. Consecuencia: con la misma semilla no da el mismo modelo. Medido, dos ejecuciones idénticas dieron 0,5633 y 0,5404.",
+      "parrafos": [
+        "Todo el trabajo pasó a LdaModel, que repitió 0,5890 las dos veces. Entre una coherencia alta y una que otra persona puede comprobar, la segunda vale más. La consecuencia incómoda es que el 0,678 que figuraba en la presentación entregada no lo puede reproducir nadie.",
+        "Sobre el corpus quedan dos cosas dichas y no resueltas: se trabaja sobre una muestra de 11.968 reseñas de las ~112.000 disponibles, y la discrepancia con el recuento del trabajo original sigue sin explicación.",
+        "Y la detección de idioma no es infalible sobre textos de mediana 16 palabras. Las reseñas de menos de 20 caracteres se marcan aparte en vez de asignarles un idioma a la fuerza, pero el resto tampoco es perfecto."
+      ],
+      "ledger": [
+        {
+          "clave": "Modelo reproducible",
+          "valor": "Sí, con LdaModel"
+        },
+        {
+          "clave": "Muestra",
+          "valor": "11.968 de ~112.000"
+        },
+        {
+          "clave": "Discrepancia del corpus",
+          "valor": "Sin explicar"
+        },
+        {
+          "clave": "Detección de idioma",
+          "valor": "Imperfecta en textos cortos"
+        }
+      ],
+      "grafico": {
+        "tipo": "veredictos",
+        "datos": [
+          {
+            "si": true,
+            "etiqueta": "El modelo da el mismo|resultado dos veces"
+          },
+          {
+            "si": true,
+            "etiqueta": "El criterio de «tópico|de idioma» está medido"
+          },
+          {
+            "si": false,
+            "etiqueta": "Se usa el corpus|completo de 2024"
+          },
+          {
+            "si": false,
+            "etiqueta": "La discrepancia del|corpus está explicada"
+          }
+        ]
+      },
+      "figcaption": "Lo que el trabajo sostiene y lo que sigue abierto.",
+      "sr": "Veredictos: el modelo es reproducible, sí; el criterio de tópico de idioma está medido, sí; se usa el corpus completo, no; la discrepancia del corpus está explicada, no.",
+      "composicion": "centrado"
+    }
+  ],
+  "cierre": {
+    "eyebrow": "El trabajo",
+    "titulo_antes": "Fue un trabajo",
+    "titulo_acento": "de tres",
+    "titulo_despues": ".",
+    "parrafos": [
+      "Proyecto conjunto de Alfredo Martín, Marcos Fernández y Pedro Pérez para la asignatura de Datos No Estructurados del máster.",
+      "Lo que más me llevo no es el modelo, es el experimento que salió de mirar un resultado que no cuadraba. La primera versión daba por buenos seis tópicos; media hora mirándolos de cerca convirtió «el modelo funciona» en «el modelo está midiendo otra cosa»."
+    ],
+    "botones": [
+      {
+        "texto": "Ver el código en GitHub",
+        "href": "https://github.com/ppblanco/letterboxd-topic-modeling",
+        "nueva_pestana": true
+      },
+      {
+        "texto": "Escríbeme",
+        "href": "mailto:pedro.perez.blanco@outlook.es"
+      }
+    ],
+    "informe": {
+      "titulo": "Letterboxd · Presentación",
+      "tipo": "PDF",
+      "alt": "Primera página de la presentación del trabajo de topic modeling sobre reseñas de Letterboxd.",
+      "cta": "Ver la presentación",
+      "descargar": "Descargar presentación",
+      "ampliar": "Abrir en pantalla completa",
+      "descarga": "letterboxd-presentacion.pdf",
+      "archivo": "letterboxd-presentacion.pdf",
+      "portada": "../medios/informes/letterboxd-portada.jpg",
+      "paginas": 26,
+      "peso": "1,0 MB",
+      "octetos": 1052306,
+      "ancho": 1000,
+      "alto": 563
+    }
+  },
+  "siguiente": {
+    "rotulo": "Siguiente trabajo",
+    "titulo": "Lipton · The Summer Shake Up",
+    "href": "lipton.html"
+  },
+  "paleta": {
+    "_porque": "naranja 22° del vídeo: el ámbar de sala de cine, más rojo que el del sitio",
+    "senal": "#E0703F",
+    "senal_viva": "#EE9169",
+    "senal_tenue": "rgba(224,112,63,.14)",
+    "senal_linea": "rgba(224,112,63,.34)"
+  }
+}

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es" data-caso="apuestas">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- GENERADO por herramientas/hacer-caso.py desde contenido-apuestas.json.
+     No lo edites a mano: se sobrescribe entero en cada ejecución. -->
+<title>Ganar a la casa de apuestas · Pedro Pérez Blanco</title>
+<meta name="description" content="Análisis de 11.794 partidos ATP en busca de un factor que la casa subestime. El patrón existe; la estrategia pierde dinero: la casa se queda un 5,46 %.">
+<meta name="theme-color" content="#0B0C0F">
+
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ganar a la casa de apuestas · Pedro Pérez Blanco">
+<meta property="og:description" content="Análisis de 11.794 partidos ATP en busca de un factor que la casa subestime. El patrón existe; la estrategia pierde dinero: la casa se queda un 5,46 %.">
+<meta property="og:image" content="https://pedro-perez-data.netlify.app/medios/og.jpg">
+<meta property="og:image:alt" content="Tarjeta con el nombre de Pedro Pérez Blanco y el titular del portfolio.">
+<meta property="og:url" content="https://pedro-perez-data.netlify.app/trabajos/apuestas.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="stylesheet" href="../ui/tipos.css">
+<link rel="stylesheet" href="../ui/plantilla.css">
+<!-- Después de plantilla.css, porque se apoya en sus tokens y solo añade lo
+     que es propio de una página de caso. -->
+<link rel="stylesheet" href="../ui/trabajo.css">
+<style>
+  /* Paleta de este trabajo. verde-cian 172° del vídeo: el 34% de sus píxeles, la pista */
+  :root{
+    --senal:#3FB39A;
+    --senal-viva:#6BCBB6;
+    --senal-tenue:rgba(63,179,154,.14);
+    --senal-linea:rgba(63,179,154,.34);
+  }
+  /* El cursor NO cambia con el caso: es del sitio. Si cambiara,
+     al pasar de un trabajo a otro pareceria otro puntero. Hay
+     una prueba que lo compara con el del portfolio. */
+  .nodo-cursor{ border-color:rgba(224,164,88,.34) }
+  .nodo-cursor::after{ background:#E0A458 }
+  .nodo-cursor.esta-activo{ border-color:#E0A458;
+                            background:rgba(224,164,88,.07) }
+</style>
+</head>
+<body>
+
+<canvas class="fondo" id="fondo" aria-hidden="true"></canvas>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra" id="barra">
+  <nav class="barra__caja" aria-label="Secciones">
+    <a class="barra__marca" href="../index.html">
+      <span class="barra__iniciales" aria-hidden="true">PPB</span>
+      <span class="barra__nombre">Pedro Pérez Blanco</span>
+    </a>
+    <ul class="barra__lista" id="menu-lista"><li><a href="#s-pregunta" data-nav>La pregunta</a></li><li><a href="#s-datos" data-nav>Los datos</a></li><li><a href="#s-hipotesis" data-nav>Tres corazonadas</a></li><li><a href="#s-simulacion" data-nav>La simulación</a></li><li><a href="#s-limites" data-nav>Lo que no prueba</a></li></ul>
+    <button class="barra__pausa" id="reanudar" type="button">
+      <span class="barra__pausa__punto" aria-hidden="true"></span>Movimiento en pausa
+      <span class="oculto">, pulsa para reanudarlo</span>
+    </button>
+    <a class="barra__cta" href="../index.html#trabajo">Todos los trabajos</a>
+    <button class="barra__menu" id="menu" type="button"
+            aria-expanded="true" aria-controls="menu-lista">
+      <span aria-hidden="true"></span>
+      <span class="oculto">Abrir el menú</span>
+    </button>
+  </nav>
+  <div class="barra__avance" id="avance" aria-hidden="true"></div>
+</header>
+
+<main id="contenido">
+
+  <section class="caso-portada caso-portada--animada"><div class="relieve" aria-hidden="true"><img class="relieve__quieta" src="../medios/video/apuestas-poster.jpg" width="1440" height="810" alt="" decoding="async"><video id="portada-video" muted loop playsinline preload="none" poster="../medios/video/apuestas-poster.jpg" data-src="../medios/video/apuestas.mp4"></video><span class="relieve__velo"></span></div>
+    <div class="marco">
+      <a class="volver" href="../index.html#trabajo">
+        <span aria-hidden="true">&larr;</span> Todos los trabajos
+      </a>
+      <div class="cristal"><span class="cristal__fx" aria-hidden="true"><span class="cristal__cara"></span><span class="cristal__filo cristal__filo--t"></span><span class="cristal__filo cristal__filo--b"></span><span class="cristal__filo cristal__filo--i"></span><span class="cristal__filo cristal__filo--d"></span></span><div class="cristal__dentro">
+      <div class="caso-portada__panel" data-revelar>
+        <p class="rotulo eyebrow">Análisis exploratorio · Simulación</p>
+        <h1 class="caso-portada__titulo" data-partir>Ganar a la casa de apuestas</h1>
+        <p class="parrafo parrafo--lead">11.794 partidos ATP de cinco temporadas, cruzados con las fichas de los jugadores y con las cuotas de las casas. La pregunta era si hay algún factor —altura, mano, edad— que el mercado esté subestimando. La respuesta corta: uno de los tres patrones existe, y aun así apostar con él pierde dinero.</p>
+        <div class="datos"><div class="dato"><span class="dato__k">Papel</span><span class="dato__v">Autor · trabajo individual</span></div><div class="dato"><span class="dato__k">Asignatura</span><span class="dato__v">Programación para el análisis de datos</span></div><div class="dato"><span class="dato__k">Año</span><span class="dato__v">2026 · MUBA, ICADE</span></div><div class="dato"><span class="dato__k">Herramientas</span><span class="dato__v">Python · pandas · NumPy · Plotly</span></div></div>
+      </div>
+      </div></div>
+      <div class="cifras" data-revelar><div class="cifra"><span class="cifra__n">11.794</span><span class="cifra__pie">partidos analizados</span></div><div class="cifra"><span class="cifra__n">56,96%</span><span class="cifra__pie">gana el más alto en hierba</span></div><div class="cifra"><span class="cifra__n">−4,54%</span><span class="cifra__pie">de ROI apostando al favorito</span></div></div>
+    </div>
+  </section>
+  <!-- El raíl de apartados. Son anclas de verdad, así que funciona con el
+       JavaScript bloqueado; lo único que añade el script es marcar en cuál
+       estás. Es un índice, no unas pestañas: el caso entero está en la
+       página. -->
+  <nav class="rail" id="rail" aria-label="Apartados de este trabajo">
+    <div class="marco rail__caja"><a href="#s-pregunta" data-rail>La pregunta</a><a href="#s-datos" data-rail>Los datos</a><a href="#s-hipotesis" data-rail>Tres corazonadas</a><a href="#s-simulacion" data-rail>La simulación</a><a href="#s-limites" data-rail>Lo que no prueba</a></div>
+  </nav>
+
+  <section class="caso" id="s-pregunta" data-caso="La pregunta">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--dividido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">La pregunta</p>
+          <h2 class="titulo-menor">¿Se le escapa algo <em class="acento">al mercado</em> ?</h2>
+          <p class="parrafo parrafo--lead">Una cuota no es una predicción: es un precio, y lleva dentro todo lo que el mercado ya sabe. La única forma de ganarle es encontrar algo que el precio todavía no recoja. Eso es lo que fui a buscar: un factor físico —la altura, la mano, la edad— con el que el mercado no estuviera contando.</p>
+          <p class="parrafo">El planteamiento importa porque decide el listón. No basta con encontrar un patrón: hay que encontrar uno que además sobreviva a pagar la cuota. Son dos preguntas distintas y casi todo el mundo se queda en la primera.</p><p class="parrafo">Por eso el trabajo no termina en el análisis exploratorio. Termina simulando las apuestas, que es donde se ve si el patrón vale algo o solo es bonito.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Periodo</span><span class="lectura__valor">ATP, 2020 – 2024</span></div><div class="lectura"><span class="lectura__clave">Pregunta</span><span class="lectura__valor">¿Hay un factor infravalorado?</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Prueba de fuego</span><span class="lectura__valor">El ROI, no el porcentaje</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 415" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="16" y="64" width="190" height="96" rx="8" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><text x="111" y="120" class="g-rotulo" text-anchor="middle">Un patrón</text><rect x="223" y="64" width="190" height="96" rx="8" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><text x="318" y="101" class="g-rotulo" text-anchor="middle">La cuota</text><text x="318" y="140" class="g-rotulo" text-anchor="middle">que paga</text><rect x="430" y="64" width="190" height="96" rx="8" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><text x="525" y="101" class="g-rotulo" text-anchor="middle">¿Queda</text><text x="525" y="140" class="g-rotulo" text-anchor="middle">beneficio?</text><path d="M 206 112 l 17 0 m -6 -5 l 6 5 l -6 5" fill="none" stroke="var(--senal)" stroke-width="1.5"/><path d="M 413 112 l 17 0 m -6 -5 l 6 5 l -6 5" fill="none" stroke="var(--senal)" stroke-width="1.5"/><path d="M 318 160 L 318 247 L 430 247" fill="none" stroke="var(--senal)" stroke-width="1.5" stroke-dasharray="5 5" opacity=".8"/><rect x="430" y="208" width="190" height="79" rx="8" fill="none" stroke="var(--senal)" stroke-width="1.5" opacity=".8"/><text x="525" y="255" class="g-rotulo" text-anchor="middle">Casi nunca</text><text x="320" y="331" class="g-pie" text-anchor="middle">El patrón es la parte fácil.</text><text x="320" y="368" class="g-pie" text-anchor="middle">Sobrevivir a la cuota, no.</text></svg>
+          <figcaption class="caso__pie">Encontrar el patrón es la mitad fácil del problema.</figcaption>
+          <p class="oculto">Diagrama: un patrón se enfrenta a la cuota que lo paga, y solo entonces se ve si queda beneficio. Casi nunca queda.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-datos" data-caso="Los datos">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--invertido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Los datos</p>
+          <h2 class="titulo-menor">Dos fuentes y <em class="acento">un identificador de verdad</em>.</h2>
+          <p class="parrafo parrafo--lead">Tennis-Data pone los partidos y las cuotas; el fichero de jugadores de Jeff Sackmann pone la altura, la mano y la fecha de nacimiento. Unirlas es el punto delicado del trabajo, porque Tennis-Data nombra a la gente como «Ruud C.» y en el otro fichero hay 65.019 jugadores de todas las épocas.</p>
+          <p class="parrafo">«Ruud C.» son dos personas: Casper Ruud, nacido en 1998 y de 183 cm, y su padre Christian, nacido en 1972 y de 188. Un cruce por apellido e inicial elige a uno de los dos, y elegir mal significa analizar 292 partidos con la altura y la edad equivocadas. Lo mismo pasa con Ben Shelton y su padre Bryan.</p><p class="parrafo">El cruce actual va por identificador único de jugador y aplica controles en cascada: apellido normalizado, iniciales alternativas, apellidos compuestos y —el que decide— la edad plausible en las fechas en que ese nombre jugó. Si después de todo eso queda más de un candidato, el jugador se queda sin atributos. Se resuelven 510 de 517 nombres.</p><p class="parrafo">Y hay comprobaciones automáticas encima: edades imposibles, alturas fuera de rango, jugadores con dos alturas distintas, duplicados. Cazaron un caso que se me había escapado, un jugador emparejado con alguien de 50 años.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Periodo</span><span class="lectura__valor">ATP, 2020 – 2024</span></div><div class="lectura"><span class="lectura__clave">Partidos</span><span class="lectura__valor">11.794</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Jugadores identificados</span><span class="lectura__valor">510 de 517</span></div><div class="lectura"><span class="lectura__clave">Sin emparejar</span><span class="lectura__valor">7, todos documentados</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 380" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="50" y="30" width="227" height="64" rx="6" fill="var(--linea-fuerte)" opacity=".45"/><text x="66" y="79" class="g-num">2</text><text x="50" y="124" class="g-pie">fuentes cruzadas</text><rect x="50" y="152" width="540" height="64" rx="6" fill="var(--linea-fuerte)" opacity=".45"/><text x="66" y="201" class="g-num">11.794</text><text x="50" y="246" class="g-pie">partidos</text><rect x="50" y="274" width="389" height="64" rx="6" fill="var(--senal)" opacity=".9"/><text x="66" y="323" class="g-num">510</text><text x="50" y="368" class="g-pie">de 517 jugadores</text></svg>
+          <figcaption class="caso__pie">Del cruce de las dos fuentes a los jugadores identificados.</figcaption>
+          <p class="oculto">Escalones: dos fuentes cruzadas, 11.794 partidos, 510 de 517 jugadores identificados por identificador único.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-hipotesis" data-caso="Tres corazonadas">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--ancho">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Tres corazonadas</p>
+          <h2 class="titulo-menor">Una aguanta. <em class="acento">Dos se caen</em>.</h2>
+          <p class="parrafo parrafo--lead">Tres creencias del tenis, contrastadas una a una. Los altos ganan más en superficies rápidas: se cumple, y además se ordena por superficie igual que predice la teoría del saque. Los zurdos y los veteranos: no se cumplen.</p>
+          <p class="parrafo">El de la altura es el único que aguanta, y aguanta bien: 56,96 % en hierba, 55,33 % en pista dura y 53,24 % en tierra. Que salga en ese orden y no al azar es lo que lo hace creíble, porque es exactamente el orden en que la superficie premia el saque.</p><p class="parrafo">Los zurdos ganan el 47,62 % de sus 2.671 duelos contra diestros: menos de la mitad. La leyenda descansa sobre Nadal, no sobre el conjunto.</p><p class="parrafo">Los veteranos ganan el 45,68 % de los partidos a cinco sets con más de cinco años de diferencia. Y no es que el partido largo les penalice: a tres sets ganan el 45,27 %, prácticamente lo mismo. La duración no cambia nada.</p>
+          <div class="lecturas"><div class="lectura lectura--destacada"><span class="lectura__clave">Altos en hierba</span><span class="lectura__valor">56,96 %</span></div><div class="lectura"><span class="lectura__clave">Altos en pista dura</span><span class="lectura__valor">55,33 %</span></div><div class="lectura"><span class="lectura__clave">Altos en tierra</span><span class="lectura__valor">53,24 %</span></div><div class="lectura"><span class="lectura__clave">Zurdos contra diestros</span><span class="lectura__valor">47,62 %</span></div><div class="lectura"><span class="lectura__clave">Veteranos a cinco sets</span><span class="lectura__valor">45,68 %</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 412" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g class="pista pista--gana" tabindex="0"><text class="g-pie" x="135" y="68" text-anchor="middle">Hierba</text><rect class="pista__suelo" x="60.0" y="92" width="150.7" height="200" rx="3" fill="var(--senal)" opacity="0.209"/><rect x="60.0" y="92" width="150.7" height="200" rx="3" fill="none" stroke="var(--senal)" stroke-width="1.4" opacity=".75"/><line x1="79.6" y1="92" x2="79.6" y2="292" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="191.1" y1="92" x2="191.1" y2="292" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="54.0" y1="192" x2="216.7" y2="192" stroke="var(--senal)" stroke-width="2.2" opacity=".9" stroke-dasharray="2 3"/><line x1="79.6" y1="144" x2="191.1" y2="144" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="79.6" y1="240" x2="191.1" y2="240" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="135.3" y1="144" x2="135.3" y2="240" stroke="var(--senal)" stroke-width="1" opacity=".4"/><text class="g-num" x="135" y="166" text-anchor="middle">56,96%</text><circle class="pelota" cx="135" cy="204" r="6" fill="var(--senal)"/><text class="g-pie" x="135" y="322" text-anchor="middle" opacity=".8">955</text><text class="g-pie" x="135" y="356" text-anchor="middle" opacity=".8">partidos</text></g><g class="pista" tabindex="0"><text class="g-pie" x="320" y="68" text-anchor="middle">Pista dura</text><rect class="pista__suelo" x="244.7" y="92" width="150.7" height="200" rx="3" fill="var(--senal)" opacity="0.177"/><rect x="244.7" y="92" width="150.7" height="200" rx="3" fill="none" stroke="var(--senal)" stroke-width="1.4" opacity=".75"/><line x1="264.3" y1="92" x2="264.3" y2="292" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="375.7" y1="92" x2="375.7" y2="292" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="238.7" y1="192" x2="401.3" y2="192" stroke="var(--senal)" stroke-width="2.2" opacity=".9" stroke-dasharray="2 3"/><line x1="264.3" y1="144" x2="375.7" y2="144" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="264.3" y1="240" x2="375.7" y2="240" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="320.0" y1="144" x2="320.0" y2="240" stroke="var(--senal)" stroke-width="1" opacity=".4"/><text class="g-num" x="320" y="166" text-anchor="middle">55,33%</text><text class="g-pie" x="320" y="322" text-anchor="middle" opacity=".8">5.404</text><text class="g-pie" x="320" y="356" text-anchor="middle" opacity=".8">partidos</text></g><g class="pista" tabindex="0"><text class="g-pie" x="505" y="68" text-anchor="middle">Tierra</text><rect class="pista__suelo" x="429.3" y="92" width="150.7" height="200" rx="3" fill="var(--senal)" opacity="0.135"/><rect x="429.3" y="92" width="150.7" height="200" rx="3" fill="none" stroke="var(--senal)" stroke-width="1.4" opacity=".75"/><line x1="448.9" y1="92" x2="448.9" y2="292" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="560.4" y1="92" x2="560.4" y2="292" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="423.3" y1="192" x2="586.0" y2="192" stroke="var(--senal)" stroke-width="2.2" opacity=".9" stroke-dasharray="2 3"/><line x1="448.9" y1="144" x2="560.4" y2="144" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="448.9" y1="240" x2="560.4" y2="240" stroke="var(--senal)" stroke-width="1" opacity=".4"/><line x1="504.7" y1="144" x2="504.7" y2="240" stroke="var(--senal)" stroke-width="1" opacity=".4"/><text class="g-num" x="505" y="166" text-anchor="middle">53,24%</text><text class="g-pie" x="505" y="322" text-anchor="middle" opacity=".8">2.825</text><text class="g-pie" x="505" y="356" text-anchor="middle" opacity=".8">partidos</text></g><text class="g-pie" x="320" y="404" text-anchor="middle" opacity=".75">gana el más alto · 50% sin ventaja</text></svg>
+          <figcaption class="caso__pie">Una pista por superficie. El suelo se llena cuanto más gana el jugador más alto, y el orden es el que predice la teoría del saque.</figcaption>
+          <p class="oculto">Tres pistas de tenis vistas desde arriba, una por superficie, con el porcentaje de partidos que gana el jugador más alto: hierba 56,96% sobre 955 partidos; pista dura 55,33% sobre 5.404; tierra 53,24% sobre 2.825. El 50% sería no tener ninguna ventaja.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-simulacion" data-caso="La simulación">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--centrado">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">La simulación</p>
+          <h2 class="titulo-menor">El favorito gana el 68%. <em class="acento">Y aun así se pierde</em>.</h2>
+          <p class="parrafo parrafo--lead">Apostar 1 € por partido siguiendo una regla fija y medir el ROI. El favorito gana el 68,18 % de las veces, que es mucho, y aun así la estrategia pierde el 4,54 %. La explicación no está en el acierto: está en el precio.</p>
+          <p class="parrafo">Las tres estrategias pierden. Apostar al favorito: −4,54 %. Al más alto en hierba, que es el patrón que sí existía: −3,31 %. Y al revés, al no favorito: −8,90 %. Da igual el lado al que te pongas.</p><p class="parrafo">El motivo está medido: si las cuotas fueran justas, sus probabilidades implícitas sumarían 1. Suman de más, y ese exceso —un 5,46 % de media— es el margen del que vive la casa. Hay que superarlo antes de empezar a ganar, y un patrón del 57 % no llega.</p><p class="parrafo">Los 77 partidos que terminaron en walkover o adjudicación quedan fuera de la simulación: nadie saltó a la pista y una casa habría devuelto el dinero. Contarlos como apuesta ganada o perdida sería contar euros que no se mueven.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Gana el favorito</span><span class="lectura__valor">68,18 %</span></div><div class="lectura"><span class="lectura__clave">ROI apostando al favorito</span><span class="lectura__valor">−4,54 %</span></div><div class="lectura"><span class="lectura__clave">ROI al más alto en hierba</span><span class="lectura__valor">−3,31 %</span></div><div class="lectura"><span class="lectura__clave">ROI al no favorito</span><span class="lectura__valor">−8,90 %</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Margen medio de la casa</span><span class="lectura__valor">5,46 %</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 265" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="50" y="86" width="540" height="86" rx="8" fill="var(--linea-fuerte)" opacity=".3"/><rect x="50" y="86" width="368.2" height="86" rx="8" fill="var(--senal)" opacity=".9"/><text x="234" y="146" class="g-num g-num--sobre" text-anchor="middle">68,18%</text><text x="504" y="146" class="g-num" text-anchor="middle">31,82%</text><text x="50" y="206" class="g-pie">Gana el favorito</text><text x="590" y="243" class="g-pie" text-anchor="end">Gana el otro</text></svg>
+          <figcaption class="caso__pie">El favorito gana casi siete de cada diez partidos. Y aun así pierde dinero.</figcaption>
+          <p class="oculto">El favorito gana el 68,18 % de los partidos; el resto los gana el otro jugador. Apostar siempre al favorito da un ROI del −4,54 %.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-limites" data-caso="Lo que no prueba">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--editorial">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Los límites</p>
+          <h2 class="titulo-menor">Lo que este análisis <em class="acento">no demuestra</em>.</h2>
+          <p class="parrafo parrafo--lead">Lo que este trabajo no puede decir. Las tres primeras eran defectos reales de la primera versión y están arregladas; las dos últimas siguen ahí y conviene no disimularlas.</p>
+          <p class="parrafo">El cruce de fuentes ya usa un identificador único de jugador con controles automáticos, y el filtro de edades atípicas ha desaparecido: lo que borraba no eran outliers, eran 432 filas mal cruzadas, y de paso se llevaba por delante a veteranos reales como Feliciano López o Karlović.</p><p class="parrafo">Lo que sigue sin poder afirmarse es que la diferencia en hierba sea estadísticamente significativa: 955 partidos dan una estimación, no una prueba. Y el ROI no incluye comisiones ni límites de apuesta, así que el número real de cualquiera de estas estrategias sería algo peor, no mejor.</p><p class="parrafo">Tampoco hay partición temporal: las estrategias se evalúan sobre los mismos datos en los que se observaron los patrones. Aquí no invalida la conclusión —el sesgo empujaría a parecer más rentable, y aun así todo pierde—, pero impediría defender una estrategia que hubiera salido ganadora.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Cruce por clave real</span><span class="lectura__valor">Sí, por player_id</span></div><div class="lectura"><span class="lectura__clave">Filtro de edades atípicas</span><span class="lectura__valor">Eliminado</span></div><div class="lectura"><span class="lectura__clave">Significatividad en hierba</span><span class="lectura__valor">No contrastada</span></div><div class="lectura"><span class="lectura__clave">Comisiones y límites</span><span class="lectura__valor">Fuera del ROI</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 598" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><circle cx="74" cy="48" r="20" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity="1"/><path d="M 64 48 l 8 8 l 14 -16" fill="none" stroke="var(--senal)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="46" class="g-rotulo">Se confirma</text><text x="116" y="85" class="g-pie">El cruce de fuentes</text><text x="116" y="122" class="g-pie">usa una clave de verdad</text><circle cx="74" cy="191" r="20" fill="none" stroke="var(--senal)" stroke-width="1.8" opacity="1"/><path d="M 64 191 l 8 8 l 14 -16" fill="none" stroke="var(--senal)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="189" class="g-rotulo">Se confirma</text><text x="116" y="228" class="g-pie">Las edades salen de</text><text x="116" y="265" class="g-pie">la fecha de nacimiento</text><circle cx="74" cy="334" r="20" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.8" opacity=".8"/><path d="M 65 325 l 18 18 m 0 -18 l -18 18" fill="none" stroke="var(--linea-fuerte)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="332" class="g-rotulo">Se cae</text><text x="116" y="371" class="g-pie">La diferencia en hierba</text><text x="116" y="408" class="g-pie">es significativa</text><circle cx="74" cy="477" r="20" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.8" opacity=".8"/><path d="M 65 468 l 18 18 m 0 -18 l -18 18" fill="none" stroke="var(--linea-fuerte)" stroke-width="2.4" stroke-linecap="round"/><text x="116" y="475" class="g-rotulo">Se cae</text><text x="116" y="514" class="g-pie">El ROI incluye comisiones</text><text x="116" y="551" class="g-pie">y límites de apuesta</text></svg>
+          <figcaption class="caso__pie">Cuatro cosas que este análisis no sostiene.</figcaption>
+          <p class="oculto">Cuatro comprobaciones con su veredicto, dos cumplidas y dos no. Cumplidas: el cruce de fuentes usa una clave de verdad, y las edades salen de la fecha de nacimiento. No cumplidas: la diferencia en hierba es significativa, y el ROI incluye comisiones y límites de apuesta.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="caso caso--cierre" id="s-cierre">
+    <div class="marco">
+      <div class="cierre" data-revelar>
+        <p class="rotulo eyebrow">El código</p>
+        <h2 class="titulo-menor">El código está en <em class="acento">GitHub</em>.</h2>
+        <p class="parrafo">Todo lo de esta página sale del cuaderno de Python del trabajo: la carga y el cruce de las dos fuentes, la limpieza, el análisis exploratorio con sus gráficos, y la simulación de las estrategias de apuesta partido a partido.</p><p class="parrafo">El repositorio lleva el cuaderno entero, con su código y sus salidas, incluido el apartado de limitaciones tal y como lo escribí. Es la parte que más dice sobre cómo trabajo.</p>
+        <div class="botones"><a class="boton boton--solido" href="https://github.com/ppblanco/atp-tennis-betting-analysis" target="_blank" rel="noopener">Ver el código en GitHub <span class="flecha" aria-hidden="true">↗</span></a><a class="boton " href="mailto:pedro.perez.blanco@outlook.es">Escríbeme <span class="flecha" aria-hidden="true">↗</span></a></div>
+      </div>
+      
+        <figure class="visor" data-revelar>
+          <figcaption class="visor__barra visor__barra--alta">
+            <span class="visor__rotulo">Ganar a la casa de apuestas · Presentación</span>
+            <span class="visor__meta">PDF · 11 páginas · 859 KB</span>
+          </figcaption>
+
+          <div class="visor__lienzo">
+            <a class="visor__fachada" href="apuestas-presentacion.pdf"
+               target="_blank" rel="noopener"
+               data-visor="Ganar a la casa de apuestas · Presentación, 11 páginas">
+              <img class="visor__portada" src="../medios/informes/apuestas-portada.jpg"
+                   width="1000" height="563"
+                   loading="lazy" decoding="async"
+                   alt="Primera página de la presentación del análisis exploratorio sobre apuestas deportivas en el circuito ATP.">
+              <span class="visor__cta">Ver la presentación
+                <span class="visor__peso">859 KB</span>
+                <span class="oculto" data-visor-nota>, se abre en otra pestaña</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="visor__barra visor__barra--baja">
+            <a class="visor__accion" href="apuestas-presentacion.pdf"
+               download="apuestas-presentacion.pdf">
+              <span class="visor__icono" aria-hidden="true">&#8595;</span>Descargar presentación
+              <span class="visor__peso">859 KB</span>
+            </a>
+            <a class="visor__accion visor__accion--fin" href="apuestas-presentacion.pdf"
+               target="_blank" rel="noopener">
+              Abrir en pantalla completa <span class="flecha" aria-hidden="true">↗</span>
+              <span class="oculto">, se abre en otra pestaña</span>
+            </a>
+          </div>
+        </figure>
+    </div>
+  </section>
+
+  <section class="caso caso--siguiente">
+    <div class="marco">
+      <a class="siguiente" href="tfm-lead-scoring.html">
+        <span class="siguiente__rotulo">Siguiente trabajo</span>
+        <span class="siguiente__titulo">Lead scoring y asistente RAG</span>
+        <span class="siguiente__flecha" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- Las dos piezas que faltaban aquí y sí estaban en el portfolio, y por eso
+     el ratón no se comportaba igual al abrir un trabajo. El anillo lo dibuja
+     plantilla.js, que ya venía cargado; sin este div no tenía dónde. -->
+<div class="nodo-cursor" id="nodo-cursor" aria-hidden="true"></div>
+
+<a class="flotante" id="flotante" href="mailto:pedro.perez.blanco@outlook.es" aria-label="Escribir a Pedro Pérez Blanco por correo">
+  <span class="flotante__texto">
+    <b>Ponte en contacto</b>
+    <span>Escríbeme cuando quieras</span>
+  </span>
+  <span class="flotante__icono" aria-hidden="true">&#9993;</span>
+</a>
+
+<footer class="pie">
+  <div class="marco">
+    <div class="pie__reparto">
+      <div>
+        <p class="pie__nombre">Pedro Pérez Blanco</p>
+        <p class="pie__nota">Analista de marketing y datos · Madrid</p>
+        <button class="pie__quieto" id="quieto" type="button" aria-pressed="false">
+          <span class="pie__punto" aria-hidden="true"></span><span data-texto>Parar movimiento</span>
+        </button>
+      </div>
+      <div class="pie__enlaces">
+        <a class="pie__enlace" href="../index.html">Volver al portfolio <span class="flecha" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../ui/fondo.js" defer></script>
+<script src="../ui/plantilla.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,470 @@
+{
+  "_leeme": "Todo el texto de trabajos/videojuegos.html sale de aquí. Edita y ejecuta 'python herramientas/hacer-caso.py'. No edites el HTML a mano: se sobrescribe entero. TODAS las cifras salen del cuaderno original (originales/notebooks/Trabajo ML Supervisado_Pedro_Pérez_Blanco/ML_Prediccion_Ventas_Videojuegos.ipynb). Si cambias una aquí, cámbiala también allí o la página dejará de coincidir con su propio código.",
+  "meta": {
+    "titulo_pestana": "Predicción de ventas de videojuegos · Pedro Pérez Blanco",
+    "descripcion": "Cuatro modelos para estimar las ventas de un videojuego. El mejor explica el 49,8 % de la varianza en escala logarítmica y el 22,7 % sobre millones.",
+    "dominio": "pedro-perez-data.netlify.app"
+  },
+  "volver": {
+    "texto": "Todos los trabajos",
+    "href": "../index.html#trabajo"
+  },
+  "hero": {
+    "tipo": "animada",
+    "categoria": "Aprendizaje supervisado · Regresión",
+    "titulo": "Predicción de ventas de videojuegos",
+    "sub": "16.719 títulos cruzados con un segundo dataset de 51 consolas, para estimar cuánto va a vender un juego y, sobre todo, para entender qué mueve esa cifra. Cuatro modelos contra una línea de base, cuatro hipótesis contrastadas una a una, y las métricas dadas en las dos escalas que importan: la logarítmica en la que se entrena y los millones de unidades que entiende el negocio.",
+    "datos": [
+      {
+        "k": "Papel",
+        "v": "Autor · trabajo individual"
+      },
+      {
+        "k": "Asignatura",
+        "v": "Machine Learning supervisado"
+      },
+      {
+        "k": "Año",
+        "v": "2026 · MUBA, ICADE"
+      },
+      {
+        "k": "Herramientas",
+        "v": "Python · scikit-learn · SHAP · statsmodels"
+      }
+    ],
+    "cifras": [
+      {
+        "valor": "16.444",
+        "pie": "títulos en el modelo"
+      },
+      {
+        "valor": "R² 0,498",
+        "pie": "sobre log(ventas + 1)"
+      },
+      {
+        "valor": "R² 0,227",
+        "pie": "sobre ventas en millones"
+      }
+    ],
+    "video": {
+      "src": "../medios/video/videojuegos.mp4",
+      "poster": "../medios/video/videojuegos-poster.jpg"
+    }
+  },
+  "rail": [
+    {
+      "texto": "La pregunta",
+      "ancla": "s-pregunta"
+    },
+    {
+      "texto": "Las hipótesis",
+      "ancla": "s-hipotesis"
+    },
+    {
+      "texto": "Los modelos",
+      "ancla": "s-modelos"
+    },
+    {
+      "texto": "Qué pesa",
+      "ancla": "s-shap"
+    },
+    {
+      "texto": "Lo que no ve",
+      "ancla": "s-limites"
+    },
+    {
+      "texto": "Para qué sirve",
+      "ancla": "s-uso"
+    }
+  ],
+  "secciones": [
+    {
+      "id": "s-pregunta",
+      "etiqueta": "La pregunta",
+      "eyebrow": "La pregunta",
+      "titulo_antes": "Qué hace que un juego",
+      "titulo_acento": "venda",
+      "titulo_despues": ".",
+      "lead": "El objetivo es una cifra continua —ventas globales en millones de unidades—, así que es un problema de regresión y no de clasificación. Pero la pregunta interesante no era predecir por predecir: era saber qué variables mueven de verdad esa cifra, y cuáles solo lo parecen.",
+      "parrafos": [
+        "El dataset base son 16.719 títulos con sus ventas, notas de crítica y de usuarios, año, género y plataforma. Por sí solo no dice nada del hardware, así que se cruzó con un segundo dataset de 51 consolas y sus unidades vendidas, para poder preguntar si el tamaño del parque instalado explica algo.",
+        "Del cruce y la limpieza salen 16.444 observaciones. Se pierden 271 títulos sin género o sin año y 4 con año posterior a 2016; los 973 sin consola identificable no se descartan, se marcan con una bandera."
+      ],
+      "ledger": [
+        {
+          "clave": "Títulos de partida",
+          "valor": "16.719"
+        },
+        {
+          "clave": "Consolas cruzadas",
+          "valor": "51"
+        },
+        {
+          "clave": "Observaciones en el modelo",
+          "valor": "16.444"
+        },
+        {
+          "clave": "Objetivo",
+          "valor": "log(ventas + 1)",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "escalones",
+        "datos": [
+          {
+            "valor": "16.719",
+            "etiqueta": "títulos con ventas",
+            "parte": 1.0
+          },
+          {
+            "valor": "51",
+            "etiqueta": "consolas cruzadas",
+            "parte": 0.55
+          },
+          {
+            "valor": "16.444",
+            "etiqueta": "observaciones en el modelo",
+            "parte": 0.92
+          }
+        ]
+      },
+      "figcaption": "De los dos datasets a las observaciones que entran en el modelo.",
+      "sr": "Embudo: 16.719 títulos con ventas, cruzados con 51 consolas, dan 16.444 observaciones en el modelo.",
+      "composicion": "dividido"
+    },
+    {
+      "id": "s-hipotesis",
+      "etiqueta": "Las hipótesis",
+      "eyebrow": "Cuatro hipótesis",
+      "titulo_antes": "Tres se confirman.",
+      "titulo_acento": "Una se cae",
+      "titulo_despues": ".",
+      "lead": "Las cuatro se escribieron antes de mirar los datos, que es la única forma de que una hipótesis signifique algo. Tres aguantan la contrastación —nota de la crítica, tamaño del parque de la consola y número de plataformas—. La cuarta, la clasificación por edad, no resulta significativa.",
+      "parrafos": [
+        "La que se cae es la más interesante de las cuatro. Parecía razonable que un juego para todos los públicos vendiera más que uno para adultos, y no se sostiene: una vez controladas las demás variables, el Rating no aporta nada.",
+        "Un trabajo que solo enseña las hipótesis que salieron bien no está enseñando el trabajo, está enseñando el resultado. La que falla es la que demuestra que la contrastación era de verdad."
+      ],
+      "ledger": [
+        {
+          "clave": "Nota de la crítica",
+          "valor": "Significativa",
+          "destacada": true
+        },
+        {
+          "clave": "Unidades de la consola",
+          "valor": "Significativa"
+        },
+        {
+          "clave": "Número de plataformas",
+          "valor": "Significativa"
+        },
+        {
+          "clave": "Clasificación por edad",
+          "valor": "No significativa"
+        }
+      ],
+      "grafico": {
+        "tipo": "veredictos",
+        "datos": [
+          {
+            "si": true,
+            "etiqueta": "Los juegos mejor valorados|por la crítica venden más"
+          },
+          {
+            "si": true,
+            "etiqueta": "Las consolas más vendidas|arrastran más ventas"
+          },
+          {
+            "si": true,
+            "etiqueta": "Los multiplataforma venden|más que los exclusivos"
+          },
+          {
+            "si": false,
+            "etiqueta": "La clasificación por edad|influye en las ventas"
+          }
+        ]
+      },
+      "figcaption": "Las cuatro hipótesis, contrastadas una por una.",
+      "sr": "Tres hipótesis se confirman: la nota de la crítica, las unidades vendidas de la consola y el número de plataformas. La cuarta, la clasificación por edad, no resulta significativa.",
+      "composicion": "centrado"
+    },
+    {
+      "id": "s-modelos",
+      "etiqueta": "Los modelos",
+      "eyebrow": "Cuatro modelos",
+      "titulo_antes": "Todo se mide contra",
+      "titulo_acento": "predecir la media",
+      "titulo_despues": ".",
+      "lead": "La línea de base no es un trámite: es predecir siempre la media y ver qué error da. Su R² es 0,000 por definición, y cualquier modelo que no la supere con holgura no vale el tiempo que cuesta explicarlo. Gana Gradient Boosting con R² 0,498 y un RMSE de 0,285, medidos sobre log(ventas + 1).",
+      "parrafos": [
+        "El orden importa tanto como el ganador. La regresión lineal ya recoge la mitad del terreno, lo que dice que buena parte de la relación es lineal; KNN mejora poco sobre ella, y el salto de verdad lo da el ensamblado, que es donde entran las interacciones entre variables.",
+        "El RMSE del mejor modelo baja de 0,402 a 0,285: un 29 % menos de error que decir siempre la media. Y aquí hay que frenar antes de traducirlo: 0,285 está medido sobre log(ventas + 1), así que deshacer el logaritmo da un factor de 1,33 sobre ventas + 1, no sobre las ventas. Para un título que vende millones la diferencia apenas se nota; para uno que vende décimas de millón, el «+1» pesa más que la propia cifra y el factor deja de querer decir «se equivoca un tercio». Y un RMSE es un error típico, no un intervalo de predicción: no promete que cada título caiga dentro de ese margen."
+      ],
+      "ledger": [
+        {
+          "clave": "Línea de base (la media)",
+          "valor": "R² 0,000 · RMSE 0,402"
+        },
+        {
+          "clave": "Regresión lineal",
+          "valor": "R² 0,291 · RMSE 0,339"
+        },
+        {
+          "clave": "KNN (k = 11)",
+          "valor": "R² 0,347 · RMSE 0,325"
+        },
+        {
+          "clave": "Gradient Boosting",
+          "valor": "R² 0,498 · RMSE 0,285",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "hud",
+        "datos": [
+          {
+            "valor": 0.0,
+            "texto": "0,000",
+            "etiqueta": "Base"
+          },
+          {
+            "valor": 0.2909,
+            "texto": "0,291",
+            "etiqueta": "Lineal"
+          },
+          {
+            "valor": 0.3472,
+            "texto": "0,347",
+            "etiqueta": "KNN"
+          },
+          {
+            "valor": 0.4976,
+            "texto": "0,498",
+            "etiqueta": "Boosting",
+            "destacada": true
+          }
+        ]
+      },
+      "figcaption": "R² sobre log(ventas + 1), en test. Cada bloque son cinco centésimas: el mejor llena diez y la línea de base, ninguno.",
+      "sr": "Cuatro medidores por bloques con el R² sobre el logaritmo de las ventas en test: línea de base 0,000; regresión lineal 0,291; KNN 0,347; y Gradient Boosting 0,498, el mejor de los cuatro.",
+      "composicion": "ancho"
+    },
+    {
+      "id": "s-shap",
+      "etiqueta": "Qué pesa",
+      "eyebrow": "Interpretabilidad",
+      "titulo_antes": "No pesa la nota.",
+      "titulo_acento": "Pesa cuánta gente vota",
+      "titulo_despues": ".",
+      "lead": "La importancia SHAP sobre el conjunto de test deja un primer puesto que no es el esperado: manda el número de votos de usuarios, muy por encima de la nota que ponen y de la que pone la crítica.",
+      "parrafos": [
+        "Tiene sentido si se piensa un momento: el número de votos no mide calidad, mide cuánta gente jugó. Es una señal de popularidad disfrazada de valoración. Un juego con un 9 y treinta votos vende menos que uno con un 7 y diez mil.",
+        "Los tres puestos siguientes tampoco hablan del producto sino de su contexto comercial: el año, el parque instalado de la consola y en cuántas plataformas salió el título."
+      ],
+      "ledger": [
+        {
+          "clave": "Votos de usuarios",
+          "valor": "0,109",
+          "destacada": true
+        },
+        {
+          "clave": "Año de lanzamiento",
+          "valor": "0,076"
+        },
+        {
+          "clave": "Unidades de la consola",
+          "valor": "0,058"
+        },
+        {
+          "clave": "Número de plataformas",
+          "valor": "0,047"
+        },
+        {
+          "clave": "Nota de la crítica",
+          "valor": "0,040"
+        }
+      ],
+      "grafico": {
+        "tipo": "barras",
+        "datos": [
+          {
+            "valor": 0.109,
+            "texto": "0,11",
+            "etiqueta": "Votos",
+            "destacada": true
+          },
+          {
+            "valor": 0.076,
+            "texto": "0,08",
+            "etiqueta": "Año"
+          },
+          {
+            "valor": 0.058,
+            "texto": "0,06",
+            "etiqueta": "Consola"
+          },
+          {
+            "valor": 0.04,
+            "texto": "0,04",
+            "etiqueta": "Nota"
+          }
+        ]
+      },
+      "figcaption": "Importancia SHAP media en test. «Nota» es la de la crítica: pesa casi tres veces menos que el número de votos.",
+      "sr": "Barras de importancia SHAP: votos de usuarios 0,109; año de lanzamiento 0,076; unidades de la consola 0,058; nota de la crítica 0,040. El número de plataformas queda en 0,047.",
+      "composicion": "invertido"
+    },
+    {
+      "id": "s-limites",
+      "etiqueta": "Lo que no ve",
+      "eyebrow": "Los límites",
+      "titulo_antes": "Un R² de 0,498",
+      "titulo_acento": "no es el 50% de las ventas",
+      "titulo_despues": ".",
+      "lead": "Aquí hay que ser preciso, porque es donde se cuela el error más común. Ese 0,498 es la varianza explicada de log(ventas + 1), que es la escala en la que se entrenó. Al deshacer la transformación y medir sobre ventas en millones de unidades, el R² del mismo modelo es 0,227.",
+      "parrafos": [
+        "Las dos cifras son correctas y describen el mismo modelo: responden a preguntas distintas. La logarítmica dice lo bien que ordena los títulos por magnitud; la de millones, cuánto se equivoca en unidades vendidas. Decir «el modelo explica el 50 % de las ventas» sería falso.",
+        "Hay una limitación mayor que el R², y es de calendario: la nota de la crítica y la de los usuarios son datos posteriores al lanzamiento. En una predicción anterior a lanzar, esas dos columnas no existen, y son justo las que más pesan.",
+        "Y una tercera, metodológica: el 51,5 % de las notas de crítica venían vacías y se imputaron con la mediana, calculada solo con el tramo de entrenamiento. Los juegos sin nota venden de media menos (0,39 millones frente a 0,69), así que esa ausencia no es aleatoria.",
+        "Las unidades de la consola son además su total histórico, no las que llevaba vendidas el día que salió el juego. Es la aproximación disponible, pero favorece a los títulos de plataformas que acabaron vendiendo mucho."
+      ],
+      "ledger": [
+        {
+          "clave": "R² sobre log(ventas + 1)",
+          "valor": "0,498"
+        },
+        {
+          "clave": "R² sobre ventas en millones",
+          "valor": "0,227",
+          "destacada": true
+        },
+        {
+          "clave": "Notas de crítica y usuarios",
+          "valor": "Post-lanzamiento"
+        },
+        {
+          "clave": "Notas de crítica vacías",
+          "valor": "51,5 %"
+        }
+      ],
+      "grafico": {
+        "tipo": "escalas",
+        "datos": [
+          {
+            "valor": 49.8,
+            "texto": "49,8%",
+            "etiqueta": "Varianza de log(ventas + 1)",
+            "pie": "la escala en la que se entrenó"
+          },
+          {
+            "valor": 22.7,
+            "texto": "22,7%",
+            "etiqueta": "Varianza de ventas en millones",
+            "pie": "la misma predicción, en unidades"
+          }
+        ]
+      },
+      "figcaption": "Dos escalas, dos reglas. El mismo modelo mide 49,8 en una y 22,7 en la otra: no son dos resultados, son dos preguntas.",
+      "sr": "Dos reglas graduadas de 0 a 100. La primera, sobre el logaritmo de las ventas más uno, llega a 49,8. La segunda, sobre las ventas en millones de unidades, llega a 22,7. Son el mismo modelo medido en dos escalas distintas.",
+      "composicion": "dividido"
+    },
+    {
+      "id": "s-uso",
+      "etiqueta": "Para qué sirve",
+      "eyebrow": "Utilidad",
+      "titulo_antes": "El momento en que",
+      "titulo_acento": "sí sirve",
+      "titulo_despues": ".",
+      "lead": "Con las notas de la crítica dentro, el modelo no predice antes de lanzar: estima después de las primeras reseñas. Y ahí es cuando una distribuidora todavía tiene una decisión encima de la mesa, que es cuánto invertir en la campaña de las semanas siguientes.",
+      "parrafos": [
+        "Esa es la ventana útil: entre las primeras críticas y el grueso del gasto en marketing. Una estimación con un error medio de 0,38 millones de unidades no decide la campaña sola, pero sí ordena una lista de lanzamientos por dónde merece la pena poner el dinero.",
+        "La otra mitad del valor es explicativa, y no necesita ninguna ventana: saber que el Rating no mueve las ventas y que el número de plataformas sí es una conclusión que se puede usar en la siguiente negociación con un estudio."
+      ],
+      "ledger": [
+        {
+          "clave": "Error medio (MAE)",
+          "valor": "0,38 millones de unidades"
+        },
+        {
+          "clave": "Cuándo se puede usar",
+          "valor": "Tras las primeras críticas"
+        },
+        {
+          "clave": "Decisión que apoya",
+          "valor": "Reparto del gasto en campaña"
+        }
+      ],
+      "grafico": {
+        "tipo": "flujo",
+        "datos": [
+          {
+            "etiqueta": "Sale el|juego"
+          },
+          {
+            "etiqueta": "Primeras|críticas"
+          },
+          {
+            "etiqueta": "Estimación|de ventas"
+          },
+          {
+            "etiqueta": "Reparto|del gasto",
+            "pie": "Antes de las críticas esas|variables no existen."
+          }
+        ]
+      },
+      "figcaption": "Dónde encaja el modelo en el calendario de un lanzamiento.",
+      "sr": "Diagrama: tras el lanzamiento llegan las primeras críticas, con ellas se estima la venta, y esa estimación alimenta el reparto del gasto en campaña. Antes de las críticas esas variables no existen.",
+      "composicion": "editorial"
+    }
+  ],
+  "cierre": {
+    "eyebrow": "El código",
+    "titulo_antes": "El código está en",
+    "titulo_acento": "GitHub",
+    "titulo_despues": ".",
+    "parrafos": [
+      "Cada cifra de esta página viene del cuaderno de Python del trabajo: la carga y limpieza de los dos datasets, el análisis exploratorio, el modelo OLS con sus contrastes, los tres modelos comparados y la interpretación con SHAP.",
+      "El repositorio lleva el cuaderno entero, con su código y sus salidas, incluido el apartado de limitaciones tal y como lo escribí. Es la parte que más dice sobre cómo trabajo."
+    ],
+    "botones": [
+      {
+        "texto": "Ver el código en GitHub",
+        "href": "https://github.com/ppblanco/video-game-sales-prediction",
+        "nueva_pestana": true
+      },
+      {
+        "texto": "Escríbeme",
+        "href": "mailto:pedro.perez.blanco@outlook.es"
+      }
+    ],
+    "informe": {
+      "titulo": "Predicción de ventas · Presentación",
+      "tipo": "PDF",
+      "alt": "Primera página de la presentación del trabajo de aprendizaje supervisado sobre predicción de ventas de videojuegos.",
+      "cta": "Ver la presentación",
+      "descargar": "Descargar presentación",
+      "ampliar": "Abrir en pantalla completa",
+      "descarga": "videojuegos-presentacion.pdf",
+      "archivo": "videojuegos-presentacion.pdf",
+      "portada": "../medios/informes/videojuegos-portada.jpg",
+      "paginas": 11,
+      "peso": "325 KB",
+      "octetos": 332777,
+      "ancho": 1000,
+      "alto": 563
+    }
+  },
+  "siguiente": {
+    "rotulo": "Siguiente trabajo",
+    "titulo": "Predicción de demanda con redes recurrentes",
+    "href": "deep-learning.html"
+  },
+  "paleta": {
+    "_porque": "azul 202° del vídeo, el 21% de sus píxeles con color: pantallas y carcasas",
+    "senal": "#63B4DE",
+    "senal_viva": "#8ACBEB",
+    "senal_tenue": "rgba(99,180,222,.14)",
+    "senal_linea": "rgba(99,180,222,.34)"
+  }
+}

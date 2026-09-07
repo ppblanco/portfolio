@@ -1,0 +1,625 @@
+{
+  "_leeme": "TODO el texto de index.html sale de aquí. Edita y ejecuta 'python herramientas/hacer-plantilla.py'. No edites el HTML a mano: se sobrescribe entero. Los huecos por rellenar llevan el valor 'PENDIENTE' y el generador avisa de cuántos quedan. El dominio y el enlace de respaldo no los toques aquí: usa herramientas/rellenar.py.",
+  "sitio": {
+    "dominio": "pedro-perez-data.netlify.app",
+    "iniciales": "PP",
+    "nombre": "Pedro Pérez Blanco",
+    "descripcion": "Portfolio de Pedro Pérez Blanco, analista de marketing y datos: seis casos de machine learning, NLP, deep learning y estrategia de marca.",
+    "titulo_pestana": "Pedro Pérez Blanco · Analista de marketing y datos",
+    "verificacion_google": "DOORDlz7cONmXe1ia2Wyl8JYohyL6mozDuZVAdRpIoE"
+  },
+  "nav": [
+    {
+      "texto": "Trabajo",
+      "ancla": "trabajo"
+    },
+    {
+      "texto": "Herramientas",
+      "ancla": "destrezas"
+    },
+    {
+      "texto": "Experiencia",
+      "ancla": "experiencia"
+    },
+    {
+      "texto": "Formación",
+      "ancla": "formacion"
+    },
+    {
+      "texto": "Sobre mí",
+      "ancla": "sobre-mi"
+    }
+  ],
+  "nav_cta": {
+    "texto": "Contacto",
+    "ancla": "contacto"
+  },
+  "portada": {
+    "saludo": "Hola",
+    "nombre": "Pedro Pérez Blanco",
+    "lema_antes": "El 96% de las entregas trabajando el",
+    "lema_acento": "30%",
+    "lema_despues": "de los leads.",
+    "entradilla": "Analista de marketing y datos. Construí el sistema de lead scoring del CRM de admisiones de la Universidad Pontificia Comillas como trabajo de fin de máster. Vengo de marketing, y por eso el modelo devuelve A, B o C en vez de una probabilidad con cuatro decimales: un comercial no llama a un 0,7413.",
+    "cta_principal": {
+      "texto": "Ver mi trabajo",
+      "ancla": "trabajo"
+    },
+    "cta_secundaria": {
+      "texto": "Hablemos",
+      "ancla": "contacto"
+    },
+    "meta_fuerte": "Máster en Business Analytics",
+    "meta_resto": "Universidad Pontificia Comillas · ICADE, Madrid ’26",
+    "disponibilidad": "Madrid · disponible desde ya",
+    "imagen": "medios/retrato.jpg",
+    "imagen_alt": "Retrato de Pedro Pérez Blanco.",
+    "saludo_cola": ", soy",
+    "saludos": [
+      "Hola",
+      "Hello",
+      "Bonjour",
+      "Ciao",
+      "Olá",
+      "Hallo",
+      "Salut",
+      "Hej"
+    ]
+  },
+  "mapa": {
+    "rotulo": "Cómo se tocan los trabajos",
+    "titulo_antes": "Seis proyectos, las mismas",
+    "titulo_acento": "herramientas",
+    "titulo_despues": "",
+    "entradilla": "Pasa el ratón por un nodo para encender lo que comparte, arrástralo si te apetece, y pulsa un proyecto para abrir su página.",
+    "aviso_movil": "El mapa necesita ratón y sitio para leerse. Los seis proyectos están justo debajo."
+  },
+  "trabajo": {
+    "numero": "01",
+    "rotulo": "Trabajo seleccionado",
+    "titulo_antes": "Seis proyectos, un mismo",
+    "titulo_acento": "hábito",
+    "titulo_despues": "",
+    "entradilla": "Coger datos reales, sacar de ellos una decisión que alguien pueda tomar el lunes, y decir con la misma claridad qué funciona y qué no.",
+    "aviso": "Cada proyecto tiene su página: cómo se planteó, qué salió y, sobre todo, qué no salió. La memoria del TFM lleva datos del CRM de Comillas y no puede circular, así que esa la enseño en persona.",
+    "proyectos": [
+      {
+        "id": "obra-tfm",
+        "titulo": "Lead scoring y asistente RAG",
+        "categoria": "Modelado predictivo · IA aplicada",
+        "ano": "2026",
+        "imagen": "medios/fotos/Lead scoring y asistente RAG.png",
+        "alt": "Portada de la defensa del trabajo de fin de máster: «Sistema de Lead Scoring y Asistente Virtual con RAG para la captación de estudiantes en la Universidad Pontificia Comillas», con el sello de Comillas.",
+        "resumen": "Random Forest sobre 24.365 leads del CRM de admisiones que devuelve cada contacto como A, B o C, más un asistente con arquitectura RAG en Copilot Studio. Probado contra el curso siguiente sin reentrenar.",
+        "lecturas": [
+          {
+            "clave": "PR-AUC test",
+            "valor": "0,691",
+            "destacada": true
+          },
+          {
+            "clave": "Lift categoría A",
+            "valor": "×6,8"
+          }
+        ],
+        "chips": [
+          "Python",
+          "scikit-learn",
+          "Random Forest",
+          "SHAP",
+          "RAG"
+        ],
+        "enlaces": [
+          {
+            "texto": "Ver el trabajo",
+            "href": "trabajos/tfm-lead-scoring.html",
+            "tipo": "vivo",
+            "accion": "trabajo_tfm"
+          }
+        ],
+        "nota": "La memoria lleva datos del CRM · se la enseño en persona",
+        "tratamiento": "entera",
+        "github": "https://github.com/ppblanco/admissions-lead-scoring-rag"
+      },
+      {
+        "id": "obra-videojuegos",
+        "titulo": "Predicción de ventas de videojuegos",
+        "categoria": "Aprendizaje supervisado",
+        "ano": "2026",
+        "imagen": "medios/fotos/Predicción de ventas de videojuegos.jpg",
+        "alt": "Montón de consolas y juegos retro: una Super Nintendo, varias Game Boy y cartuchos de Pokémon, Zelda y Mario.",
+        "resumen": "Regresión sobre 16.719 títulos, enriquecida cruzando con un dataset de 51 consolas. El mejor modelo explica el 49,8 % de la varianza del logaritmo de las ventas, y el 22,7 % sobre las ventas en millones. Confirmó tres hipótesis y tumbó la cuarta.",
+        "lecturas": [
+          {
+            "clave": "Baseline",
+            "valor": "R² 0,000",
+            "tenue": true
+          },
+          {
+            "clave": "Gradient Boosting",
+            "valor": "R² 0,498",
+            "destacada": true
+          }
+        ],
+        "chips": [
+          "pandas",
+          "scikit-learn",
+          "Gradient Boosting",
+          "SHAP"
+        ],
+        "enlaces": [
+          {
+            "texto": "Ver el trabajo",
+            "href": "trabajos/videojuegos.html",
+            "tipo": "vivo",
+            "accion": "trabajo_videojuegos"
+          }
+        ],
+        "github": "https://github.com/ppblanco/video-game-sales-prediction"
+      },
+      {
+        "id": "obra-deeplearning",
+        "titulo": "Predicción de demanda con redes recurrentes",
+        "categoria": "Deep learning · Series temporales",
+        "ano": "2026",
+        "imagen": "medios/informes/deep-learning-portada.jpg",
+        "alt": "Primera página de la presentación del trabajo de predicción de demanda con redes recurrentes.",
+        "resumen": "Cuatro arquitecturas recurrentes contra una media móvil de siete días, sobre cinco años de ventas diarias. 56 entrenamientos, partición cronológica y el test tocado una sola vez. Trabajo de equipo con Marcos Fernández y Alfredo Martín.",
+        "lecturas": [
+          {
+            "clave": "Media móvil",
+            "valor": "MAE 4,867",
+            "tenue": true
+          },
+          {
+            "clave": "LSTM",
+            "valor": "MAE 4,550",
+            "destacada": true
+          }
+        ],
+        "chips": [
+          "TensorFlow",
+          "Keras",
+          "LSTM",
+          "Forecasting"
+        ],
+        "enlaces": [
+          {
+            "texto": "Ver el trabajo",
+            "href": "trabajos/deep-learning.html",
+            "tipo": "vivo",
+            "accion": "trabajo_deeplearning"
+          }
+        ],
+        "github": "https://github.com/ppblanco/retail-demand-forecasting-rnn"
+      },
+      {
+        "id": "obra-letterboxd",
+        "titulo": "Letterboxd · De qué habla quien reseña cine",
+        "categoria": "Datos no estructurados · PLN",
+        "ano": "2026",
+        "imagen": "medios/informes/letterboxd-portada.jpg",
+        "alt": "Primera página de la presentación del trabajo de topic modeling sobre reseñas de Letterboxd.",
+        "resumen": "Topic modeling sobre reseñas de cine. El modelo encontró seis tópicos y la mitad no hablaban de películas: separaban idiomas. De ahí salió un experimento que no estaba en el encargo. Trabajo de equipo con Alfredo Martín y Marcos Fernández.",
+        "lecturas": [
+          {
+            "clave": "Idiomas en el corpus",
+            "valor": "48",
+            "tenue": true
+          },
+          {
+            "clave": "Tópicos que eran idioma",
+            "valor": "3 de 6",
+            "destacada": true
+          }
+        ],
+        "chips": [
+          "spaCy",
+          "NLTK",
+          "Gensim",
+          "LDA"
+        ],
+        "enlaces": [
+          {
+            "texto": "Ver el trabajo",
+            "href": "trabajos/letterboxd.html",
+            "tipo": "vivo",
+            "accion": "trabajo_letterboxd"
+          }
+        ],
+        "github": "https://github.com/ppblanco/letterboxd-topic-modeling"
+      },
+      {
+        "id": "obra-lipton",
+        "titulo": "Lipton · The Summer Shake Up",
+        "categoria": "Estrategia de marca",
+        "ano": "2024",
+        "imagen": "medios/fotos/Lipton · The Summer Shake Up.jpg",
+        "alt": "Lata de Lipton Ice Tea Lemon sobre hielo, rodeada de rodajas de limón y hojas de menta.",
+        "resumen": "Campaña de marca para Lipton Ice Tea presentada al concurso Ad Venture de Edcom, sobre el brief oficial. En equipo de cuatro, con investigación propia: cuestionario y focus groups antes de proponer nada.",
+        "lecturas": [
+          {
+            "clave": "Público",
+            "valor": "Gen Z, 1995–2010"
+          },
+          {
+            "clave": "Mercados",
+            "valor": "6 países"
+          }
+        ],
+        "chips": [
+          "Estrategia de marca",
+          "Gen Z",
+          "Investigación"
+        ],
+        "enlaces": [
+          {
+            "texto": "Ver el trabajo",
+            "href": "trabajos/lipton.html",
+            "tipo": "vivo",
+            "accion": "trabajo_lipton"
+          }
+        ],
+        "github": "https://github.com/ppblanco/lipton-summer-shake-up"
+      },
+      {
+        "id": "obra-apuestas",
+        "titulo": "Ganar a la casa de apuestas",
+        "categoria": "Análisis exploratorio",
+        "ano": "2026",
+        "imagen": "medios/fotos/Ganar a la casa de apuestas.jpg",
+        "alt": "Rótulo iluminado de una casa de apuestas Sportium, «Apostes Esportives», visto desde abajo.",
+        "resumen": "11.794 partidos ATP con sus cuotas, cruzados con 65.019 jugadores. El patrón existe —en hierba el más alto gana casi el 57%— pero al simular las apuestas todas las estrategias pierden dinero. La cuota ya se lo había comido.",
+        "lecturas": [
+          {
+            "clave": "Acierto al favorito",
+            "valor": "68,18%",
+            "tenue": true
+          },
+          {
+            "clave": "ROI de esa estrategia",
+            "valor": "−4,54%",
+            "destacada": true
+          }
+        ],
+        "chips": [
+          "pandas",
+          "NumPy",
+          "Plotly",
+          "EDA"
+        ],
+        "enlaces": [
+          {
+            "texto": "Ver el trabajo",
+            "href": "trabajos/apuestas.html",
+            "tipo": "vivo",
+            "accion": "trabajo_apuestas"
+          }
+        ],
+        "github": "https://github.com/ppblanco/atp-tennis-betting-analysis"
+      }
+    ]
+  },
+  "destrezas": {
+    "numero": "02",
+    "rotulo": "Con qué trabajo",
+    "titulo_antes": "Lo que uso de verdad, no una lista de todo lo que he",
+    "titulo_acento": "tocado",
+    "titulo_despues": "",
+    "grupos": [
+      {
+        "rotulo": "Datos",
+        "items": [
+          {
+            "nombre": "Python",
+            "icono": "◆"
+          },
+          {
+            "nombre": "SQL",
+            "icono": "◆"
+          },
+          {
+            "nombre": "scikit-learn",
+            "icono": "◆"
+          },
+          {
+            "nombre": "SHAP",
+            "icono": "◆"
+          },
+          {
+            "nombre": "pandas",
+            "icono": "◆"
+          },
+          {
+            "nombre": "MongoDB",
+            "icono": "◆"
+          },
+          {
+            "nombre": "TensorFlow · Keras",
+            "icono": "◆"
+          },
+          {
+            "nombre": "spaCy · Gensim",
+            "icono": "◆"
+          }
+        ]
+      },
+      {
+        "rotulo": "Visualización",
+        "items": [
+          {
+            "nombre": "Power BI",
+            "icono": "●"
+          },
+          {
+            "nombre": "Tableau",
+            "icono": "●"
+          },
+          {
+            "nombre": "Plotly",
+            "icono": "●"
+          }
+        ]
+      },
+      {
+        "rotulo": "IA aplicada",
+        "items": [
+          {
+            "nombre": "RAG · Copilot Studio",
+            "icono": "◈"
+          },
+          {
+            "nombre": "Claude Code",
+            "icono": "◈"
+          },
+          {
+            "nombre": "Claude Cowork",
+            "icono": "◈"
+          },
+          {
+            "nombre": "ChatGPT",
+            "icono": "◈"
+          },
+          {
+            "nombre": "Automatización de procesos",
+            "icono": "◈"
+          }
+        ]
+      },
+      {
+        "rotulo": "Marketing digital",
+        "items": [
+          {
+            "nombre": "Análisis de competencia",
+            "icono": "▲"
+          },
+          {
+            "nombre": "Publicidad online",
+            "icono": "▲"
+          },
+          {
+            "nombre": "Redes sociales",
+            "icono": "▲"
+          },
+          {
+            "nombre": "Creación de contenido",
+            "icono": "▲"
+          },
+          {
+            "nombre": "WordPress",
+            "icono": "▲"
+          }
+        ]
+      },
+      {
+        "rotulo": "Idiomas",
+        "items": [
+          {
+            "nombre": "Español · nativo",
+            "icono": "■"
+          },
+          {
+            "nombre": "Inglés · C1 Cambridge",
+            "icono": "■"
+          }
+        ]
+      }
+    ]
+  },
+  "experiencia": {
+    "numero": "03",
+    "rotulo": "Experiencia",
+    "titulo_antes": "Marketing primero, datos",
+    "titulo_acento": "después",
+    "titulo_despues": "",
+    "entradilla": "Ese orden explica por qué el modelo devuelve A, B o C en lugar de una probabilidad: he estado del lado del que tiene que coger el teléfono.",
+    "imagen": "medios/fotos/experiencia.jpg",
+    "imagen_alt": "Pedro Pérez Blanco, de traje, en el campus de la Universidad Pontificia Comillas el día de la graduación del máster.",
+    "puestos": [
+      {
+        "puesto": "Proyecto de datos",
+        "empresa": "Universidad Pontificia Comillas",
+        "ciudad": "Madrid",
+        "cuando": "jul 2026",
+        "descripcion": "Colaboración para llevar a producción el sistema de lead scoring y el asistente RAG del trabajo de fin de máster, esta vez con los datos oficiales del CRM de admisiones. Trabajo con datos reales y confidenciales, con las restricciones que eso impone.",
+        "abierto": true
+      },
+      {
+        "puesto": "Becario de marketing",
+        "empresa": "MBE · Master in Business Entrepreneurship",
+        "ciudad": "Madrid",
+        "cuando": "feb – jul 2025",
+        "descripcion": "Investigación de competencia y de mercado, diseño de campañas de captación y creación de contenido para redes. También los materiales de promoción y comunicación de los proyectos emprendedores del programa."
+      },
+      {
+        "puesto": "Cofundador",
+        "empresa": "Cre8 Marketing Agency",
+        "ciudad": "Tilburg, Países Bajos",
+        "cuando": "sep 2023 – feb 2024",
+        "descripcion": "Agencia cofundada durante el Erasmus. Campaña publicitaria online completa para un cliente real, Slijterij56: estrategia, contenido y gestión de redes, de principio a fin."
+      },
+      {
+        "puesto": "Logistics assistant",
+        "empresa": "CLASSEN Group",
+        "ciudad": "Tilburg, Países Bajos",
+        "cuando": "oct 2023 – feb 2024",
+        "descripcion": "Gestión de inventarios y apoyo en operaciones logísticas, en un entorno internacional y en inglés, compaginado con el intercambio."
+      }
+    ]
+  },
+  "formacion": {
+    "numero": "04",
+    "rotulo": "Formación",
+    "titulo_antes": "Dónde he",
+    "titulo_acento": "estudiado",
+    "titulo_despues": "",
+    "bloques": [
+      {
+        "titulo": "Máster Universitario en Business Analytics",
+        "institucion": "Universidad Pontificia Comillas · ICADE",
+        "cuando": "oct 2025 – jul 2026",
+        "detalle": "Madrid",
+        "imagen": "medios/fotos/Máster Universitario en Business Analytics.jpeg",
+        "alt": "Graduación del máster en Business Analytics en la Universidad Pontificia Comillas: los titulados en el escenario con la banda de la universidad.",
+        "puntos": [
+          "Primer puesto en el concurso del módulo de Visualización de Datos, con la campaña solidaria «Reyes Magos de Verdad».",
+          "Machine learning supervisado y no supervisado, deep learning, big data y datos no estructurados (NLP).",
+          "Programación en Python, fuentes y bases de datos, y visualización.",
+          "Analítica aplicada a marketing, finanzas y logística.",
+          "Trabajo de fin de máster: sistema de lead scoring y asistente virtual con RAG para la captación de estudiantes."
+        ],
+        "etiquetas": [
+          "Python",
+          "Machine learning",
+          "NLP",
+          "Big data"
+        ],
+        "foco": "center 45%"
+      },
+      {
+        "titulo": "Grado en Marketing + Diploma en Habilidades Directivas",
+        "institucion": "ESIC University",
+        "cuando": "sep 2021 – jun 2025",
+        "detalle": "Madrid",
+        "imagen": "medios/fotos/Grado en Marketing + Diploma en Habilidades Directivas.jpeg",
+        "alt": "Pedro Pérez Blanco el día de la graduación en ESIC University, con birrete, toga, la banda naranja de ESIC y el diploma.",
+        "puntos": [
+          "Marketing estratégico y digital.",
+          "Diploma de especialización en habilidades directivas."
+        ],
+        "etiquetas": [
+          "Marketing estratégico",
+          "Marketing digital"
+        ],
+        "foco": "center 16%"
+      },
+      {
+        "titulo": "Creative Advertising · intercambio Erasmus",
+        "institucion": "Fontys Academy for the Creative Economy",
+        "cuando": "sep 2023 – feb 2024",
+        "detalle": "Tilburg, Países Bajos",
+        "imagen": "medios/fotos/Creative Advertising · intercambio Erasmus.jpeg",
+        "alt": "Logotipo de Cre8 Marketing Agency, la agencia que cofundó durante el intercambio.",
+        "puntos": [
+          "Proyecto estratégico para Lipton Ice Tea, presentado al concurso Ad Venture de Edcom.",
+          "Cofundación de Cre8 Marketing Agency durante el intercambio."
+        ],
+        "etiquetas": [
+          "Publicidad creativa",
+          "Erasmus"
+        ],
+        "foco": "center 6%",
+        "tratamiento": "marca"
+      },
+      {
+        "titulo": "Idiomas y formación complementaria",
+        "institucion": "Cambridge · Anthropic · Comillas · HubSpot",
+        "cuando": "2021 – 2026",
+        "detalle": "",
+        "imagen": "medios/fotos/Idiomas y formación complementaria.webp",
+        "alt": "Logotipo de Anthropic.",
+        "puntos": [
+          "Inglés C1 Advanced, Cambridge (2021). Español nativo.",
+          "Claude Code in Action, Claude Academy — Anthropic (2026).",
+          "Usos de la IA Generativa (MOOC013), Universidad Pontificia Comillas (2025).",
+          "Introducción al Business Analytics (MOOC011), Universidad Pontificia Comillas (2025).",
+          "Inbound Marketing, HubSpot Academy (2024)."
+        ],
+        "etiquetas": [
+          "Inglés C1",
+          "IA generativa",
+          "Business analytics",
+          "Inbound marketing"
+        ],
+        "foco": "center 50%",
+        "tratamiento": "logo"
+      }
+    ]
+  },
+  "sobre_mi": {
+    "numero": "05",
+    "rotulo": "Sobre mí",
+    "titulo_antes": "De marketing a",
+    "titulo_acento": "datos",
+    "titulo_despues": "",
+    "parrafos": [
+      "Vengo de marketing. Estudié el grado en ESIC, me fui de Erasmus a Países Bajos y allí cofundé una agencia con la que llevamos una campaña entera para un cliente real. Sé lo que cuesta traer a alguien, y sé lo que se siente cuando la lista de contactos es larga y el tiempo corto.",
+      "El máster en Business Analytics vino después, y por eso lo uso de otra forma. Cuando construí el sistema de lead scoring para Comillas, la decisión importante no fue qué modelo entrenar: fue que la salida tenía que ser A, B o C, y no una probabilidad con cuatro decimales. Un comercial no llama a un 0,7413. Llama a los de la lista A.",
+      "Los problemas que más disfruto son los que terminan en una decisión concreta: a quién llamar, qué campaña parar, dónde no merece la pena insistir. Por eso trabajo con SHAP y no solo con métricas: si quien tiene que usar el modelo no entiende por qué prioriza un contacto, no lo va a usar.",
+      "Busco un sitio donde esas dos cosas cuenten a la vez: entender el embudo antes de modelarlo, y saber explicar el modelo a quien tiene que tomar la decisión."
+    ]
+  },
+  "contacto": {
+    "titular_antes": "Si le encaja,",
+    "titular_acento": "hablamos",
+    "titular_despues": ".",
+    "entradilla": "Estoy en Madrid y disponible desde ya. Escríbame o llámeme y le cuento el proyecto con calma.",
+    "cta": {
+      "texto": "Escribirme",
+      "href": "mailto:pedro.perez.blanco@outlook.es"
+    }
+  },
+  "redes": [
+    {
+      "texto": "Correo",
+      "href": "mailto:pedro.perez.blanco@outlook.es",
+      "icono": "@"
+    },
+    {
+      "texto": "Teléfono",
+      "href": "tel:+34626146431",
+      "icono": "☎"
+    },
+    {
+      "texto": "LinkedIn",
+      "href": "https://linkedin.com/in/pedroperezblanco",
+      "icono": "in"
+    },
+    {
+      "texto": "CV en español",
+      "href": "medios/cv-pedro-perez-blanco-es.pdf",
+      "icono": "↓",
+      "descarga": "Pedro Perez Blanco - CV (ES).pdf"
+    },
+    {
+      "texto": "CV in English",
+      "href": "medios/cv-pedro-perez-blanco-en.pdf",
+      "icono": "↓",
+      "descarga": "Pedro Perez Blanco - CV (EN).pdf"
+    },
+    {
+      "texto": "GitHub",
+      "href": "https://github.com/ppblanco",
+      "icono": "{ }"
+    }
+  ],
+  "pie": {
+    "copyright": "© 2026 Pedro Pérez Blanco · Analista de marketing y datos · Madrid"
+  },
+  "flotante": {
+    "titulo": "Ponte en contacto",
+    "sub": "Escríbeme cuando quieras",
+    "href": "mailto:pedro.perez.blanco@outlook.es",
+    "etiqueta": "Escribir a Pedro Pérez Blanco por correo"
+  }
+}

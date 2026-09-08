@@ -1705,9 +1705,69 @@ def g_arquitectura(datos):
     return _svg("".join(p), y)
 
 
+
+def g_correcciones(datos):
+    """Una lista de rectificaciones, en vertical.
+
+    VERTICAL Y NO HORIZONTAL, y es una decision, no una limitacion. Siete
+    paradas repartidas a lo ancho de un lienzo de 640 dejan noventa unidades
+    por parada: con la letra de movil eso son cinco caracteres. En vertical
+    cada rectificacion tiene la anchura entera para su nombre y se lee igual
+    a 390 que a 1440, que es justo lo que se le pide a esto.
+
+    Arriba, las tres fases por las que pasa cada una. No se repiten en cada
+    fila porque son siempre las mismas: enunciarlas una vez es la forma de que
+    la seccion no ocupe mil pixeles.
+    """
+    d = datos[0] if isinstance(datos, list) else datos
+    fases = d.get("fases", ["Supuesto", "Prueba", "Correcci\u00f3n"])
+    hitos = d["hitos"]
+    p = []
+
+    # Las tres fases, en fila, como cabecera.
+    x = IZQ - 30
+    for i, f in enumerate(fases):
+        ancho = len(f) * LETRA_ROT + 26
+        p.append(f'<rect x="{x:.0f}" y="14" width="{ancho:.0f}" height="34" rx="17" '
+                 f'fill="none" stroke="var(--linea-fuerte)" stroke-width="1.3"/>')
+        p.append(f'<text x="{x + ancho / 2:.0f}" y="37" class="g-rotulo" '
+                 f'text-anchor="middle">{e(f)}</text>')
+        x += ancho + 8
+        if i < len(fases) - 1:
+            p.append(f'<path d="M {x - 4:.0f} 31 l 10 0 m -4 -4 l 4 4 l -4 4" fill="none" '
+                     f'stroke="var(--senal)" stroke-width="1.4"/>')
+            x += 16
+    cabe(" ".join(fases), DER - IZQ + 60, LETRA_ROT, " en las fases")
+
+    # El rail y las paradas.
+    # El paso sale del rotulo mas alto, no de un numero escrito a mano: con
+    # 54 fijo, una parada de dos lineas se comia la siguiente.
+    FILA = max(54, LINEA_ROT * max(len(lineas(h)) for h in hitos) + 16)
+    Y0 = 92
+    # El rail deja sitio a su izquierda para el numero de la parada: con
+    # RX = IZQ - 14 el «01» empezaba en -5 y el lienzo se lo comia.
+    RX = IZQ + 8
+    p.append(f'<line x1="{RX}" y1="{Y0 - 14}" x2="{RX}" y2="{Y0 + (len(hitos) - 1) * FILA + 14}" '
+             f'stroke="var(--linea-fuerte)" stroke-width="1.4" opacity=".6"/>')
+    for i, h in enumerate(hitos):
+        y = Y0 + i * FILA
+        p.append(f'<circle cx="{RX}" cy="{y}" r="7" fill="var(--fondo)" '
+                 f'stroke="var(--senal)" stroke-width="1.8"/>')
+        p.append(f'<text x="{RX - 20}" y="{y + 6}" class="g-pie" text-anchor="end">'
+                 f'{i + 1:02d}</text>')
+        trozos = lineas(h)
+        base = y + 6 - (LINEA_ROT // 2) * (len(trozos) - 1)
+        for j, l in enumerate(trozos):
+            p.append(f'<text x="{RX + 22}" y="{base + j * LINEA_ROT}" class="g-rotulo">'
+                     f'{e(l)}</text>')
+        cabe(h, DER - RX - 30, LETRA_ROT, " en una correccion")
+    return _svg("".join(p), Y0 + (len(hitos) - 1) * FILA + 40)
+
+
 GRAFICOS = {
     # --- piezas de cabina, estrenadas en el caso de self-play ---------
     "pool": g_pool,
+    "correcciones": g_correcciones,
     "arquitectura": g_arquitectura,
     "dial": g_dial,
     "telemetria": g_telemetria,
@@ -1876,7 +1936,7 @@ def visor(inf):
 
           <div class="visor__lienzo">
             <a class="visor__fachada" href="{ruta(inf['archivo'])}"
-               target="_blank" rel="noopener"
+               target="_blank" rel="noopener noreferrer"
                data-visor="{e(inf['titulo'])}, {inf.get('paginas', 0)} páginas">
               <img class="visor__portada" src="{ruta(inf['portada'])}"
                    width="{inf.get('ancho', 1000)}" height="{inf.get('alto', 1415)}"
@@ -1896,7 +1956,7 @@ def visor(inf):
               <span class="visor__peso">{e(inf.get('peso', ''))}</span>
             </a>
             <a class="visor__accion visor__accion--fin" href="{ruta(inf['archivo'])}"
-               target="_blank" rel="noopener">
+               target="_blank" rel="noopener noreferrer">
               {e(inf['ampliar'])} <span class="flecha" aria-hidden="true">↗</span>
               <span class="oculto">, se abre en otra pestaña</span>
             </a>
@@ -2029,7 +2089,7 @@ def hacer(nombre_json, nombre_salida):
     pendientes = [b["texto"] for b in c["botones"] if b["href"] == "PENDIENTE"]
     botones = "".join(
         f'<a class="boton {"boton--solido" if i == 0 else ""}" href="{e(b["href"])}"'
-        f'{" target=\"_blank\" rel=\"noopener\"" if b.get("nueva_pestana") else ""}>'
+        f'{" target=\"_blank\" rel=\"noopener noreferrer\"" if b.get("nueva_pestana") else ""}>'
         f'{e(b["texto"])} {FLECHA}</a>'
         for i, b in enumerate(vivos))
     # El flotante sale de contenido-plantilla.json y no de aquí: es el mismo
@@ -2084,6 +2144,7 @@ def hacer(nombre_json, nombre_salida):
 <meta property="og:image" content="https://{e(m['dominio'])}/medios/og.jpg">
 <meta property="og:image:alt" content="Tarjeta con el nombre de Pedro Pérez Blanco y el titular del portfolio.">
 <meta property="og:url" content="https://{e(m['dominio'])}/trabajos/{e(nombre_salida)}">
+<link rel="canonical" href="https://{e(m['dominio'])}/trabajos/{e(nombre_salida)}">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="stylesheet" href="../ui/tipos.css">

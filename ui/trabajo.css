@@ -1044,3 +1044,24 @@
 @media (prefers-reduced-motion: reduce){
   .corte__video{ transition:none }
 }
+
+/* ---------- Área de pulsación mínima ------------------------------ */
+/* Lo mismo que en plantilla.css, para los enlaces propios de una página de
+   caso. Crece la caja, no la letra. Area de pulsacion minima. */
+.volver,
+.visor__accion{ min-height:24px }
+
+/* ---------- Respaldo de aspect-ratio ------------------------------ */
+
+/* aspect-ratio existe en Safari desde la 15. En una anterior, la banda de
+   vídeo se quedaría con altura cero y el corte desaparecería sin dejar
+   rastro. El respaldo es el truco clásico del padding porcentual, y solo
+   se aplica donde la propiedad NO se soporta: donde sí, esta regla ni se
+   evalúa. No lo he podido probar en un Safari real. */
+@supports not (aspect-ratio: 21 / 9){
+  .corte__caja{ height:0; padding-bottom:42.85% }   /* 9/21 */
+  .corte__caja > *{ position:absolute }
+  @media (max-width:760px){
+    .corte__caja{ padding-bottom:56.25% }           /* 9/16 */
+  }
+}

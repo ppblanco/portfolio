@@ -80,6 +80,10 @@
     {
       "texto": "La falsación",
       "ancla": "s-falsacion"
+    },
+    {
+      "texto": "Lo que hice mal",
+      "ancla": "s-correcciones"
     }
   ],
   "secciones": [
@@ -562,6 +566,60 @@
       },
       "figcaption": "Los dos medidores en rojo son los que la predicción decía que subirían. Son los dos más bajos de los cinco.",
       "sr": "Cinco medidores en anillo, de mayor a menor: stage_1_basics 61,5, stage_2_offense 22,5, sin ZeroSum 16,0, R1 con el moldeado dividido entre diez 2,0 y R2 sólo con eventos 2,5. Los dos últimos, marcados, son los que la predicción decía que subirían. La predicción falló en la dirección contraria: hipótesis falsada."
+    },
+    {
+      "id": "s-correcciones",
+      "etiqueta": "08",
+      "eyebrow": "Lo que hice mal",
+      "titulo_antes": "Siete cosas que ",
+      "titulo_acento": "creí",
+      "titulo_despues": " y no eran.",
+      "composicion": "dividido",
+      "lead": "Ninguna de las siete la encontró una revisión final: salieron mientras el experimento corría, y cada una cambió algo de lo que venía después.",
+      "parrafos": [
+        "El patrón se repite en las siete. Doy algo por supuesto, escribo una comprobación que lo pondría en evidencia si fuera falso, y a veces lo es. Dos ejemplos: di por buena una lectura sacada de 40 partidas que con 200 no se sostenía, y llamé inofensivo un error de socket que después bloqueó una corrida entera.",
+        "Estos siete no están aquí por franqueza. Están porque son la parte del trabajo que explica por qué hay que fiarse del resto: las cifras de esta página son las que quedaron después de que estas correcciones las tocaran."
+      ],
+      "ledger": [
+        {
+          "clave": "Rectificaciones anotadas",
+          "valor": "7",
+          "destacada": true
+        },
+        {
+          "clave": "Encontradas durante",
+          "valor": "la ejecución"
+        },
+        {
+          "clave": "Corregidas sin reentrenar",
+          "valor": "5 de 7"
+        },
+        {
+          "clave": "Documentadas en el informe",
+          "valor": "las 7"
+        }
+      ],
+      "grafico": {
+        "tipo": "correcciones",
+        "datos": {
+          "fases": [
+            "Supuesto",
+            "Prueba",
+            "Corrección"
+          ],
+          "hitos": [
+            "DefaultReward",
+            "Varianza explicada",
+            "Ratio valor/retorno",
+            "Lectura de 40 partidas",
+            "Métrica de recompensa",
+            "Cierre de sockets",
+            "Hipótesis del moldeado"
+          ]
+        }
+      },
+      "figcaption": "Cada parada pasó por las tres fases de arriba antes de quedarse como está.",
+      "sr": "Siete rectificaciones, cada una del supuesto a la prueba y a la corrección: DefaultReward, la varianza explicada, el ratio entre valor y retorno, la lectura de 40 partidas, un defecto en la métrica de recompensa, el cierre de sockets y la hipótesis del moldeado."
     }
   ],
   "cierre": {

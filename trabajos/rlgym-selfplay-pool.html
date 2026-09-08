@@ -19,6 +19,7 @@
 <meta property="og:image" content="https://pedro-perez-data.netlify.app/medios/og.jpg">
 <meta property="og:image:alt" content="Tarjeta con el nombre de Pedro Pérez Blanco y el titular del portfolio.">
 <meta property="og:url" content="https://pedro-perez-data.netlify.app/trabajos/rlgym-selfplay-pool.html">
+<link rel="canonical" href="https://pedro-perez-data.netlify.app/trabajos/rlgym-selfplay-pool.html">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="stylesheet" href="../ui/tipos.css">
@@ -55,7 +56,7 @@
       <span class="barra__iniciales" aria-hidden="true">PPB</span>
       <span class="barra__nombre">Pedro Pérez Blanco</span>
     </a>
-    <ul class="barra__lista" id="menu-lista"><li><a href="#s-pregunta" data-nav>La pregunta</a></li><li><a href="#s-arquitectura" data-nav>Qué construí</a></li><li><a href="#s-resultado" data-nav>El resultado</a></li><li><a href="#s-diagnostico" data-nav>El diagnóstico</a></li><li><a href="#s-puerta" data-nav>La puerta</a></li><li><a href="#s-recompensas" data-nav>La recompensa</a></li><li><a href="#s-falsacion" data-nav>La falsación</a></li></ul>
+    <ul class="barra__lista" id="menu-lista"><li><a href="#s-pregunta" data-nav>La pregunta</a></li><li><a href="#s-arquitectura" data-nav>Qué construí</a></li><li><a href="#s-resultado" data-nav>El resultado</a></li><li><a href="#s-diagnostico" data-nav>El diagnóstico</a></li><li><a href="#s-puerta" data-nav>La puerta</a></li><li><a href="#s-recompensas" data-nav>La recompensa</a></li><li><a href="#s-falsacion" data-nav>La falsación</a></li><li><a href="#s-correcciones" data-nav>Lo que hice mal</a></li></ul>
     <button class="barra__pausa" id="reanudar" type="button">
       <span class="barra__pausa__punto" aria-hidden="true"></span>Movimiento en pausa
       <span class="oculto">, pulsa para reanudarlo</span>
@@ -94,7 +95,7 @@
        estás. Es un índice, no unas pestañas: el caso entero está en la
        página. -->
   <nav class="rail" id="rail" aria-label="Apartados de este trabajo">
-    <div class="marco rail__caja"><a href="#s-pregunta" data-rail>La pregunta</a><a href="#s-arquitectura" data-rail>Qué construí</a><a href="#s-resultado" data-rail>El resultado</a><a href="#s-diagnostico" data-rail>El diagnóstico</a><a href="#s-puerta" data-rail>La puerta</a><a href="#s-recompensas" data-rail>La recompensa</a><a href="#s-falsacion" data-rail>La falsación</a></div>
+    <div class="marco rail__caja"><a href="#s-pregunta" data-rail>La pregunta</a><a href="#s-arquitectura" data-rail>Qué construí</a><a href="#s-resultado" data-rail>El resultado</a><a href="#s-diagnostico" data-rail>El diagnóstico</a><a href="#s-puerta" data-rail>La puerta</a><a href="#s-recompensas" data-rail>La recompensa</a><a href="#s-falsacion" data-rail>La falsación</a><a href="#s-correcciones" data-rail>Lo que hice mal</a></div>
   </nav>
 
   <section class="caso" id="s-pregunta" data-caso="01">
@@ -268,6 +269,24 @@ mirar la recompensa.</p>
       </div>
     </div>
   </section>
+  <section class="caso" id="s-correcciones" data-caso="08">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--dividido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Lo que hice mal</p>
+          <h2 class="titulo-menor">Siete cosas que  <em class="acento">creí</em>  y no eran.</h2>
+          <p class="parrafo parrafo--lead">Ninguna de las siete la encontró una revisión final: salieron mientras el experimento corría, y cada una cambió algo de lo que venía después.</p>
+          <p class="parrafo">El patrón se repite en las siete. Doy algo por supuesto, escribo una comprobación que lo pondría en evidencia si fuera falso, y a veces lo es. Dos ejemplos: di por buena una lectura sacada de 40 partidas que con 200 no se sostenía, y llamé inofensivo un error de socket que después bloqueó una corrida entera.</p><p class="parrafo">Estos siete no están aquí por franqueza. Están porque son la parte del trabajo que explica por qué hay que fiarse del resto: las cifras de esta página son las que quedaron después de que estas correcciones las tocaran.</p>
+          <div class="lecturas"><div class="lectura lectura--destacada"><span class="lectura__clave">Rectificaciones anotadas</span><span class="lectura__valor">7</span></div><div class="lectura"><span class="lectura__clave">Encontradas durante</span><span class="lectura__valor">la ejecución</span></div><div class="lectura"><span class="lectura__clave">Corregidas sin reentrenar</span><span class="lectura__valor">5 de 7</span></div><div class="lectura"><span class="lectura__clave">Documentadas en el informe</span><span class="lectura__valor">las 7</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 462" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="20" y="14" width="176" height="34" rx="17" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.3"/><text x="108" y="37" class="g-rotulo" text-anchor="middle">Supuesto</text><path d="M 200 31 l 10 0 m -4 -4 l 4 4 l -4 4" fill="none" stroke="var(--senal)" stroke-width="1.4"/><rect x="220" y="14" width="138" height="34" rx="17" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.3"/><text x="289" y="37" class="g-rotulo" text-anchor="middle">Prueba</text><path d="M 362 31 l 10 0 m -4 -4 l 4 4 l -4 4" fill="none" stroke="var(--senal)" stroke-width="1.4"/><rect x="382" y="14" width="213" height="34" rx="17" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.3"/><text x="489" y="37" class="g-rotulo" text-anchor="middle">Corrección</text><line x1="58" y1="78" x2="58" y2="436" stroke="var(--linea-fuerte)" stroke-width="1.4" opacity=".6"/><circle cx="58" cy="92" r="7" fill="var(--fondo)" stroke="var(--senal)" stroke-width="1.8"/><text x="38" y="98" class="g-pie" text-anchor="end">01</text><text x="80" y="98" class="g-rotulo">DefaultReward</text><circle cx="58" cy="147" r="7" fill="var(--fondo)" stroke="var(--senal)" stroke-width="1.8"/><text x="38" y="153" class="g-pie" text-anchor="end">02</text><text x="80" y="153" class="g-rotulo">Varianza explicada</text><circle cx="58" cy="202" r="7" fill="var(--fondo)" stroke="var(--senal)" stroke-width="1.8"/><text x="38" y="208" class="g-pie" text-anchor="end">03</text><text x="80" y="208" class="g-rotulo">Ratio valor/retorno</text><circle cx="58" cy="257" r="7" fill="var(--fondo)" stroke="var(--senal)" stroke-width="1.8"/><text x="38" y="263" class="g-pie" text-anchor="end">04</text><text x="80" y="263" class="g-rotulo">Lectura de 40 partidas</text><circle cx="58" cy="312" r="7" fill="var(--fondo)" stroke="var(--senal)" stroke-width="1.8"/><text x="38" y="318" class="g-pie" text-anchor="end">05</text><text x="80" y="318" class="g-rotulo">Métrica de recompensa</text><circle cx="58" cy="367" r="7" fill="var(--fondo)" stroke="var(--senal)" stroke-width="1.8"/><text x="38" y="373" class="g-pie" text-anchor="end">06</text><text x="80" y="373" class="g-rotulo">Cierre de sockets</text><circle cx="58" cy="422" r="7" fill="var(--fondo)" stroke="var(--senal)" stroke-width="1.8"/><text x="38" y="428" class="g-pie" text-anchor="end">07</text><text x="80" y="428" class="g-rotulo">Hipótesis del moldeado</text></svg>
+          <figcaption class="caso__pie">Cada parada pasó por las tres fases de arriba antes de quedarse como está.</figcaption>
+          <p class="oculto">Siete rectificaciones, cada una del supuesto a la prueba y a la corrección: DefaultReward, la varianza explicada, el ratio entre valor y retorno, la lectura de 40 partidas, un defecto en la métrica de recompensa, el cierre de sockets y la hipótesis del moldeado.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
 
   <section class="caso caso--cierre" id="s-cierre">
     <div class="marco">
@@ -275,7 +294,7 @@ mirar la recompensa.</p>
         <p class="rotulo eyebrow">El trabajo</p>
         <h2 class="titulo-menor">Un experimento que  <em class="acento">no salió</em>.</h2>
         <p class="parrafo">No hay aquí un bot mejor. La hipótesis quedó sin confirmar, el segundo experimento se detuvo en su propia puerta y la hipótesis de recambio quedó falsada. La causa de lo que se observó sigue sin identificarse, y darla por conocida sería inventarse el final.</p><p class="parrafo">Lo que sí hay es el método entero y auditable: el criterio escrito antes de mirar, protocolos congelados por SHA256 que los propios scripts verifican al arrancar, una sola evaluación, intervalos de confianza con la corrida como unidad experimental, y los errores propios anotados donde se cometieron en vez de barridos. El informe completo incluye las decisiones que salieron mal.</p><p class="parrafo">Construido sobre moanv2/rlgym, con licencia MIT. El bot de Rocket League no es obra mía; el experimento sobre él, sí.</p>
-        <div class="botones"><a class="boton boton--solido" href="rlgym-presentacion.pdf" target="_blank" rel="noopener">Ver la presentación <span class="flecha" aria-hidden="true">↗</span></a><a class="boton " href="https://github.com/ppblanco/rlgym-selfplay-pool" target="_blank" rel="noopener">Ver el código en GitHub <span class="flecha" aria-hidden="true">↗</span></a><a class="boton " href="https://github.com/ppblanco/rlgym-selfplay-pool/blob/main/deliverables/RLGym_SelfPlay_Project_Report.pdf" target="_blank" rel="noopener">Leer el informe completo <span class="flecha" aria-hidden="true">↗</span></a></div>
+        <div class="botones"><a class="boton boton--solido" href="rlgym-presentacion.pdf" target="_blank" rel="noopener noreferrer">Ver la presentación <span class="flecha" aria-hidden="true">↗</span></a><a class="boton " href="https://github.com/ppblanco/rlgym-selfplay-pool" target="_blank" rel="noopener noreferrer">Ver el código en GitHub <span class="flecha" aria-hidden="true">↗</span></a><a class="boton " href="https://github.com/ppblanco/rlgym-selfplay-pool/blob/main/deliverables/RLGym_SelfPlay_Project_Report.pdf" target="_blank" rel="noopener noreferrer">Leer el informe completo <span class="flecha" aria-hidden="true">↗</span></a></div>
       </div>
       
         <figure class="visor" data-revelar>
@@ -286,7 +305,7 @@ mirar la recompensa.</p>
 
           <div class="visor__lienzo">
             <a class="visor__fachada" href="rlgym-presentacion.pdf"
-               target="_blank" rel="noopener"
+               target="_blank" rel="noopener noreferrer"
                data-visor="Self-play con opponent pool · Presentación, 12 páginas">
               <img class="visor__portada" src="../medios/informes/rlgym-portada.jpg"
                    width="1001" height="563"
@@ -306,7 +325,7 @@ mirar la recompensa.</p>
               <span class="visor__peso">1,2 MB</span>
             </a>
             <a class="visor__accion visor__accion--fin" href="rlgym-presentacion.pdf"
-               target="_blank" rel="noopener">
+               target="_blank" rel="noopener noreferrer">
               Abrir en pantalla completa <span class="flecha" aria-hidden="true">↗</span>
               <span class="oculto">, se abre en otra pestaña</span>
             </a>

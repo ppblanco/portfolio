@@ -54,7 +54,10 @@
   --t-cuerpo:16px;
   --t-menor:14px;
   --t-rotulo:12px;
-  --t-micro:10px;
+  /* 11 y no 10: a 10 px las etiquetas mono en versalitas se leen, pero
+     van justas para quien no tenga vista de veinte anos. Un pixel mas
+     no cambia la jerarquia y se nota al leerlas. */
+  --t-micro:11px;
 
   /* ---- Espacio. Escala de 4. --------------------------------- */
   --e1:8px;  --e2:12px; --e3:16px; --e4:24px;
@@ -1241,3 +1244,24 @@ html.sin-movimiento .nodo-cursor{ display:none }
   transition:background var(--rapido) var(--sale);
 }
 html.sin-movimiento .pie__punto{ background:var(--senal) }
+
+/* ---------- Área de pulsación mínima ------------------------------ */
+
+/* WCAG 2.2 pide 24x24 px para un objetivo. Estos enlaces median 19 y 22 de
+   alto: se leen bien, pero se fallan con el pulgar. Lo que crece es LA CAJA,
+   no la letra. Son inline-flex con align-items:center, así que el texto se
+   queda exactamente donde estaba y lo único que se gana es superficie.
+   Area de pulsacion minima. */
+.obra__enlace,
+.pie__enlaces a{ min-height:24px }
+
+/* El subrayado del enlace de ficha cuelga del borde inferior de la caja, y
+   la caja acaba de crecer: sin esto bajaría con ella y se despegaría del
+   texto. */
+.obra__enlace::after{ bottom:0 }
+
+/* Los puntos del carrusel miden 22x3. Eso no es un botón, es una raya. Se
+   les da un área invisible alrededor en vez de engordarlos, que cambiaría
+   el diseño: 26x25 de zona pulsable sobre 3 px de tinta. */
+.carrusel__punto{ position:relative }
+.carrusel__punto::after{ content:""; position:absolute; inset:-11px -2px }

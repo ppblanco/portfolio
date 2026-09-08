@@ -38,7 +38,7 @@ const CASOS = [
     nombre: 'Opponent Pool Self-Play',
     ruta: '/trabajos/rlgym-selfplay-pool.html',
     secciones: ['s-pregunta', 's-arquitectura', 's-resultado', 's-diagnostico',
-                's-puerta', 's-recompensas', 's-falsacion', 's-cierre'],
+                's-puerta', 's-recompensas', 's-falsacion', 's-correcciones', 's-cierre'],
     // El resultado es un intervalo que cruza el cero, y por eso el SIGNO forma
     // parte del dato: −0,83 con el intervalo entero. Dejarlo en 0,83 convierte
     // «no se puede afirmar nada» en «el brazo B gana», que es lo contrario de

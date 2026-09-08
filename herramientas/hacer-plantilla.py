@@ -100,7 +100,7 @@ def cabecera(d, clase="titulo-mayor"):
 # ---------------------------------------------------------------- piezas
 
 def enlace(l, clase):
-    extra = ' target="_blank" rel="noopener"' if l.get("nueva_pestana") else ""
+    extra = ' target="_blank" rel="noopener noreferrer"' if l.get("nueva_pestana") else ""
     aviso = f'<span class="oculto">{e(l["aviso"])}</span>' if l.get("aviso") else ""
     accion = f' data-accion="{e(l["accion"])}"' if l.get("accion") else ""
     return (f'<a class="{clase} {clase}--{e(l.get("tipo", "vivo"))}" '
@@ -141,7 +141,7 @@ def obra(p):
         pie = f'<span class="obra__nota">{e(p["nota"])}</span>'
 
     if principal:
-        extra = ' target="_blank" rel="noopener"' if principal.get("nueva_pestana") else ""
+        extra = ' target="_blank" rel="noopener noreferrer"' if principal.get("nueva_pestana") else ""
         accion = f' data-accion="{e(principal["accion"])}"' if principal.get("accion") else ""
         titulo = (f'<a class="obra__ir" href="{e(principal["href"])}"{accion}{extra}>'
                   f'{e(p["titulo"])}</a>')
@@ -254,7 +254,7 @@ def hito(x, n):
 
 
 def red(r, clase=""):
-    extra = ' target="_blank" rel="noopener"' if r.get("nueva_pestana") else ""
+    extra = ' target="_blank" rel="noopener noreferrer"' if r.get("nueva_pestana") else ""
     # "descarga" pone el atributo download con el nombre con el que se guarda.
     # Sin el, el navegador abre el PDF en una pestaña y quien queria el
     # archivo tiene que buscar el boton de guardar del visor.
@@ -262,6 +262,55 @@ def red(r, clase=""):
         extra += f' download="{e(r["descarga"])}"'
     return (f'<a class="{clase}" href="{e(r["href"])}"{extra}>'
             f'<span aria-hidden="true">{e(r["icono"])}</span> {e(r["texto"])}</a>')
+
+
+def mapa_en_palabras():
+    """Lo que el grafo dice, escrito, para quien no puede verlo.
+
+    El lienzo lleva role="img" y su aria-label, pero un aria-label es una
+    etiqueta, no el contenido: dice que hay un grafo, no QUE une con QUE. Esto
+    lo escribe, y lo escribe LEYENDO ui/mapa.js, que es donde viven los nodos
+    y las aristas de verdad. Asi no hay dos fuentes que se separen: si manana
+    entra un proyecto en el mapa, este texto lo recoge solo.
+
+    Va en un <ul class="oculto">, sin enlaces a proposito. Poner aqui siete
+    enlaces invisibles crearia siete paradas de tabulador que un teclado ve
+    pero un ojo no, y la navegacion YA existe justo debajo, en las fichas, que
+    son enlaces de verdad y visibles. Esto aporta la informacion que el dibujo
+    tiene y la lista de fichas no: que comparte cada trabajo con cual.
+
+    Si el analisis fallara, devuelve cadena vacia y la pagina sale como antes.
+    """
+    import re
+    try:
+        js = (RAIZ / "ui" / "mapa.js").read_text(encoding="utf-8")
+        nodos = {}
+        for m in re.finditer(r"\{\s*id:\s*'([^']+)'\s*,\s*texto:\s*'([^']+)'\s*,"
+                             r"\s*tipo:\s*'([^']+)'", js):
+            nodos[m.group(1)] = (m.group(2), m.group(3))
+        bloque = re.search(r"var ARISTAS = \[(.*?)\n  \];", js, re.S)
+        aristas = re.findall(r"\['([^']+)',\s*'([^']+)'\]", bloque.group(1))
+        if not nodos or not aristas:
+            return ""
+        comparte = {}
+        for a, z in aristas:
+            for x, y in ((a, z), (z, a)):
+                if nodos.get(x, ("", ""))[1] == "obra":
+                    comparte.setdefault(x, []).append(nodos[y][0])
+        filas = []
+        for i, (texto, tipo) in nodos.items():
+            if tipo != "obra":
+                continue
+            con = ", ".join(comparte.get(i, [])) or "ninguna herramienta compartida"
+            filas.append(f"<li>{e(texto)}: {e(con)}.</li>")
+        if not filas:
+            return ""
+        return ('<ul class="oculto">'
+                f'<li>El grafo enlaza {len(filas)} proyectos con las herramientas y '
+                'conceptos que comparten. Cada proyecto se abre desde las fichas de la '
+                'sección siguiente.</li>' + "".join(filas) + "</ul>")
+    except Exception:
+        return ""
 
 
 # ---------------------------------------------------------------- montaje
@@ -312,7 +361,8 @@ def main():
 <meta property="og:description" content="{e(recortar(s['descripcion']))}">
 <meta property="og:image" content="https://{e(s['dominio'])}/medios/og.jpg">
 <meta property="og:image:alt" content="Tarjeta con el nombre de Pedro Pérez Blanco y el titular del portfolio.">
-<meta property="og:url" content="https://{e(s['dominio'])}/index.html">
+<meta property="og:url" content="https://{e(s['dominio'])}/">
+<link rel="canonical" href="https://{e(s['dominio'])}/">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="preload" href="tipos/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
@@ -411,6 +461,7 @@ def main():
     <div class="mapa__caja" data-revelar>
       <canvas class="mapa__lienzo" id="mapa-portfolio"
               role="img" aria-label="Grafo de los siete proyectos y las herramientas que comparten"></canvas>
+      {mapa_en_palabras()}
     </div>
     <p class="mapa__aviso">{e(ma['aviso_movil'])}</p>
   </div>

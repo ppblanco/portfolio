@@ -631,7 +631,8 @@
     {
       "texto": "LinkedIn",
       "href": "https://linkedin.com/in/pedroperezblanco",
-      "icono": "in"
+      "icono": "in",
+      "nueva_pestana": true
     },
     {
       "texto": "CV en español",
@@ -648,7 +649,8 @@
     {
       "texto": "GitHub",
       "href": "https://github.com/ppblanco",
-      "icono": "{ }"
+      "icono": "{ }",
+      "nueva_pestana": true
     }
   ],
   "pie": {

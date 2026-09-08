@@ -93,7 +93,7 @@ test.describe('Estructura', () => {
 
   test('lo que se pinta cuadra con las listas del JSON', async ({ page }) => {
     await page.goto('/index.html');
-    await expect(page.locator('.obra')).toHaveCount(6);
+    await expect(page.locator('.obra')).toHaveCount(7);
     await expect(page.locator('.fila-destreza')).toHaveCount(5);
     await expect(page.locator('.puesto')).toHaveCount(4);
     await expect(page.locator('.hito')).toHaveCount(4);
@@ -1047,7 +1047,7 @@ test.describe('Fotos', () => {
     expect(encima, 'el enlace del pie está tapado por el área de la tarjeta').toBe(true);
   });
 
-  test('las seis fichas llevan a alguna parte', async ({ page }) => {
+  test('las siete fichas llevan a alguna parte', async ({ page }) => {
     await page.goto('/index.html');
     /* Desde el 03/09/2026 son seis trabajos y ninguno queda huérfano. Esta
        prueba existe para que se note el día que vuelva a haberlo: una ficha
@@ -1059,7 +1059,7 @@ test.describe('Fotos', () => {
       enlace: !!e.querySelector('.obra__ir'),
       flecha: !!e.querySelector('.obra__ir-boton'),
     })));
-    expect(fichas).toHaveLength(6);
+    expect(fichas).toHaveLength(7);
     fichas.forEach((f) => {
       expect(f.huerfana, `${f.id} se quedó sin destino`).toBe(false);
       // Enlace y flecha van juntos SIEMPRE: una flecha sin enlace promete un
@@ -1104,7 +1104,7 @@ test.describe('Fotos', () => {
     const mapa = fs2.readFileSync(path2.join(__dirname, '..', 'ui', 'mapa.js'), 'utf8');
 
     const paginas = [...mapa.matchAll(/pagina:\s*'([^']+)'/g)].map((m) => m[1]);
-    expect(paginas.length, 'los nodos del mapa no declaran su página').toBe(6);
+    expect(paginas.length, 'los nodos del mapa no declaran su página').toBe(7);
 
     for (const ruta of paginas) {
       expect(fs2.existsSync(path2.join(__dirname, '..', ruta)),
@@ -1119,17 +1119,17 @@ test.describe('Fotos', () => {
     expect(mapa, 'se perdió el respaldo de bajar a la ficha').toContain('scrollIntoView');
   });
 
-  test('las seis fichas llevan su portada, y ninguna se repite', async ({ page }) => {
+  test('las siete fichas llevan su portada, y ninguna se repite', async ({ page }) => {
     await page.goto('/index.html');
     const portadas = await page.$$eval('.obra__portada', (els) => els.map((e) => ({
       src: decodeURIComponent(e.getAttribute('src')),
       alt: e.getAttribute('alt') || '',
       obra: e.closest('.obra').id,
     })));
-    expect(portadas).toHaveLength(6);
+    expect(portadas).toHaveLength(7);
     // Cuatro archivos distintos: copiar y pegar una ficha y olvidarse de la
     // imagen deja dos proyectos con la misma cara y no se nota de un vistazo.
-    expect(new Set(portadas.map((p) => p.src)).size, 'hay portadas repetidas').toBe(6);
+    expect(new Set(portadas.map((p) => p.src)).size, 'hay portadas repetidas').toBe(7);
     portadas.forEach((p) => {
       expect(p.src, `${p.obra} no tiene portada`).toMatch(/^medios\//);
       expect(p.alt.length, `la portada de ${p.obra} no está descrita`).toBeGreaterThan(30);

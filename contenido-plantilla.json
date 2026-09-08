@@ -4,7 +4,7 @@
     "dominio": "pedro-perez-data.netlify.app",
     "iniciales": "PP",
     "nombre": "Pedro Pérez Blanco",
-    "descripcion": "Portfolio de Pedro Pérez Blanco, analista de marketing y datos: seis casos de machine learning, NLP, deep learning y estrategia de marca.",
+    "descripcion": "Portfolio de Pedro Pérez Blanco, analista de marketing y datos: siete casos de machine learning, NLP, deep learning y estrategia de marca.",
     "titulo_pestana": "Pedro Pérez Blanco · Analista de marketing y datos",
     "verificacion_google": "DOORDlz7cONmXe1ia2Wyl8JYohyL6mozDuZVAdRpIoE"
   },
@@ -68,16 +68,16 @@
   },
   "mapa": {
     "rotulo": "Cómo se tocan los trabajos",
-    "titulo_antes": "Seis proyectos, las mismas",
+    "titulo_antes": "Siete proyectos, las mismas",
     "titulo_acento": "herramientas",
     "titulo_despues": "",
     "entradilla": "Pasa el ratón por un nodo para encender lo que comparte, arrástralo si te apetece, y pulsa un proyecto para abrir su página.",
-    "aviso_movil": "El mapa necesita ratón y sitio para leerse. Los seis proyectos están justo debajo."
+    "aviso_movil": "El mapa necesita ratón y sitio para leerse. Los siete proyectos están justo debajo."
   },
   "trabajo": {
     "numero": "01",
     "rotulo": "Trabajo seleccionado",
-    "titulo_antes": "Seis proyectos, un mismo",
+    "titulo_antes": "Siete proyectos, un mismo",
     "titulo_acento": "hábito",
     "titulo_despues": "",
     "entradilla": "Coger datos reales, sacar de ellos una decisión que alguien pueda tomar el lunes, y decir con la misma claridad qué funciona y qué no.",
@@ -120,6 +120,44 @@
         "nota": "La memoria lleva datos del CRM · se la enseño en persona",
         "tratamiento": "entera",
         "github": "https://github.com/ppblanco/admissions-lead-scoring-rag"
+      },
+      {
+        "id": "obra-rlgym",
+        "titulo": "Opponent Pool Self-Play",
+        "categoria": "Aprendizaje por refuerzo · Método experimental",
+        "ano": "2026",
+        "imagen": "medios/fotos/Opponent Pool Self-Play.png",
+        "alt": "Diagrama del experimento: la política actual guarda una copia cada K muestras en un pool histórico con retención 16 y C0 protegido; de ese pool se sortea el rival congelado de cada episodio 1v1, y la actualización del aprendiz vuelve a la política actual. El brazo de control retiene solo la copia más reciente.",
+        "resumen": "Experimento preregistrado de self-play sobre el entorno de Rocket League de moanv2/rlgym (MIT): dos brazos, tres semillas por brazo y 720 partidas para comprobar si entrenar contra copias antiguas de uno mismo ayuda a aprender. El resultado no lo confirma, y el segundo experimento se detuvo en su propia puerta.",
+        "lecturas": [
+          {
+            "clave": "Diferencia B − A",
+            "valor": "−0,83 pp",
+            "destacada": true
+          },
+          {
+            "clave": "Veredicto de H1",
+            "valor": "inconcluyente"
+          }
+        ],
+        "chips": [
+          "Python",
+          "PPO",
+          "rlgym-sim",
+          "RocketSim",
+          "Self-play"
+        ],
+        "enlaces": [
+          {
+            "texto": "Ver el trabajo",
+            "href": "trabajos/rlgym-selfplay-pool.html",
+            "tipo": "vivo",
+            "accion": "trabajo_rlgym"
+          }
+        ],
+        "nota": "Sobre moanv2/rlgym (MIT) · el bot original no es mío",
+        "tratamiento": "entera",
+        "github": "https://github.com/ppblanco/rlgym-selfplay-pool"
       },
       {
         "id": "obra-videojuegos",

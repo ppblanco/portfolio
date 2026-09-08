@@ -52,6 +52,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 
 CASOS = [
     ("contenido-tfm.json", "tfm-lead-scoring.html"),
+    ("contenido-rlgym.json", "rlgym-selfplay-pool.html"),
     ("contenido-videojuegos.json", "videojuegos.html"),
     ("contenido-deeplearning.json", "deep-learning.html"),
     ("contenido-letterboxd.json", "letterboxd.html"),
@@ -193,8 +194,13 @@ LETRA_ROT = 13 * G_MAX * (0.6 + 0.12)
 # el alto justo quedaba 1 unidad libre entre dos líneas, y una holgura de 1 no
 # es una holgura, es que todavía no ha fallado.
 CAJA_LETRA = 1.32
+CIFRA_BASE = 24        # el cuerpo de .g-num, en px
 LINEA_PIE = round(12 * G_MAX * CAJA_LETRA) + 5
 LINEA_ROT = round(13 * G_MAX * CAJA_LETRA) + 5
+# Y el paso para el texto GRANDE. Sale de CIFRA, no de 13: una frase de dos
+# lineas en .g-num con el paso de los rotulos se solapa consigo misma, y la
+# comprobacion de textos pegados lo caza con -182 unidades de hueco.
+LINEA_NUM = round(CIFRA_BASE * G_MAX * CAJA_LETRA) + 6
 
 # Las cifras van en Barlow Condensed 600, que NO es monoespaciada, así que
 # aquí no vale contar letras: los dos números salen de medir con getBBox().
@@ -1232,7 +1238,482 @@ def g_nodos(datos):
     return _svg("".join(p), alto)
 
 
+# =====================================================================
+# PIEZAS DE CABINA
+# =====================================================================
+#
+# Cinco graficos con aire de telemetria de simulador. Son tipos normales
+# del registro GRAFICOS: se piden desde el JSON como cualquier otro y no
+# hay una sola rama que mire de que proyecto se trata.
+#
+# LA REGLA QUE MANDA EN TODOS: el dibujo no puede decir mas de lo que dicen
+# los numeros. Un velocimetro que marca 5,00 frente a 4,17 sugiere que A
+# gana, y lo que el experimento midio es que NO se pueden separar. Por eso
+# la pieza de H1 no son dos agujas: son dos agujas MAS la banda del
+# intervalo cruzando el cero, que es el dato de verdad.
+
+
+def _arco(cx, cy, r, t0, t1):
+    """Camino de un arco entre dos angulos en grados, 0 = a la izquierda."""
+    import math
+    x0 = cx + r * math.cos(math.radians(t0))
+    y0 = cy + r * math.sin(math.radians(t0))
+    x1 = cx + r * math.cos(math.radians(t1))
+    y1 = cy + r * math.sin(math.radians(t1))
+    grande = 1 if abs(t1 - t0) > 180 else 0
+    return f"M {x0:.1f} {y0:.1f} A {r} {r} 0 {grande} 1 {x1:.1f} {y1:.1f}"
+
+
+def _aguja(cx, cy, r, frac):
+    """Punta de la aguja para una fraccion 0..1 sobre el semicirculo alto."""
+    import math
+    a = math.radians(180 + 180 * max(0.0, min(1.0, frac)))
+    return cx + r * math.cos(a), cy + r * math.sin(a)
+
+
+def g_dial(datos):
+    """H1 como cuadro de instrumentos. La incertidumbre es la protagonista.
+
+    Arriba, dos diales con la tasa de cada brazo. Abajo, y ocupando mas
+    sitio que los dos diales juntos, el intervalo de confianza sobre un eje
+    con el CERO marcado. Esa jerarquia es deliberada: si los diales fueran
+    lo mayor, la pieza contaria «A marca mas que B», que es justo la lectura
+    que el resultado no admite.
+    """
+    d = datos[0] if isinstance(datos, list) else datos
+    a, b = float(d["a"]), float(d["b"])
+    dif = float(d["dif"])
+    ic0, ic1 = float(d["ic"][0]), float(d["ic"][1])
+    tope = float(d.get("tope", 10))          # fondo de escala de los diales
+    p = []
+
+    # --- los dos diales -------------------------------------------------
+    R = 74
+    for i, (rot, val) in enumerate((("Brazo A", a), ("Brazo B", b))):
+        cx, cy = 172 + i * 296, 128
+        p.append(f'<path d="{_arco(cx, cy, R, 180, 360)}" fill="none" '
+                 f'stroke="var(--linea-fuerte)" stroke-width="7" opacity=".34" '
+                 f'stroke-linecap="round"/>')
+        # Ticks: dan lectura de escala sin escribir once numeros.
+        for k in range(11):
+            import math
+            ang = math.radians(180 + 18 * k)
+            r0, r1 = R - 11, R - 4
+            p.append(f'<line x1="{cx + r0 * math.cos(ang):.1f}" '
+                     f'y1="{cy + r0 * math.sin(ang):.1f}" '
+                     f'x2="{cx + r1 * math.cos(ang):.1f}" '
+                     f'y2="{cy + r1 * math.sin(ang):.1f}" '
+                     f'stroke="var(--linea)" stroke-width="1.4" opacity=".7"/>')
+        frac = max(0.0, min(1.0, val / tope))
+        p.append(f'<path d="{_arco(cx, cy, R, 180, 180 + 180 * frac)}" fill="none" '
+                 f'stroke="var(--senal)" stroke-width="7" opacity=".92" '
+                 f'stroke-linecap="round"/>')
+        ax, ay = _aguja(cx, cy, R - 16, frac)
+        p.append(f'<line x1="{cx}" y1="{cy}" x2="{ax:.1f}" y2="{ay:.1f}" '
+                 f'stroke="var(--senal-viva)" stroke-width="2.4" stroke-linecap="round"/>')
+        p.append(f'<circle cx="{cx}" cy="{cy}" r="4.5" fill="var(--senal-viva)"/>')
+        # Dos decimales SIEMPRE: 5,00 y 4,17 se comparan de un vistazo, y
+        # «5» a secas al lado de «4,17» sugiere una precision distinta.
+        texto = f"{val:.2f}".replace(".", ",")
+        p.append(f'<text x="{cx}" y="{cy + 42}" class="g-num" text-anchor="middle">'
+                 f'{texto}%</text>')
+        p.append(f'<text x="{cx}" y="{cy + 100}" class="g-pie" text-anchor="middle">'
+                 f'{e(rot)}</text>')
+        cabe(rot, 240, donde=" bajo un dial")
+
+    # --- el intervalo, que es la pieza principal ------------------------
+    Y = 296
+    x0, x1 = IZQ + 6, DER - 6
+    lo, hi = -5.0, 3.0                        # eje fijo, con holgura a los dos lados
+    def X(v):
+        return x0 + (v - lo) / (hi - lo) * (x1 - x0)
+
+    p.append(f'<line x1="{x0}" y1="{Y}" x2="{x1}" y2="{Y}" '
+             f'stroke="var(--linea)" stroke-width="1.4"/>')
+    for v in (-5, -4, -3, -2, -1, 0, 1, 2, 3):
+        p.append(f'<line x1="{X(v):.1f}" y1="{Y - 5}" x2="{X(v):.1f}" y2="{Y + 5}" '
+                 f'stroke="var(--linea)" stroke-width="1.2" opacity=".8"/>')
+    # La banda del intervalo.
+    p.append(f'<rect x="{X(ic0):.1f}" y="{Y - 19}" width="{X(ic1) - X(ic0):.1f}" '
+             f'height="38" rx="7" fill="var(--senal)" opacity=".26"/>')
+    p.append(f'<line x1="{X(ic0):.1f}" y1="{Y - 19}" x2="{X(ic0):.1f}" y2="{Y + 19}" '
+             f'stroke="var(--senal-viva)" stroke-width="2.2"/>')
+    p.append(f'<line x1="{X(ic1):.1f}" y1="{Y - 19}" x2="{X(ic1):.1f}" y2="{Y + 19}" '
+             f'stroke="var(--senal-viva)" stroke-width="2.2"/>')
+    # El cero, en blanco y a toda altura: es la linea que el intervalo cruza.
+    p.append(f'<line x1="{X(0):.1f}" y1="{Y - 34}" x2="{X(0):.1f}" y2="{Y + 34}" '
+             f'stroke="#FFFFFF" stroke-width="2" opacity=".9"/>')
+    p.append(f'<text x="{X(0):.1f}" y="{Y - 42}" class="g-pie" text-anchor="middle">0</text>')
+    # La diferencia observada.
+    p.append(f'<circle cx="{X(dif):.1f}" cy="{Y}" r="6" fill="var(--senal-viva)"/>')
+
+    p.append(f'<text x="{X(ic0):.1f}" y="{Y + 42}" class="g-pie" text-anchor="middle">'
+             f'{_num(ic0)}</text>')
+    p.append(f'<text x="{X(ic1):.1f}" y="{Y + 42}" class="g-pie" text-anchor="middle">'
+             f'{_num(ic1)}</text>')
+    # Va una linea MAS ARRIBA que el rotulo del cero. Con los dos a la misma
+    # altura se leian pegados —«-0,83 pp 0»—, porque solo los separan 0,83
+    # unidades de un eje de ocho y el texto es mas ancho que ese hueco.
+    # Y bastante mas arriba que el rotulo del cero. Con 26 unidades de
+    # separacion las dos CAJAS de texto seguian solapandose 11 unidades —la
+    # caja de .g-pie mide unas 32 de alto, no 12—, y «-0,83 pp» se leia
+    # pegado al «0». Con 40 no comparten franja y la comprobacion las ignora.
+    p.append(f'<text x="{X(dif):.1f}" y="{Y - 82}" class="g-pie" text-anchor="middle">'
+             f'{_num(dif)} pp</text>')
+    p.append(f'<line x1="{X(dif):.1f}" y1="{Y - 72}" x2="{X(dif):.1f}" y2="{Y - 24}" '
+             f'stroke="var(--senal-viva)" stroke-width="1" opacity=".55"/>')
+
+    # El veredicto, escrito. No se deduce del dibujo: se dice.
+    # El veredicto va MUY por debajo de los extremos del intervalo. La caja de
+    # .g-num sube casi 50 unidades sobre su linea base, asi que con +86 se
+    # solapaba con «-3,89», que esta en +42. Aqui la aritmetica es la que
+    # manda y no el ojo: 42 (extremos) + 32 (media caja de .g-pie) + 48 (caja
+    # de .g-num) = 122, y se redondea hacia arriba.
+    ver = d.get("veredicto", "INCONCLUYENTE")
+    p.append(f'<text x="320" y="{Y + 128}" class="g-num" text-anchor="middle">{e(ver)}</text>')
+    p.append(f'<text x="320" y="{Y + 164}" class="g-pie" text-anchor="middle">'
+             f'{e(d.get("pie", "el intervalo cruza el cero"))}</text>')
+    cabe(d.get("pie", ""), DER - IZQ, donde=" bajo el intervalo")
+    return _svg("".join(p), Y + 190)
+
+
+def g_telemetria(datos):
+    """Tres canales de estado, con su anillo, su cifra y su pie.
+
+    Son MEDIDAS del estado en que quedo el experimento, no causas. El pie de
+    cada tarjeta lo dice y el texto de al lado tambien; aqui la forma ayuda:
+    tres anillos identicos y ninguna flecha entre ellos, porque no hay
+    relacion demostrada que dibujar.
+    """
+    n = len(datos)
+    hueco = 640 / n
+    R = 46
+    p = []
+    for i, x in enumerate(datos):
+        cx = hueco * (i + 0.5)
+        cy = 112
+        p.append(f'<circle cx="{cx:.0f}" cy="{cy}" r="{R}" fill="none" '
+                 f'stroke="var(--linea-fuerte)" stroke-width="6" opacity=".34"/>')
+        # El anillo SOLO se llena si el JSON trae "parte", y "parte" solo se
+        # pone cuando hay una escala de verdad detras. Rellenar un anillo con
+        # una fraccion inventada para que la tarjeta quede bonita es dibujar
+        # una cantidad que nadie ha medido: las que no la tienen se quedan con
+        # el aro como marco y la cifra hace todo el trabajo.
+        if x.get("parte") is not None:
+            frac = max(0.0, min(1.0, float(x["parte"])))
+            p.append(f'<path d="{_arco(cx, cy, R, 135, 135 + 270 * frac)}" fill="none" '
+                     f'stroke="var(--senal)" stroke-width="6" stroke-linecap="round" '
+                     f'opacity=".92"/>')
+        else:
+            p.append(f'<circle cx="{cx:.0f}" cy="{cy - R}" r="4" '
+                     f'fill="var(--senal-viva)"/>')
+        p.append(f'<text x="{cx:.0f}" y="{cy + 9}" class="g-num" text-anchor="middle">'
+                 f'{_num(x)}</text>')
+        p.append(f'<text x="{cx:.0f}" y="{cy - R - 18}" class="g-rotulo" '
+                 f'text-anchor="middle">{e(x["clave"])}</text>')
+        for j, linea in enumerate(lineas(x.get("pie", ""))):
+            p.append(f'<text x="{cx:.0f}" y="{cy + R + 30 + j * LINEA_PIE}" '
+                     f'class="g-pie" text-anchor="middle">{e(linea)}</text>')
+        cabe(x["clave"], hueco - 8, LETRA_ROT, " sobre un anillo")
+        cabe(x.get("pie", ""), hueco - 8, donde=" bajo un anillo")
+    filas = max(len(lineas(x.get("pie", ""))) for x in datos)
+    return _svg("".join(p), 112 + R + 30 + filas * LINEA_PIE + 10)
+
+
+def g_cockpit(datos):
+    """H2 como panel de sistemas: cuatro testigos y un indicador maestro.
+
+    Los testigos se encienden en orden al entrar en pantalla. La animacion es
+    CSS con un retardo por fila en --i, y el estado FINAL es el estado por
+    defecto: si no hay JS, si el navegador no anima o si el visitante pide
+    menos movimiento, el panel se ve entero y encendido desde el primer
+    fotograma. Animar es anadir, nunca esconder.
+    """
+    d = datos[0] if isinstance(datos, list) else datos
+    puertas = d["puertas"]
+    FILA = 74
+    p = []
+    for i, g in enumerate(puertas):
+        y = 22 + i * FILA
+        ok = bool(g.get("si"))
+        color = "var(--ok)" if ok else "var(--mal)"
+        p.append(f'<g class="ck-fila" style="--i:{i}">')
+        p.append(f'<rect x="{IZQ - 34}" y="{y}" width="{DER - IZQ + 68}" height="{FILA - 14}" '
+                 f'rx="9" fill="var(--linea-fuerte)" opacity=".16"/>')
+        p.append(f'<circle cx="{IZQ - 6}" cy="{y + 30}" r="15" fill="none" '
+                 f'stroke="{color}" stroke-width="2"/>')
+        if ok:
+            p.append(f'<path d="M {IZQ - 14} {y + 30} l 6 6 l 11 -13" fill="none" '
+                     f'stroke="{color}" stroke-width="2.6" stroke-linecap="round"/>')
+        else:
+            p.append(f'<path d="M {IZQ - 13} {y + 23} l 14 14 m 0 -14 l -14 14" '
+                     f'fill="none" stroke="{color}" stroke-width="2.6" '
+                     f'stroke-linecap="round"/>')
+        p.append(f'<text x="{IZQ + 22}" y="{y + 24}" class="g-rotulo">{e(g["clave"])}</text>')
+        p.append(f'<text x="{IZQ + 22}" y="{y + 24 + LINEA_PIE}" class="g-pie">'
+                 f'{e(g.get("pie", ""))}</text>')
+        p.append(f'<text x="{DER + 24}" y="{y + 36}" class="g-rotulo" text-anchor="end">'
+                 f'{e("CUMPLE" if ok else "FALLA")}</text>')
+        p.append("</g>")
+        cabe(g["clave"], 330, LETRA_ROT, " en un testigo")
+        cabe(g.get("pie", ""), 330, donde=" bajo un testigo")
+
+    y = 22 + len(puertas) * FILA + 14
+    p.append(f'<g class="ck-maestro" style="--i:{len(puertas)}">')
+    # El alto del cajon se CALCULA: «NO-GO» va en .g-num, que mide 24 px y con
+    # la letra de movil ocupa casi 50 unidades de viewBox. Con el alto escrito
+    # a mano (86) el pie se le montaba encima, y la comprobacion de textos
+    # pegados lo cazo con -109 unidades de hueco.
+    lin = lineas(d.get("pie", ""))
+    alto_m = 96 + LINEA_PIE * len(lin) + 14
+    p.append(f'<rect x="{IZQ + 60}" y="{y}" width="{DER - IZQ - 120}" height="{alto_m}" '
+             f'rx="12" fill="var(--mal)" opacity=".14"/>')
+    p.append(f'<rect x="{IZQ + 60}" y="{y}" width="{DER - IZQ - 120}" height="{alto_m}" '
+             f'rx="12" fill="none" stroke="var(--mal)" stroke-width="1.6" opacity=".7"/>')
+    p.append(f'<text x="320" y="{y + 58}" class="g-num" text-anchor="middle">'
+             f'{e(d.get("maestro", "NO-GO"))}</text>')
+    for j, linea in enumerate(lin):
+        p.append(f'<text x="320" y="{y + 96 + j * LINEA_PIE}" class="g-pie" '
+                 f'text-anchor="middle">{e(linea)}</text>')
+    p.append("</g>")
+    cabe(d.get("pie", ""), DER - IZQ - 130, donde=" bajo el indicador maestro")
+    return _svg("".join(p), y + alto_m + 18)
+
+
+def g_canales(datos):
+    """Reward diagnostic: tres canales de senal sobre la MISMA escala.
+
+    Tres pistas apiladas, una por configuracion, con los tres hitos en la
+    misma posicion horizontal. Comparten eje vertical a proposito: si cada
+    pista se escalara a su propio maximo, tres curvas de aspecto identico
+    dirian cosas distintas, que es la forma mas facil de mentir con una
+    grafica sin tocar un solo numero.
+    """
+    HITOS = datos[0]["hitos"] if isinstance(datos, list) else datos["hitos"]
+    canales = datos[0]["canales"] if isinstance(datos, list) else datos["canales"]
+    tope = max(float(v) for c in canales for v in c["valores"]) * 1.18
+    ALTA, PASO = 88, 118
+    p = []
+    # El primer hito arranca en +130 y no en +70: el rotulo del canal («D_C»)
+    # ocupa la izquierda, y con 70 la cifra del primer punto le quedaba a tres
+    # unidades, que en pantalla se lee «D_C56,5».
+    ini, fin = IZQ + 130, DER - 30
+    xs = [ini + i * ((fin - ini) / (len(HITOS) - 1)) for i in range(len(HITOS))]
+
+    for ci, c in enumerate(canales):
+        y0 = 34 + ci * PASO
+        p.append(f'<rect x="{IZQ - 34}" y="{y0 - 6}" width="{DER - IZQ + 68}" '
+                 f'height="{ALTA + 12}" rx="9" fill="var(--linea-fuerte)" opacity=".13"/>')
+        p.append(f'<text x="{IZQ - 22}" y="{y0 + 18}" class="g-rotulo">{e(c["clave"])}</text>')
+        pts = []
+        for i, v in enumerate(c["valores"]):
+            yy = y0 + ALTA - (float(v) / tope) * (ALTA - 16)
+            pts.append((xs[i], yy))
+        p.append('<polyline points="' + " ".join(f"{x:.1f},{y:.1f}" for x, y in pts) +
+                 '" fill="none" stroke="var(--senal)" stroke-width="2.2" opacity=".85"/>')
+        for i, (x, y) in enumerate(pts):
+            p.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.6" fill="var(--senal-viva)"/>')
+            p.append(f'<text x="{x:.1f}" y="{y - 13:.1f}" class="g-pie" '
+                     f'text-anchor="middle">{_num(c["valores"][i])}</text>')
+        cabe(c["clave"], 150, LETRA_ROT, " en un canal")
+
+    yb = 34 + len(canales) * PASO
+    for i, h in enumerate(HITOS):
+        p.append(f'<text x="{xs[i]:.1f}" y="{yb}" class="g-pie" text-anchor="middle">'
+                 f'{e(h)}</text>')
+    return _svg("".join(p), yb + 18)
+
+
+def g_falsacion(datos):
+    """La hipotesis que se cayo, como una serie de medidores que colapsan.
+
+    Cinco anillos de izquierda a derecha, cada uno con su fraccion. Los dos
+    ultimos son las configuraciones que la prediccion decia que subirian.
+    No hay flecha de causa entre ellos: es una comparacion, no un proceso.
+    """
+    d = datos[0] if isinstance(datos, list) else datos
+    items = d["items"]
+    n = len(items)
+    hueco = 640 / n
+    R = min(40, hueco / 2 - 10)
+    tope = max(float(x["valor"]) for x in items)
+    p = []
+    for i, x in enumerate(items):
+        cx, cy = hueco * (i + 0.5), 76
+        frac = float(x["valor"]) / tope
+        marca = bool(x.get("marcada"))
+        p.append(f'<circle cx="{cx:.0f}" cy="{cy}" r="{R}" fill="none" '
+                 f'stroke="var(--linea-fuerte)" stroke-width="5" opacity=".3"/>')
+        p.append(f'<path d="{_arco(cx, cy, R, 135, 135 + 270 * frac)}" fill="none" '
+                 f'stroke="{"var(--mal)" if marca else "var(--senal)"}" stroke-width="5" '
+                 f'stroke-linecap="round" opacity="{".95" if marca else ".7"}"/>')
+        p.append(f'<text x="{cx:.0f}" y="{cy + 8}" class="g-num" text-anchor="middle">'
+                 f'{_num(x)}</text>')
+        for j, linea in enumerate(lineas(x["etiqueta"])):
+            p.append(f'<text x="{cx:.0f}" y="{cy + R + 26 + j * LINEA_PIE}" '
+                     f'class="g-pie" text-anchor="middle">{e(linea)}</text>')
+        cabe(x["etiqueta"], hueco - 6, donde=" bajo un medidor")
+    filas = max(len(lineas(x["etiqueta"])) for x in items)
+    # +50 y no +16: debajo va el titular en .g-num, cuya caja sube casi 50
+    # unidades sobre la linea base y se comia el ultimo rotulo de los aros.
+    y = 76 + R + 26 + filas * LINEA_PIE + 50
+    # El titular tambien se parte con «|»: es la frase mas larga del grafico
+    # y en una sola linea no cabe con la letra de movil.
+    tit = lineas(d["titular"])
+    for j, linea in enumerate(tit):
+        p.append(f'<text x="320" y="{y + j * LINEA_NUM}" class="g-num" '
+                 f'text-anchor="middle">{e(linea)}</text>')
+    p.append(f'<text x="320" y="{y + (len(tit) - 1) * LINEA_NUM + 62}" '
+             f'class="g-pie" text-anchor="middle">{e(d["pie"])}</text>')
+    cabe(d["titular"], DER - IZQ, LETRA_ROT, " en el titular de la falsacion")
+    cabe(d["pie"], DER - IZQ, donde=" bajo la falsacion")
+    return _svg("".join(p), y + (len(tit) - 1) * LINEA_NUM + 84)
+
+
+def g_pool(datos):
+    """El ciclo del opponent pool, dibujado para entenderse sin leer.
+
+    Politica actual -> snapshot -> pool historico -> se sortea un rival ->
+    rival congelado contra aprendiz -> episodio -> actualizacion -> y vuelta.
+
+    TODO EL DIBUJO ES ESTATICO Y COMPLETO. La animacion son cuatro puntos que
+    recorren las flechas y un aro que marca el rival elegido, y vive entera en
+    ui/trabajo.css dentro de una consulta de movimiento. Sin JavaScript, con
+    prefers-reduced-motion o si el navegador no anima, se ve exactamente el
+    mismo esquema con todo en su sitio: aqui animar solo ANADE.
+    """
+    d = datos[0] if isinstance(datos, list) else datos
+    nodos = d.get("nodos", ["C0", "t−4", "t−3", "t−2", "t−1"])
+    elegido = int(d.get("elegido", 3))
+    p = []
+
+    def caja(x, y, w, h, rotulo, fuerte=False):
+        p.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="9" '
+                 f'fill="{"var(--senal-tenue)" if fuerte else "none"}" '
+                 f'stroke="{"var(--senal)" if fuerte else "var(--linea-fuerte)"}" '
+                 f'stroke-width="1.6"/>')
+        trozos = lineas(rotulo)
+        base = y + h / 2 + 6 - (LINEA_ROT // 2) * (len(trozos) - 1)
+        for j, l in enumerate(trozos):
+            p.append(f'<text x="{x + w / 2:.0f}" y="{base + j * LINEA_ROT:.0f}" '
+                     f'class="g-rotulo" text-anchor="middle">{e(l)}</text>')
+        cabe(rotulo, w - 10, LETRA_ROT, " en una caja del pool")
+
+    def flecha(x1, y1, x2, y2):
+        p.append(f'<path d="M {x1} {y1} L {x2} {y2}" fill="none" '
+                 f'stroke="var(--linea-fuerte)" stroke-width="1.5"/>')
+        if y2 > y1:
+            p.append(f'<path d="M {x2 - 5} {y2 - 6} l 5 6 l 5 -6" fill="none" '
+                     f'stroke="var(--linea-fuerte)" stroke-width="1.5"/>')
+
+    # 1. La politica actual. Las cajas miden 76 y no 52 porque los rotulos
+    #    van en DOS lineas: con 52 la segunda linea se sale por debajo del
+    #    borde, que es como se veia en la primera version.
+    caja(220, 12, 200, 76, "POLÍTICA|ACTUAL", fuerte=True)
+    flecha(320, 88, 320, 124)
+    p.append('<text x="332" y="112" class="g-pie">snapshot</text>')
+
+    # 2. El pool
+    p.append('<rect x="56" y="128" width="528" height="106" rx="11" '
+             'fill="var(--linea-fuerte)" opacity=".13"/>')
+    p.append('<text x="70" y="150" class="g-pie">POOL HISTÓRICO</text>')
+    xs = [110 + i * 92 for i in range(len(nodos))]
+    for i, (x, n) in enumerate(zip(xs, nodos)):
+        marca = i == elegido
+        p.append(f'<circle class="pool-nodo" style="--i:{i}" cx="{x}" cy="{190}" r="15" '
+                 f'fill="{"var(--senal)" if marca else "none"}" '
+                 f'fill-opacity="{".9" if marca else "0"}" '
+                 f'stroke="var(--senal)" stroke-width="1.6" '
+                 f'opacity="{"1" if marca else ".55"}"/>')
+        p.append(f'<text x="{x}" y="{224}" class="g-pie" text-anchor="middle">{e(n)}</text>')
+    p.append(f'<circle class="pool-elegido" cx="{xs[elegido]}" cy="190" r="23" fill="none" '
+             f'stroke="var(--senal-viva)" stroke-width="1.6" opacity=".85"/>')
+
+    flecha(320, 234, 320, 272)
+    p.append('<text x="332" y="258" class="g-pie">se sortea</text>')
+
+    # 3. El duelo
+    caja(40, 276, 240, 76, "RIVAL|CONGELADO")
+    caja(360, 276, 240, 76, "APRENDIZ", fuerte=True)
+    p.append('<path d="M 284 314 L 356 314 M 290 309 l -6 5 l 6 5 '
+             'M 350 309 l 6 5 l -6 5" fill="none" stroke="var(--senal)" '
+             'stroke-width="1.5"/>')
+    p.append('<text x="320" y="378" class="g-pie" text-anchor="middle">'
+             'episodio 1v1</text>')
+
+    # 4. La vuelta: sale del aprendiz, rodea por la izquierda y vuelve arriba.
+    p.append('<path class="pool-vuelta" d="M 480 352 L 480 398 L 20 398 L 20 50 L 216 50" '
+             'fill="none" stroke="var(--senal)" stroke-width="1.5" opacity=".55" '
+             'stroke-dasharray="5 5"/>')
+    p.append('<path d="M 210 45 l 6 5 l -6 5" fill="none" stroke="var(--senal)" '
+             'stroke-width="1.5" opacity=".55"/>')
+    p.append('<text x="250" y="416" class="g-pie">actualización</text>')
+
+    # 5. Los cuatro puntos que viajan. Sin animacion se quedan quietos en el
+    #    principio de su tramo, que es un estado legible y no un error.
+    for i, (x, y) in enumerate(((320, 94), (320, 240), (300, 314), (470, 358))):
+        p.append(f'<circle class="pool-pulso pool-pulso--{i + 1}" cx="{x}" cy="{y}" '
+                 f'r="3.4" fill="var(--senal-viva)"/>')
+
+    cabe("episodio 1v1", 300, donde=" bajo el duelo")
+    return _svg("".join(p), 436)
+
+
+def g_arquitectura(datos):
+    """Tres zonas: lo heredado, lo mio y lo que salio. En ese orden.
+
+    Es la pieza que contesta de un vistazo a «cuanto de esto has hecho tu».
+    Cada zona lleva su distintivo y su color: lo heredado va en gris, mi
+    aportacion en el color del caso y los resultados en blanco.
+
+    Al pasar el raton por una zona, las otras dos bajan de intensidad. Eso es
+    CSS puro sobre el SVG, no hay JavaScript detras, y el dibujo entero se lee
+    igual sin pasar el raton por ningun sitio: el realce es una ayuda, no la
+    forma de acceder a la informacion. El SVG va aria-hidden, asi que no se
+    le pone tabindex: quien no lo ve recibe el parrafo que lo describe.
+    """
+    d = datos[0] if isinstance(datos, list) else datos
+    zonas = d["zonas"]
+    ANCHO, COLS, PASO = DER - IZQ + 68, 2, 40
+    p = []
+    y = 12
+    for zi, z in enumerate(zonas):
+        filas = (len(z["items"]) + COLS - 1) // COLS
+        alto = 76 + filas * PASO + 14
+        color = z.get("color", "senal")
+        trazo = {"senal": "var(--senal)", "gris": "var(--linea-fuerte)",
+                 "blanco": "#FFFFFF"}[color]
+        p.append(f'<g class="arq-zona">')
+        p.append(f'<rect x="{IZQ - 34}" y="{y}" width="{ANCHO}" height="{alto}" rx="11" '
+                 f'fill="var(--linea-fuerte)" opacity=".12"/>')
+        # El filete de la izquierda es lo que distingue una zona de otra de un
+        # vistazo, antes incluso de leer el distintivo.
+        p.append(f'<rect x="{IZQ - 34}" y="{y}" width="4" height="{alto}" rx="2" '
+                 f'fill="{trazo}" opacity=".8"/>')
+        p.append(f'<text x="{IZQ - 18}" y="{y + 28}" class="g-rotulo">{e(z["distintivo"])}</text>')
+        for i, it in enumerate(z["items"]):
+            col, fila = i % COLS, i // COLS
+            tx = IZQ - 14 + col * ((ANCHO - 40) / COLS)
+            ty = y + 76 + fila * PASO
+            p.append(f'<circle cx="{tx + 4:.0f}" cy="{ty - 5}" r="3" fill="{trazo}" '
+                     f'opacity=".75"/>')
+            p.append(f'<text x="{tx + 18:.0f}" y="{ty}" class="g-pie">{e(it)}</text>')
+            cabe(it, (ANCHO - 40) / COLS - 26, donde=" en la arquitectura")
+        p.append("</g>")
+        y += alto + 16
+        cabe(z["distintivo"], ANCHO - 40, LETRA_ROT, " como distintivo")
+    return _svg("".join(p), y)
+
+
 GRAFICOS = {
+    # --- piezas de cabina, estrenadas en el caso de self-play ---------
+    "pool": g_pool,
+    "arquitectura": g_arquitectura,
+    "dial": g_dial,
+    "telemetria": g_telemetria,
+    "cockpit": g_cockpit,
+    "canales": g_canales,
+    "falsacion": g_falsacion,
     "escalones": g_escalones, "medidores": g_medidores, "comparacion": g_comparacion,
     "barras": g_barras, "veredictos": g_veredictos, "resto": g_resto, "flujo": g_flujo,
     "escalas": g_escalas,
@@ -1310,6 +1791,53 @@ def seccion(s):
       </div>
     </div>
   </section>"""
+
+
+
+def corte(c):
+    """Un CORTE: una banda de video entre dos apartados.
+
+    Que es y que NO es. Es contexto visual: imagenes del juego sobre el que
+    corre el experimento, puestas para dar respiro entre dos bloques densos.
+    NO es material del experimento, y por eso lleva su nota escrita encima y
+    va deliberadamente tratada —velo, rejilla, poco brillo— para que se lea
+    como ambiente y no como una grabacion que demuestre algo.
+
+    Lo que se sirve de entrada es el POSTER. El <video> nace sin src: lo pone
+    plantilla.js cuando el corte entra en pantalla, y lo pausa cuando sale.
+    Sin JavaScript, con el movimiento parado o con prefers-reduced-motion no
+    se pide nunca el archivo y lo que queda es la imagen fija con su rotulo,
+    que sigue contando lo mismo.
+
+    No lleva id ni entra en el rail: es una transicion, no un apartado.
+    """
+    v = c["video"]
+    etiquetas = "".join(
+        f'<span class="corte__etiqueta">{e(x)}</span>' for x in c.get("etiquetas", []))
+    titular = (f'<p class="corte__titular">{e(c["titular"])}</p>'
+               if c.get("titular") else "")
+    return f"""
+  <div class="corte" data-revelar>
+    <div class="marco">
+      <figure class="corte__figura">
+      <div class="corte__caja">
+        <img class="corte__quieta" src="{ruta(v['poster'])}" width="1440" height="810"
+             alt="" decoding="async" loading="lazy">
+        <video class="corte__video" data-video-ambiental muted loop playsinline
+               preload="none" poster="{ruta(v['poster'])}"
+               data-src="{ruta(v['src'])}" aria-hidden="true"></video>
+        <span class="corte__velo" aria-hidden="true"></span>
+        <span class="corte__rejilla" aria-hidden="true"></span>
+        <div class="corte__hud" aria-hidden="true">{etiquetas}</div>
+        {titular}
+      </div>
+      <!-- La nota va FUERA de la caja: dentro quedaba tapada por el video y
+           recortada por el overflow, y una nota de procedencia que no se ve no
+           sirve de nada. -->
+      <figcaption class="corte__nota">{e(c['nota'])}</figcaption>
+      </figure>
+    </div>
+  </div>"""
 
 
 def visor(inf):
@@ -1396,6 +1924,19 @@ def portada(d):
                      f'<span class="cifra__pie">{e(x["pie"])}</span></div>'
                      for x in h["cifras"])
 
+    # Una linea pequena bajo la portada para decir DE DONDE sale el metraje.
+    # Es opcional: sin la clave en el JSON no se pinta nada y las cinco
+    # portadas animadas que ya existen no cambian ni un pixel. Existe porque
+    # un video de contexto que no dice que es de contexto se lee como
+    # material del propio trabajo, y eso seria mentir por omision.
+    # El salto de linea va DENTRO del valor, no en la plantilla: si estuviera
+    # en la plantilla, un caso sin nota dejaria una linea en blanco suelta en
+    # su HTML, y eso sale en el diff de las otras seis paginas sin significar
+    # nada. Sin nota, salida identica byte a byte a la de antes.
+    nota_video = ("\n      "
+                  f'<p class="portada__nota">{e(h["nota_video"])}</p>'
+                  if h.get("nota_video") else "")
+
     lienzo = ""
     panel_abre, panel_cierra = "", ""
     if animada:
@@ -1412,7 +1953,12 @@ def portada(d):
         lienzo = (f'<div class="relieve" aria-hidden="true">'
                   f'<img class="relieve__quieta" src="{ruta(v["poster"])}"'
                   f' width="1440" height="810" alt="" decoding="async">'
-                  f'<video id="portada-video" muted loop playsinline preload="none"'
+                  # data-video-ambiental: lo que gobierna plantilla.js. Y
+                  # data-arranca-visible porque la portada YA se ve al cargar;
+                  # los cortes de mas abajo no lo llevan y por eso no piden su
+                  # archivo hasta que alguien baja hasta ellos.
+                  f'<video id="portada-video" data-video-ambiental data-arranca-visible'
+                  f' muted loop playsinline preload="none"'
                   f' poster="{ruta(v["poster"])}" data-src="{ruta(v["src"])}"></video>'
                   f'<span class="relieve__velo"></span></div>')
         # El panel de cristal: una cara translúcida y cuatro filos que recogen
@@ -1440,7 +1986,7 @@ def portada(d):
         <p class="parrafo parrafo--lead">{e(h['sub'])}</p>
         <div class="datos">{datos}</div>
       </div>
-      {panel_cierra}
+      {panel_cierra}{nota_video}
       <div class="cifras" data-revelar>{cifras}</div>
     </div>
   </section>"""
@@ -1456,7 +2002,23 @@ def hacer(nombre_json, nombre_salida):
                    for r in d["rail"])
     nav = "".join(f'<li><a href="#{e(r["ancla"])}" data-nav>{e(r["texto"])}</a></li>'
                   for r in d["rail"])
-    secciones = "".join(seccion(s) for s in d["secciones"])
+    # Los cortes viven en su propia lista y declaran delante de que apartado
+    # van. No entran en d["secciones"] a proposito: ahi cambiarian la cuenta
+    # de apartados, la del rail y la de figuras, que son invariantes que las
+    # pruebas vigilan y que un separador decorativo no tiene por que tocar.
+    # ct y no c: en esta funcion «c» ya es el bloque de cierre del caso, y
+    # reutilizar el nombre lo pisaba.
+    cortes = {}
+    for ct in d.get("cortes", []):
+        cortes.setdefault(ct["antes"], []).append(ct)
+    ids = {s["id"] for s in d["secciones"]}
+    for clave in cortes:
+        if clave not in ids:
+            raise SystemExit(f'Un corte dice ir antes de "{clave}", que no es '
+                             f'ningun apartado de este caso.')
+    secciones = "".join(
+        "".join(corte(ct) for ct in cortes.get(s["id"], [])) + seccion(s)
+        for s in d["secciones"])
     cierre_p = "".join(f'<p class="parrafo">{e(t)}</p>' for t in c["parrafos"])
     # PENDIENTE es la convencion del proyecto: mientras un enlace valga eso,
     # NO se pinta y el generador avisa al terminar. Un boton que lleva a un

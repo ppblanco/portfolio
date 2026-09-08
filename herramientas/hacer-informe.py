@@ -34,6 +34,7 @@ DESTINO = RAIZ / "medios" / "informes"
 # json del caso -> (pdf, nombre de la portada)
 INFORMES = {
     "contenido-tfm.json": ("trabajos/tfm-presentacion.pdf", "tfm"),
+    "contenido-rlgym.json": ("trabajos/rlgym-presentacion.pdf", "rlgym"),
     "contenido-lipton.json": ("trabajos/lipton-summer-shake-up.pdf", "lipton"),
     "contenido-videojuegos.json": ("trabajos/videojuegos-presentacion.pdf", "videojuegos"),
     "contenido-deeplearning.json": ("trabajos/deep-learning-presentacion.pdf", "deep-learning"),

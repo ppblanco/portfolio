@@ -529,8 +529,8 @@
   },
   "siguiente": {
     "rotulo": "Siguiente trabajo",
-    "titulo": "Predicción de ventas de videojuegos",
-    "href": "videojuegos.html"
+    "titulo": "Opponent Pool Self-Play",
+    "href": "rlgym-selfplay-pool.html"
   },
   "paleta": {
     "_porque": "el ámbar del portfolio: es el trabajo insignia y no necesita separarse",

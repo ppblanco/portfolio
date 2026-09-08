@@ -35,6 +35,30 @@ const CASOS = [
     video: null,
   },
   {
+    nombre: 'Opponent Pool Self-Play',
+    ruta: '/trabajos/rlgym-selfplay-pool.html',
+    secciones: ['s-pregunta', 's-arquitectura', 's-resultado', 's-diagnostico',
+                's-puerta', 's-recompensas', 's-falsacion', 's-cierre'],
+    // El resultado es un intervalo que cruza el cero, y por eso el SIGNO forma
+    // parte del dato: −0,83 con el intervalo entero. Dejarlo en 0,83 convierte
+    // «no se puede afirmar nada» en «el brazo B gana», que es lo contrario de
+    // lo que midió el experimento.
+    cifras: ['−0,83', '−3,89', '+2,22', '5,00', '4,17', '1,55', '0,0074',
+             '61,5', '22,5', '16,0', '2,0', '2,5', '720',
+             // Las puertas de H2: medido y requerido, los dos. Sin el par, la
+             // pagina podria decir «falla» sin ensenar por cuanto.
+             '0,0310', '0,0465', '0,0135', '0,0148',
+             // Y los tres canales del diagnostico de recompensa.
+             '72,0', '67,5', '14,0', '37,5', '56,5', '52,5',
+             // Lo que separa lo heredado de lo mio, que es la cifra que
+             // mas le importa a quien lee esta pagina.
+             '5.401'],
+    // Portada con vídeo. El metraje es gameplay de terceros usado como
+    // CONTEXTO VISUAL y va rotulado como tal en la propia portada: entra en
+    // las pruebas de vídeo como los otros cinco.
+    video: 'rlgym',
+  },
+  {
     nombre: 'Videojuegos',
     ruta: '/trabajos/videojuegos.html',
     secciones: ['s-pregunta', 's-hipotesis', 's-modelos', 's-shap', 's-limites', 's-uso', 's-cierre'],
@@ -862,6 +886,95 @@ test.describe('El informe de Lipton', () => {
 });
 
 // =============================================================
+// LOS CORTES DE VIDEO ENTRE APARTADOS
+// =============================================================
+//
+// Un separador ambiental tiene dos obligaciones que no son de estetica:
+// no descargarse hasta que hace falta, y decir de donde sale el metraje.
+// Las dos se comprueban aqui sobre la pagina servida, no sobre el JSON.
+test.describe('Cortes de vídeo · Opponent Pool Self-Play', () => {
+  const RUTA = '/trabajos/rlgym-selfplay-pool.html';
+
+  test('son dos, y ninguno se descarga al cargar la página', async ({ page }) => {
+    const mp4 = [];
+    page.on('request', (r) => { if (r.url().endsWith('.mp4')) mp4.push(r.url().split('/').pop()); });
+    await page.goto(RUTA);
+    await page.waitForTimeout(1800);
+    await expect(page.locator('.corte')).toHaveCount(2);
+    // La portada SI se pide, porque se ve al cargar. Los cortes NO.
+    expect(mp4.filter((n) => n.includes('corte')),
+      'un corte se ha descargado sin que nadie baje hasta él').toEqual([]);
+  });
+
+  test('cada corte dice que es contexto visual y no material del experimento',
+    async ({ page }) => {
+      await page.goto(RUTA);
+      const notas = await page.$$eval('.corte__nota', (ns) => ns.map((n) => n.textContent));
+      expect(notas).toHaveLength(2);
+      for (const n of notas) {
+        expect(n.toLowerCase()).toContain('contexto visual');
+        expect(n.toLowerCase()).toContain('no son grabaciones del experimento');
+      }
+    });
+
+  test('mudos, en bucle, sin controles y sin deformar', async ({ page }) => {
+    await page.goto(RUTA);
+    const v = await page.$$eval('.corte__video', (ns) => ns.map((x) => ({
+      mudo: x.muted, bucle: x.loop, enLinea: x.hasAttribute('playsinline'),
+      controles: x.hasAttribute('controls'),
+      ajuste: getComputedStyle(x).objectFit,
+      poster: !!x.getAttribute('poster'),
+      srcDeEntrada: x.getAttribute('src'),
+    })));
+    expect(v).toHaveLength(2);
+    for (const x of v) {
+      expect(x.mudo).toBe(true);
+      expect(x.bucle).toBe(true);
+      expect(x.enLinea).toBe(true);
+      expect(x.controles, 'un corte no lleva controles: es ambiente').toBe(false);
+      expect(x.ajuste).toBe('cover');
+      expect(x.poster, 'sin póster la banda es un rectángulo negro').toBe(true);
+      expect(x.srcDeEntrada, 'el src lo pone el script, no el HTML').toBeNull();
+    }
+  });
+
+  test('con movimiento reducido no se pide ni un vídeo y queda el póster',
+    async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      const mp4 = [];
+      page.on('request', (r) => { if (r.url().endsWith('.mp4')) mp4.push(r.url()); });
+      await page.goto(RUTA);
+      expect(await page.evaluate(() =>
+        matchMedia('(prefers-reduced-motion: reduce)').matches),
+      'la emulación no se aplicó: la prueba no probaría nada').toBe(true);
+      await page.evaluate(async () => {
+        for (let y = 0; y < 12000; y += 700) {
+          window.scrollTo(0, y);
+          await new Promise((r) => setTimeout(r, 60));
+        }
+      });
+      await page.waitForTimeout(900);
+      expect(mp4, 'con movimiento reducido no debe viajar ningún vídeo').toEqual([]);
+      const posters = await page.$$eval('.corte__quieta',
+        (ns) => ns.map((i) => i.complete && i.naturalWidth > 0));
+      expect(posters).toEqual([true, true]);
+    });
+
+  test('no desbordan a lo ancho en ningún tamaño', async ({ page }) => {
+    for (const w of [390, 768, 1024, 1440]) {
+      await page.setViewportSize({ width: w, height: 900 });
+      await page.goto(RUTA);
+      const desb = await page.evaluate(async () => {
+        window.scrollTo(9999, 0);
+        await new Promise((r) => requestAnimationFrame(r));
+        const x = window.scrollX; window.scrollTo(0, 0); return x;
+      });
+      expect(desb, `desborde a ${w}px`).toBe(0);
+    }
+  });
+});
+
+// =============================================================
 // EL PROYECTO ES UN PORTFOLIO, NO UNA WEB DE CANDIDATURA
 // =============================================================
 test.describe('Ya no queda nada de la campaña', () => {
@@ -899,7 +1012,7 @@ test.describe('Ya no queda nada de la campaña', () => {
     await page.goto('/');
     await expect(page.locator('#saludo')).toHaveCount(1);
     await expect(page.locator('#mapa-lienzo, #mapa canvas')).not.toHaveCount(0);
-    await expect(page.locator('.obra')).toHaveCount(6);
+    await expect(page.locator('.obra')).toHaveCount(7);
     await expect(page.locator('#contacto')).toHaveCount(1);
   });
 

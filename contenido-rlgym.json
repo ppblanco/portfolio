@@ -1,0 +1,651 @@
+{
+  "_leeme": "Proyecto personal construido sobre moanv2/rlgym (MIT). LO QUE ESTA PAGINA NO PUEDE DECIR NUNCA, porque no es verdad: que cree un bot de Rocket League, que mejorara el bot original, que supere a nadie, ni que se conozca la causa de la degradacion observada. H1 quedo INCONCLUYENTE, H2 en NO-GO y la hipotesis del moldeado quedo FALSADA; las tres cosas se cuentan tal cual. Las cifras de cierre.informe las escribe herramientas/hacer-informe.py leyendo el PDF: no se tocan a mano.",
+  "meta": {
+    "titulo_pestana": "Opponent Pool Self-Play · Pedro Pérez Blanco",
+    "descripcion": "Un experimento de aprendizaje por refuerzo sobre self-play: criterio preregistrado, seis entrenamientos, 720 partidas y un resultado que no lo confirma.",
+    "dominio": "pedro-perez-data.netlify.app"
+  },
+  "volver": {
+    "texto": "Todos los trabajos",
+    "href": "../index.html#trabajo"
+  },
+  "hero": {
+    "categoria": "Aprendizaje por refuerzo · Método experimental",
+    "titulo": "Opponent Pool Self-Play",
+    "sub": "¿Ayuda entrenar contra versiones anteriores de uno mismo? Proyecto personal sobre el entorno de Rocket League de moanv2/rlgym, con licencia MIT. El criterio se escribió y se congeló antes de lanzar nada; después se ejecutaron seis entrenamientos y se evaluaron 720 partidas una sola vez. La respuesta es que no se puede afirmar. El bot original no es obra mía: lo mío es la infraestructura experimental.",
+    "datos": [
+      {
+        "k": "Papel",
+        "v": "Autor · proyecto personal"
+      },
+      {
+        "k": "Base",
+        "v": "moanv2/rlgym (MIT) · el bot no es mío"
+      },
+      {
+        "k": "Método",
+        "v": "Protocolo congelado por SHA256 antes de ejecutar"
+      },
+      {
+        "k": "Herramientas",
+        "v": "Python · PPO · rlgym-sim · RocketSim"
+      }
+    ],
+    "cifras": [
+      {
+        "valor": "ABIERTA",
+        "pie": "veredicto de H1: inconcluyente"
+      },
+      {
+        "valor": "−0,83 pp",
+        "pie": "diferencia B − A · IC95 [−3,89, +2,22]"
+      },
+      {
+        "valor": "NO-GO",
+        "pie": "H2, detenido antes de entrenar"
+      }
+    ],
+    "tipo": "animada",
+    "video": {
+      "src": "../medios/video/rlgym.mp4",
+      "poster": "../medios/video/rlgym-poster.jpg"
+    },
+    "nota_video": "Imágenes de Rocket League a modo de contexto visual: gameplay ilustrativo de terceros, NO son grabaciones del experimento ni de ningún agente entrenado aquí · Based on moanv2/rlgym (MIT) · Infraestructura experimental · opponent pools · reproducibilidad"
+  },
+  "rail": [
+    {
+      "texto": "La pregunta",
+      "ancla": "s-pregunta"
+    },
+    {
+      "texto": "Qué construí",
+      "ancla": "s-arquitectura"
+    },
+    {
+      "texto": "El resultado",
+      "ancla": "s-resultado"
+    },
+    {
+      "texto": "El diagnóstico",
+      "ancla": "s-diagnostico"
+    },
+    {
+      "texto": "La puerta",
+      "ancla": "s-puerta"
+    },
+    {
+      "texto": "La recompensa",
+      "ancla": "s-recompensas"
+    },
+    {
+      "texto": "La falsación",
+      "ancla": "s-falsacion"
+    }
+  ],
+  "secciones": [
+    {
+      "id": "s-pregunta",
+      "etiqueta": "01",
+      "eyebrow": "La pregunta",
+      "titulo_antes": "Entrenar contra ",
+      "titulo_acento": "quien fuiste",
+      "titulo_despues": ", no contra quien eres.",
+      "composicion": "centrado",
+      "lead": "En self-play un agente aprende jugando contra sí mismo. La versión de siempre lo enfrenta a su copia más reciente, y eso tiene un riesgo conocido: la estrategia puede dar vueltas en círculo y olvidar lo que ya sabía ganar.",
+      "parrafos": [
+        "La alternativa que se puso a prueba es un opponent pool: en vez de jugar siempre contra su yo de hoy, el agente sortea el rival entre todas las copias guardadas a lo largo del entrenamiento. La idea no es nueva —es fictitious self-play—; la pregunta era si aquí, en este entorno y con este presupuesto de cómputo, cambia algo.",
+        "El experimento se preregistró: dos brazos, tres semillas cada uno, el mismo número de partidas y un criterio de decisión escrito y congelado por SHA256 antes de lanzar nada. Los scripts se niegan a arrancar si el protocolo ha cambiado. Eso no hace el resultado mejor; hace que no se pueda mover la portería después de verlo.",
+        "El entorno y el agente de partida son de moanv2/rlgym, con licencia MIT: el bot original no es obra mía y no lo he mejorado. Lo mío son las 5.401 líneas del experimento —el adaptador de rival congelado, el pool, la ejecución en procesos aislados y el análisis—, sin tocar ni un archivo heredado."
+      ],
+      "ledger": [
+        {
+          "clave": "Brazos comparados",
+          "valor": "2 · A y B"
+        },
+        {
+          "clave": "Semillas por brazo",
+          "valor": "3"
+        },
+        {
+          "clave": "Partidas evaluadas",
+          "valor": "720",
+          "destacada": true
+        },
+        {
+          "clave": "Protocolo",
+          "valor": "congelado por SHA256"
+        },
+        {
+          "clave": "Archivos heredados tocados",
+          "valor": "0"
+        }
+      ],
+      "grafico": {
+        "tipo": "pool",
+        "datos": {
+          "nodos": [
+            "C0",
+            "t−4",
+            "t−3",
+            "t−2",
+            "t−1"
+          ],
+          "elegido": 3
+        }
+      },
+      "figcaption": "El ciclo completo. El brazo A es este mismo esquema con el pool reducido a una sola copia: la más reciente.",
+      "sr": "Ciclo del opponent pool. La política actual guarda un snapshot en un pool histórico de cinco copias —C0, t menos 4, t menos 3, t menos 2 y t menos 1—; de ahí se sortea una, que queda como rival congelado y juega un episodio 1v1 contra el aprendiz; la actualización vuelve a la política actual y el ciclo empieza otra vez. En el brazo A el pool guarda solo la copia más reciente."
+    },
+    {
+      "id": "s-arquitectura",
+      "etiqueta": "02",
+      "eyebrow": "Qué construí yo",
+      "titulo_antes": "Lo heredado, ",
+      "titulo_acento": "lo mío",
+      "titulo_despues": " y lo que salió.",
+      "composicion": "ancho",
+      "lead": "El entorno, el algoritmo y las políticas de partida son de moanv2/rlgym, con licencia MIT. Lo que añadí son 5.401 líneas de infraestructura experimental, sin tocar ni un archivo heredado.",
+      "parrafos": [
+        "La zona de arriba no es obra mía y por eso va en gris. El bot de Rocket League ya existía, funcionaba y no lo he mejorado: mi trabajo empieza donde termina el suyo.",
+        "La del medio es lo que construí: el adaptador que expone un solo agente para que a PPO solo le llegue la experiencia del aprendiz, el pool con su retención y su C0 protegido, el muestreo reproducible, los manifiestos con hashes, la ejecución en procesos aislados con reanudación, y el análisis.",
+        "La de abajo es lo que salió, que no es lo que esperaba: un resultado inconcluyente, una puerta que se cerró y una hipótesis falsada."
+      ],
+      "ledger": [
+        {
+          "clave": "Líneas propias",
+          "valor": "5.401",
+          "destacada": true
+        },
+        {
+          "clave": "Archivos heredados modificados",
+          "valor": "0"
+        },
+        {
+          "clave": "Licencia de la base",
+          "valor": "MIT · moanv2/rlgym"
+        },
+        {
+          "clave": "El bot original",
+          "valor": "no es obra mía"
+        }
+      ],
+      "grafico": {
+        "tipo": "arquitectura",
+        "datos": {
+          "zonas": [
+            {
+              "distintivo": "HEREDADO",
+              "color": "gris",
+              "items": [
+                "RLGym",
+                "PPO",
+                "simulación",
+                "políticas base"
+              ]
+            },
+            {
+              "distintivo": "MI APORTACIÓN",
+              "color": "senal",
+              "items": [
+                "init por proc.",
+                "rival congelado",
+                "opponent pool",
+                "snapshots",
+                "hashes",
+                "recuperación",
+                "evaluación",
+                "protocolos",
+                "análisis"
+              ]
+            },
+            {
+              "distintivo": "RESULTADOS",
+              "color": "blanco",
+              "items": [
+                "H1",
+                "puerta H2",
+                "diagnóstico",
+                "falsación"
+              ]
+            }
+          ]
+        }
+      },
+      "figcaption": "Gris lo heredado, violeta lo mío, blanco lo que salió. La zona del medio es la que construí yo.",
+      "sr": "Arquitectura en tres zonas. Heredado, de moanv2/rlgym: RLGym, PPO, simulación y políticas base. Mi aportación: inicialización por proceso, rival congelado, opponent pool, snapshots, hashes, recuperación, evaluación, protocolos y análisis. Resultados: H1, la puerta de H2, el diagnóstico de recompensa y la falsación."
+    },
+    {
+      "id": "s-resultado",
+      "etiqueta": "03",
+      "eyebrow": "El resultado",
+      "titulo_antes": "El intervalo ",
+      "titulo_acento": "cruza el cero",
+      "titulo_despues": ".",
+      "composicion": "ancho",
+      "lead": "Las seis corridas terminaron y se evaluaron una sola vez: 720 partidas contra un rival fijo. La diferencia entre los dos brazos fue de −0,83 puntos porcentuales, con un intervalo de confianza del 95% que va de −3,89 a +2,22.",
+      "parrafos": [
+        "Ese intervalo cruza el cero por los dos lados. Con el criterio preregistrado eso es un resultado inconcluyente: no se puede afirmar que el opponent pool ayude, y tampoco que estorbe. No es un empate demostrado, es una medida demasiado imprecisa para separarlos.",
+        "La unidad experimental es la corrida, no la partida. Con tres semillas por brazo el intervalo sale ancho por construcción, y estrecharlo tratando las 720 partidas como si fueran independientes habría sido hacerse trampa a uno mismo.",
+        "Se evaluó una vez y se paró. No hubo una segunda tanda, ni un reajuste después de ver los números, ni una versión mejorada del experimento escrita a posteriori."
+      ],
+      "ledger": [
+        {
+          "clave": "Brazo A · rival más reciente",
+          "valor": "5,00%"
+        },
+        {
+          "clave": "Brazo B · rival del pool",
+          "valor": "4,17%"
+        },
+        {
+          "clave": "Diferencia B − A",
+          "valor": "−0,83 pp",
+          "destacada": true
+        },
+        {
+          "clave": "IC 95%",
+          "valor": "[−3,89, +2,22]"
+        },
+        {
+          "clave": "Veredicto preregistrado",
+          "valor": "inconcluyente"
+        }
+      ],
+      "grafico": {
+        "tipo": "dial",
+        "datos": {
+          "a": 5.0,
+          "b": 4.17,
+          "dif": -0.83,
+          "ic": [
+            -3.89,
+            2.22
+          ],
+          "tope": 10,
+          "veredicto": "INCONCLUYENTE",
+          "pie": "el IC95 cruza el cero"
+        }
+      },
+      "figcaption": "Las dos agujas dicen poco. Lo que decide es la banda de abajo: va de −3,89 a +2,22 y cruza el cero.",
+      "sr": "Cuadro de instrumentos. Dos diales sobre una escala de 0 a 10 por ciento: el brazo A marca 5,00 por ciento y el brazo B 4,17. Debajo, un eje con el cero marcado y la banda del intervalo de confianza del 95%, que va de −3,89 a +2,22 puntos porcentuales y cruza el cero; la diferencia observada, −0,83, cae dentro. El veredicto es INCONCLUYENTE."
+    },
+    {
+      "id": "s-diagnostico",
+      "etiqueta": "04",
+      "eyebrow": "El diagnóstico",
+      "titulo_antes": "Tres medidas, y ",
+      "titulo_acento": "ninguna causa",
+      "titulo_despues": " demostrada.",
+      "composicion": "ancho",
+      "lead": "Señales que limitaron la capacidad del experimento para distinguir los dos brazos. Son tres medidas del estado en que quedó, no tres causas: ninguna está demostrada como el motivo de nada.",
+      "parrafos": [
+        "La primera es el suelo. Los dos brazos ganan alrededor del 5% de las partidas contra el rival de referencia. Cuando las dos condiciones que se comparan están pegadas al suelo, la diferencia entre ellas tiene muy poco sitio donde aparecer.",
+        "La segunda es la deriva: al terminar, los pesos de la red se habían alejado un 1,55% de su punto de partida. Y crece como la raíz del número de muestras, no en línea recta —comprobado en cinco puntos—, así que extrapolarla linealmente, que fue mi primera estimación, da un número que después no se cumple.",
+        "La tercera es la diversidad medida dentro del pool: 0,0074. Un pool cuyas copias se parecen mucho entre sí ofrece, en la práctica, rivales parecidos. Eso es coherente con no ver diferencia, pero coherente no es demostrado: no se ha establecido cuál de las tres cosas, si es que alguna, produce el resultado."
+      ],
+      "ledger": [
+        {
+          "clave": "Partidas ganadas, los dos brazos",
+          "valor": "≈ 5%"
+        },
+        {
+          "clave": "Deriva de los pesos al terminar",
+          "valor": "1,55%"
+        },
+        {
+          "clave": "Diversidad dentro del pool",
+          "valor": "0,0074",
+          "destacada": true
+        },
+        {
+          "clave": "Cómo crece la deriva",
+          "valor": "√muestras, no lineal"
+        },
+        {
+          "clave": "Causa establecida",
+          "valor": "ninguna"
+        }
+      ],
+      "grafico": {
+        "tipo": "telemetria",
+        "datos": [
+          {
+            "clave": "SUELO",
+            "valor": "≈ 5 %",
+            "parte": 0.05,
+            "pie": "partidas|ganadas por|los dos|brazos"
+          },
+          {
+            "clave": "DERIVA",
+            "valor": "1,55 %",
+            "pie": "de los pesos|al terminar"
+          },
+          {
+            "clave": "DIVERSIDAD",
+            "valor": "0,0074",
+            "pie": "dentro|del pool"
+          }
+        ]
+      },
+      "figcaption": "Solo el primero lleva el aro lleno, porque solo el primero tiene una escala detrás: los otros dos son cifras, no proporciones.",
+      "sr": "Embudo con tres medidas: alrededor del 5% de partidas ganadas por los dos brazos, 1,55% de deriva de los pesos al terminar y 0,0074 de diversidad dentro del pool."
+    },
+    {
+      "id": "s-puerta",
+      "etiqueta": "05",
+      "eyebrow": "La puerta",
+      "titulo_antes": "Se cayeron dos, y ",
+      "titulo_acento": "no se entrenó",
+      "titulo_despues": ".",
+      "composicion": "centrado",
+      "lead": "El segundo experimento, H2, estaba pensado para levantar ese suelo con diez corridas más largas. Antes de lanzarlas había cuatro puertas escritas de antemano, y la regla también estaba escrita: si alguna se cae, no se entrena.",
+      "parrafos": [
+        "Se cayeron dos. La deriva no llegó al umbral preinscrito y el pool no alcanzó la diversidad mínima. Las otras dos —que la fase corta terminara sin fallos y que el cómputo cupiera en el presupuesto— sí se cumplieron.",
+        "La decisión fue NO-GO y las diez corridas no se ejecutaron. Bajar un umbral después de verlo fallar habría convertido la puerta en un trámite, que es exactamente lo que la puerta existía para impedir.",
+        "Es el resultado que menos enseña un portfolio y del que más aprendí: la parte cara del método es respetarlo cuando dice que pares."
+      ],
+      "ledger": [
+        {
+          "clave": "G1 · la fase corta",
+          "valor": "cumple"
+        },
+        {
+          "clave": "G2 · deriva",
+          "valor": "0,0310 de 0,0465"
+        },
+        {
+          "clave": "G3 · diversidad",
+          "valor": "0,0135 de 0,0148"
+        },
+        {
+          "clave": "G4 · cómputo",
+          "valor": "cumple"
+        },
+        {
+          "clave": "Decisión",
+          "valor": "NO-GO",
+          "destacada": true
+        },
+        {
+          "clave": "Corridas ejecutadas",
+          "valor": "0 de 10"
+        }
+      ],
+      "grafico": {
+        "tipo": "cockpit",
+        "datos": {
+          "puertas": [
+            {
+              "clave": "G1 · fase corta",
+              "si": true,
+              "pie": "termina sin fallos"
+            },
+            {
+              "clave": "G2 · deriva",
+              "si": false,
+              "pie": "0,0310 de 0,0465"
+            },
+            {
+              "clave": "G3 · diversidad",
+              "si": false,
+              "pie": "0,0135 de 0,0148"
+            },
+            {
+              "clave": "G4 · cómputo",
+              "si": true,
+              "pie": "cabe en presupuesto"
+            }
+          ],
+          "maestro": "NO-GO",
+          "pie": "detenido antes|de entrenar"
+        }
+      },
+      "figcaption": "Panel de sistemas. Las dos que fallan lo hacen por poco, y por poco también cuenta: el umbral estaba escrito antes.",
+      "sr": "Panel de cuatro testigos. G1, la fase corta se completa sin fallos: cumple. G2, deriva de los pesos, 0,0310 medido frente a 0,0465 requerido: falla. G3, diversidad del pool, 0,0135 frente a 0,0148 requerido: falla. G4, coste de cómputo: cumple. Indicador maestro: NO-GO, detenido antes del entrenamiento completo."
+    },
+    {
+      "id": "s-recompensas",
+      "etiqueta": "06",
+      "eyebrow": "El diagnóstico de la recompensa",
+      "titulo_antes": "Tres canales, ",
+      "titulo_acento": "ninguna mejora",
+      "titulo_despues": " sostenida.",
+      "composicion": "ancho",
+      "lead": "Si el opponent pool no separaba nada, quedaba mirar la recompensa. Tres configuraciones, medidas a 100k, 250k y 500k muestras contra el mismo rival fijo.",
+      "parrafos": [
+        "Los tres canales comparten eje vertical a propósito. Escalar cada uno a su propio máximo habría hecho que tres curvas de aspecto idéntico dijeran cosas distintas, que es la forma más fácil de mentir con una gráfica sin tocar un solo número.",
+        "D_A empieza arriba y baja sin parar. D_B sube en el tramo central y vuelve a caer. D_C aguanta y se hunde al final. Ninguna de las tres sube y se queda arriba.",
+        "Es un diagnóstico de la recompensa, no una explicación. Dice que ninguna de las tres produjo una mejora sostenida; no dice por qué."
+      ],
+      "ledger": [
+        {
+          "clave": "D_A · 100k · 250k · 500k",
+          "valor": "72,0 · 67,5 · 61,5"
+        },
+        {
+          "clave": "D_B · 100k · 250k · 500k",
+          "valor": "14,0 · 37,5 · 22,5"
+        },
+        {
+          "clave": "D_C · 100k · 250k · 500k",
+          "valor": "56,5 · 52,5 · 16,0"
+        },
+        {
+          "clave": "Mejora sostenida",
+          "valor": "ninguna",
+          "destacada": true
+        }
+      ],
+      "grafico": {
+        "tipo": "canales",
+        "datos": {
+          "hitos": [
+            "100k",
+            "250k",
+            "500k"
+          ],
+          "canales": [
+            {
+              "clave": "D_A",
+              "valores": [
+                72.0,
+                67.5,
+                61.5
+              ]
+            },
+            {
+              "clave": "D_B",
+              "valores": [
+                14.0,
+                37.5,
+                22.5
+              ]
+            },
+            {
+              "clave": "D_C",
+              "valores": [
+                56.5,
+                52.5,
+                16.0
+              ]
+            }
+          ]
+        }
+      },
+      "figcaption": "Tres canales sobre la misma escala. Ninguno sube y se queda arriba.",
+      "sr": "Tres canales de telemetría sobre la misma escala vertical, medidos a 100k, 250k y 500k muestras. D_A: 72,0, luego 67,5, luego 61,5. D_B: 14,0, luego 37,5, luego 22,5. D_C: 56,5, luego 52,5, luego 16,0. Ninguna de las tres mejora de forma sostenida."
+    },
+    {
+      "id": "s-falsacion",
+      "etiqueta": "07",
+      "eyebrow": "La falsación",
+      "titulo_antes": "La predicción era subir. ",
+      "titulo_acento": "Bajaron",
+      "titulo_despues": ".",
+      "composicion": "invertido",
+      "lead": "Quedaba una hipótesis por poner a prueba. Si el problema era que la recompensa moldeada empujaba al agente hacia comportamientos que no ganan partidas, reducir ese moldeado debería mejorar el resultado. Se escribió esa predicción y se probó.",
+      "parrafos": [
+        "Dos configuraciones nuevas, contra el mismo rival fijo y con la misma semilla: R1 con el moldeado dividido entre diez y R2 sólo con eventos. Sobre 200 partidas ganaron el 2,0% y el 2,5%. La predicción no sólo no se cumplió: el resultado fue el contrario del anunciado.",
+        "Reducir el moldeado no resolvió el problema. Y eso no convierte a ninguna de las otras configuraciones en la buena: ninguna de las cinco produjo una mejora sostenida al avanzar el entrenamiento, y la causa de lo observado sigue sin identificarse.",
+        "Con eso se cerró la línea experimental. Sin una R3, sin una H3 y sin volver a tocar los hiperparámetros después de haber visto los resultados."
+      ],
+      "ledger": [
+        {
+          "clave": "Predicción escrita antes",
+          "valor": "menos moldeado, mejor"
+        },
+        {
+          "clave": "stage_1_basics",
+          "valor": "61,5%"
+        },
+        {
+          "clave": "stage_2_offense",
+          "valor": "22,5%"
+        },
+        {
+          "clave": "sin ZeroSum",
+          "valor": "16,0%"
+        },
+        {
+          "clave": "R1 · moldeado ÷10",
+          "valor": "2,0%"
+        },
+        {
+          "clave": "R2 · sólo eventos",
+          "valor": "2,5%"
+        },
+        {
+          "clave": "Resultado",
+          "valor": "predicción falsada",
+          "destacada": true
+        },
+        {
+          "clave": "Causa de lo observado",
+          "valor": "sin identificar"
+        }
+      ],
+      "grafico": {
+        "tipo": "falsacion",
+        "datos": {
+          "items": [
+            {
+              "valor": 61.5,
+              "texto": "61,5",
+              "etiqueta": "stage_1|basics"
+            },
+            {
+              "valor": 22.5,
+              "texto": "22,5",
+              "etiqueta": "stage_2|offense"
+            },
+            {
+              "valor": 16.0,
+              "texto": "16,0",
+              "etiqueta": "sin|ZeroSum"
+            },
+            {
+              "valor": 2.0,
+              "texto": "2,0",
+              "etiqueta": "R1 ÷10|shaping",
+              "marcada": true
+            },
+            {
+              "valor": 2.5,
+              "texto": "2,5",
+              "etiqueta": "R2|eventos",
+              "marcada": true
+            }
+          ],
+          "titular": "La predicción falló|en la dirección contraria",
+          "pie": "hipótesis falsada"
+        }
+      },
+      "figcaption": "Los dos medidores en rojo son los que la predicción decía que subirían. Son los dos más bajos de los cinco.",
+      "sr": "Cinco medidores en anillo, de mayor a menor: stage_1_basics 61,5, stage_2_offense 22,5, sin ZeroSum 16,0, R1 con el moldeado dividido entre diez 2,0 y R2 sólo con eventos 2,5. Los dos últimos, marcados, son los que la predicción decía que subirían. La predicción falló en la dirección contraria: hipótesis falsada."
+    }
+  ],
+  "cierre": {
+    "eyebrow": "El trabajo",
+    "titulo_antes": "Un experimento que ",
+    "titulo_acento": "no salió",
+    "titulo_despues": ".",
+    "parrafos": [
+      "No hay aquí un bot mejor. La hipótesis quedó sin confirmar, el segundo experimento se detuvo en su propia puerta y la hipótesis de recambio quedó falsada. La causa de lo que se observó sigue sin identificarse, y darla por conocida sería inventarse el final.",
+      "Lo que sí hay es el método entero y auditable: el criterio escrito antes de mirar, protocolos congelados por SHA256 que los propios scripts verifican al arrancar, una sola evaluación, intervalos de confianza con la corrida como unidad experimental, y los errores propios anotados donde se cometieron en vez de barridos. El informe completo incluye las decisiones que salieron mal.",
+      "Construido sobre moanv2/rlgym, con licencia MIT. El bot de Rocket League no es obra mía; el experimento sobre él, sí."
+    ],
+    "botones": [
+      {
+        "texto": "Ver la presentación",
+        "href": "rlgym-presentacion.pdf",
+        "nueva_pestana": true
+      },
+      {
+        "texto": "Ver el código en GitHub",
+        "href": "https://github.com/ppblanco/rlgym-selfplay-pool",
+        "nueva_pestana": true
+      },
+      {
+        "texto": "Leer el informe completo",
+        "href": "https://github.com/ppblanco/rlgym-selfplay-pool/blob/main/deliverables/RLGym_SelfPlay_Project_Report.pdf",
+        "nueva_pestana": true
+      }
+    ],
+    "informe": {
+      "titulo": "Self-play con opponent pool · Presentación",
+      "tipo": "PDF",
+      "alt": "Primera página de la presentación del experimento: «Can self-play remember its past?», con la atribución a moanv2/rlgym bajo licencia MIT.",
+      "cta": "Ver la presentación",
+      "descargar": "Descargar presentación",
+      "ampliar": "Abrir en pantalla completa",
+      "descarga": "rlgym-presentacion.pdf",
+      "archivo": "rlgym-presentacion.pdf",
+      "portada": "../medios/informes/rlgym-portada.jpg",
+      "ancho": 1001,
+      "alto": 563,
+      "paginas": 12,
+      "peso": "1,2 MB",
+      "octetos": 1246070
+    }
+  },
+  "siguiente": {
+    "rotulo": "Siguiente trabajo",
+    "titulo": "Predicción de ventas de videojuegos",
+    "href": "videojuegos.html"
+  },
+  "paleta": {
+    "_porque": "violeta 256°. La figura de portada es azul 221° medido —el 77% de sus píxeles con color—, pero deep learning ya ocupa 214° y videojuegos 200°: tres azules seguidos no se distinguen en el carrusel. Se gira el tono lo justo para separarlo sin salir de la familia fría de la figura. Contraste 6,03:1 sobre #0B0C0F, dentro del rango de las otras cinco señales (6,11 a 11,38).",
+    "senal": "#9A7DE8",
+    "senal_viva": "#BBA8F0",
+    "senal_tenue": "rgba(154,125,232,.14)",
+    "senal_linea": "rgba(154,125,232,.34)"
+  },
+  "cortes": [
+    {
+      "antes": "s-resultado",
+      "video": {
+        "src": "../medios/video/rlgym-corte1.mp4",
+        "poster": "../medios/video/rlgym-corte1-poster.jpg"
+      },
+      "etiquetas": [
+        "Contexto visual",
+        "1v1 · rlgym-sim"
+      ],
+      "titular": "Seis entrenamientos.\n720 partidas.\nUna sola evaluación.",
+      "nota": "Gameplay de Rocket League como contexto visual · imágenes de terceros, no son grabaciones del experimento ni de ningún agente entrenado aquí"
+    },
+    {
+      "antes": "s-recompensas",
+      "video": {
+        "src": "../medios/video/rlgym-corte2.mp4",
+        "poster": "../medios/video/rlgym-corte2-poster.jpg"
+      },
+      "etiquetas": [
+        "Contexto visual",
+        "La puerta se cerró"
+      ],
+      "titular": "Y entonces hubo que\nmirar la recompensa.",
+      "nota": "Gameplay de Rocket League como contexto visual · imágenes de terceros, no son grabaciones del experimento ni de ningún agente entrenado aquí"
+    }
+  ]
+}

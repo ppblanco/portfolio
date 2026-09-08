@@ -41,6 +41,10 @@
       pagina: 'trabajos/deep-learning.html' },
     { id: 'ltb', texto: 'Letterboxd',       tipo: 'obra', ficha: 'obra-letterboxd',
       pagina: 'trabajos/letterboxd.html' },
+    // El septimo. 'nuevo' solo le da un anillo exterior al dibujarlo: no
+    // cambia su tamano ni su peso en la fisica, asi que no rompe la jerarquia.
+    { id: 'rl',  texto: 'Self-play RL',     tipo: 'obra', ficha: 'obra-rlgym',
+      pagina: 'trabajos/rlgym-selfplay-pool.html', nuevo: true },
 
     { id: 'py',   texto: 'Python',            tipo: 'tec' },
     { id: 'skl',  texto: 'scikit-learn',      tipo: 'tec' },
@@ -56,7 +60,19 @@
     { id: 'lstm', texto: 'LSTM',              tipo: 'tec' },
     { id: 'nlp',  texto: 'NLP',               tipo: 'tec' },
     { id: 'spa',  texto: 'spaCy',             tipo: 'tec' },
-    { id: 'lda',  texto: 'LDA',               tipo: 'tec' }
+    { id: 'lda',  texto: 'LDA',               tipo: 'tec' },
+
+    // Dos conceptos, no diez. Ninguno de los otros seis proyectos es de
+    // aprendizaje por refuerzo ni corre en un simulador, asi que estos dos
+    // cuelgan solo de 'rl'. Son hojas a proposito: preferimos tres relaciones
+    // ciertas a ocho inventadas para que el nodo se vea mas conectado.
+    // «RL» y no «Reinforcement Learning»: el nombre entero mide 140 px sobre
+    // un lienzo de 740 a 768 px de ventana, y aunque el margen de pared ya
+    // impide que se salga, barre por encima de los nodos vecinos. La mitad
+    // de este mapa ya son siglas —NLP, LDA, EDA, SHAP, LSTM— y al lado de
+    // «SELF-PLAY RL» se entiende sola. El nombre completo esta en la pagina.
+    { id: 'rlc',  texto: 'RL',                   tipo: 'tec' },
+    { id: 'sim',  texto: 'Simulación',       tipo: 'tec' }
   ];
 
   var ARISTAS = [
@@ -67,7 +83,11 @@
     // Deep learning y Letterboxd. Solo lo que usan de verdad: las herramientas
     // salen de los README de cada proyecto, no de lo que quede bien.
     ['dl', 'py'], ['dl', 'pd'], ['dl', 'tf'], ['dl', 'lstm'],
-    ['ltb', 'py'], ['ltb', 'pd'], ['ltb', 'nlp'], ['ltb', 'spa'], ['ltb', 'lda']
+    ['ltb', 'py'], ['ltb', 'pd'], ['ltb', 'nlp'], ['ltb', 'spa'], ['ltb', 'lda'],
+    // Self-play RL. Python es la unica herramienta que comparte de verdad con
+    // los demas; las otras dos son suyas. No se le cuelga pandas ni
+    // scikit-learn: el experimento no los usa.
+    ['rl', 'py'], ['rl', 'rlc'], ['rl', 'sim']
   ];
 
   var vecinos = {};
@@ -97,8 +117,13 @@
 
   // Copia propia de los nodos: dos mapas no comparten posiciones.
   var NODOS = DATOS_NODOS.map(function (n, i) {
+    // z es la profundidad: un numero fijo por nodo, entre 0,86 y 1,14, sacado
+    // del indice y no del azar para que la red se dibuje igual en cada visita.
+    // Solo modula radio y opacidad al PINTAR; la fisica no lo mira, asi que la
+    // colocacion es exactamente la de antes.
     return { id: n.id, texto: n.texto, tipo: n.tipo, ficha: n.ficha, pagina: n.pagina,
-             grande: n.grande, i: i, x: 0, y: 0, vx: 0, vy: 0 };
+             grande: n.grande, nuevo: n.nuevo, i: i, x: 0, y: 0, vx: 0, vy: 0,
+             z: 0.86 + ((i * 7) % 15) / 15 * 0.28 };
   });
   var porId = {};
   NODOS.forEach(function (n) { porId[n.id] = n; });
@@ -112,6 +137,32 @@
 
   var ancho = 0, alto = 0, dpr = 1;
   var encima = null, arrastrando = null, huboArrastre = false;
+
+  /* ---- Pulsos ------------------------------------------------------
+     Puntos que recorren una arista y se apagan al llegar. Son SEIS, no
+     seiscientos: lo que da sensacion de red viva es que algo se mueva de vez
+     en cuando, no una tormenta de particulas. Cada uno elige arista nueva al
+     terminar, y avanza por tiempo real (delta), no por fotograma, asi que a
+     15 fps se ven igual de suaves que a 60.
+
+     Con prefers-reduced-motion o con el boton de parar no se crean siquiera:
+     'quieto' ya lo comprueba el ciclo, y ademas el pintado los ignora. */
+  var PULSOS = [];
+  /* La entrada arranca en 0,35 y no en 0. Un lienzo que empieza vacio es un
+     lienzo que puede quedarse vacio: si el mapa nace fuera de pantalla, o con
+     movimiento reducido, o si algo corta el ciclo, lo que ve el visitante es
+     un hueco negro. Con 0,35 la red esta desde el primer fotograma y lo que
+     se anima es que TERMINE de encenderse. Con prefers-reduced-motion entra
+     directamente al 100%. */
+  var entrada = quieto ? 1 : 0.35;
+
+  function nuevoPulso(p) {
+    p.e = ARISTAS[Math.floor(azar() * ARISTAS.length)];
+    p.t = -azar() * 0.9;    // arranque escalonado: no salen todos a la vez
+    p.v = 0.16 + azar() * 0.20;
+    return p;
+  }
+  for (var q = 0; q < 6; q++) PULSOS.push(nuevoPulso({}));
 
   function medir() {
     var caja = lienzo.getBoundingClientRect();
@@ -200,8 +251,16 @@
       if (n === arrastrando) return;    // el que se arrastra manda
       n.x += n.vx; n.y += n.vy;
 
-      // paredes blandas, con sitio para la etiqueta que se vaya a dibujar
-      var margenX = conEtiqueta(n) ? (n.tipo === 'obra' ? 100 : 84) : 16;
+      /* Paredes blandas, con sitio para la etiqueta que se vaya a dibujar.
+         El margen sale del ANCHO MEDIDO del rotulo, no de un numero escrito a
+         mano: 84 valia mientras el nombre mas largo fuera «Gradient Boosting»,
+         y con «Reinforcement Learning» —22 caracteres— el texto se salia del
+         lienzo por la derecha a 768 px. n.wRot lo guarda el pintado la primera
+         vez que dibuja esa etiqueta; hasta entonces se usa el valor de antes,
+         que es exactamente el comportamiento anterior. */
+      var margenX = conEtiqueta(n)
+        ? (n.wRot ? n.wRot + 24 : (n.tipo === 'obra' ? 100 : 84))
+        : 16;
       var margenY = radio(n) + 12;
       if (n.x < margenX) { n.x = margenX; n.vx *= -0.4; }
       if (n.x > ancho - margenX) { n.x = ancho - margenX; n.vx *= -0.4; }
@@ -233,35 +292,91 @@
     ctx.clearRect(0, 0, ancho, alto);
     ocupado.length = 0;
 
-    ARISTAS.forEach(function (e) {
+    /* Aristas CURVAS. Una recta entre dos puntos se lee como un diagrama de
+       clase; un arco suave se lee como una red. La curvatura sale del indice
+       de la arista, o sea que es fija: la telarana no ondula sola, que es lo
+       que marearia. El punto de control se guarda en la propia arista porque
+       el pulso que viaja por encima necesita la misma curva. */
+    ARISTAS.forEach(function (e, k) {
       var a = porId[e[0]], b = porId[e[1]];
       var vivo = !encima || e[0] === encima || e[1] === encima;
+      var dx = b.x - a.x, dy = b.y - a.y;
+      var curva = ((k % 5) - 2) * 0.055;
+      e.cx = (a.x + b.x) / 2 - dy * curva;
+      e.cy = (a.y + b.y) / 2 + dx * curva;
+
+      // Capas de intensidad: un enlace que toca un proyecto pesa mas que uno
+      // entre dos herramientas. Da profundidad sin anadir geometria.
+      var base = (a.tipo === 'obra' || b.tipo === 'obra') ? 0.34 : 0.20;
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
-      ctx.lineTo(b.x, b.y);
-      ctx.strokeStyle = vivo ? senal(.42) : 'rgba(255,255,255,.06)';
-      ctx.lineWidth = vivo ? 1.2 : 1;
+      ctx.quadraticCurveTo(e.cx, e.cy, b.x, b.y);
+      ctx.strokeStyle = vivo
+        ? senal((base + (encima ? 0.24 : 0)) * entrada)
+        : 'rgba(255,255,255,' + (0.05 * entrada).toFixed(3) + ')';
+      ctx.lineWidth = vivo ? (encima ? 1.7 : 1.1) : 0.9;
       ctx.stroke();
     });
+
+    /* Los pulsos, encima de las aristas y debajo de los nodos. Se apagan en
+       los extremos con un seno para que no aparezcan ni se corten de golpe. */
+    for (var pi = 0; pi < PULSOS.length; pi++) {
+      var p = PULSOS[pi];
+      if (!p.e || p.t < 0 || p.t > 1) continue;
+      var pa = porId[p.e[0]], pb = porId[p.e[1]];
+      if (!pa || !pb) continue;
+      var u = p.t, iu = 1 - u;
+      var cx = p.e.cx === undefined ? (pa.x + pb.x) / 2 : p.e.cx;
+      var cy = p.e.cy === undefined ? (pa.y + pb.y) / 2 : p.e.cy;
+      var fuerza = Math.sin(u * Math.PI) * entrada
+                 * ((!encima || p.e[0] === encima || p.e[1] === encima) ? 1 : 0.22);
+      ctx.beginPath();
+      ctx.arc(iu * iu * pa.x + 2 * iu * u * cx + u * u * pb.x,
+              iu * iu * pa.y + 2 * iu * u * cy + u * u * pb.y,
+              2.1, 0, Math.PI * 2);
+      ctx.fillStyle = senal(0.85 * fuerza);
+      ctx.fill();
+    }
 
     NODOS.forEach(function (n) {
       var vivo = vivoNodo(n);
       var esObra = n.tipo === 'obra';
-      var r = radio(n) + (n.id === encima ? 2.5 : 0);
+      // z solo toca el DIBUJO: unos nodos algo delante y otros algo detras.
+      // La fisica no lo mira, asi que la colocacion es la misma de siempre.
+      var r = radio(n) * n.z + (n.id === encima ? 2.5 : 0);
+      var opa = entrada * (0.80 + (n.z - 0.86) / 0.28 * 0.20);
 
       if (esObra) {
+        // Halo con degradado radial. El circulo plano al 11% se veia como un
+        // disco con borde; el degradado se funde con el fondo y da aire.
+        var halo = ctx.createRadialGradient(n.x, n.y, r * 0.6, n.x, n.y, r * 3.4);
+        halo.addColorStop(0, senal((vivo ? 0.22 : 0.05) * opa));
+        halo.addColorStop(1, senal(0));
         ctx.beginPath();
-        ctx.arc(n.x, n.y, r * 3.2, 0, Math.PI * 2);
-        ctx.fillStyle = senal(vivo ? .11 : .03);
+        ctx.arc(n.x, n.y, r * 3.4, 0, Math.PI * 2);
+        ctx.fillStyle = halo;
         ctx.fill();
       }
 
+      // El proyecto recien llegado lleva un anillo exterior fino, y nada mas:
+      // mismo radio y mismo peso que los otros seis, para no romper la
+      // jerarquia por ser el ultimo en llegar.
+      if (n.nuevo) {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r * 2.1, 0, Math.PI * 2);
+        ctx.strokeStyle = senal((vivo ? 0.42 : 0.12) * opa);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      ctx.globalAlpha = opa;
       ctx.beginPath();
       ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
       ctx.fillStyle = esObra
         ? (vivo ? SENAL : senal(.22))
         : (vivo ? 'rgba(255,255,255,.78)' : 'rgba(255,255,255,.16)');
       ctx.fill();
+      ctx.globalAlpha = 1;
 
       if (!conEtiqueta(n)) return;
 
@@ -288,6 +403,7 @@
         ty = prueba;
       }
       ocupado.push({ x: izq, y: ty - h / 2, w: w, h: h });
+      n.wRot = w;          // lo lee la fisica para no dejar que el texto se salga
       ctx.fillText(texto, tx, ty);
     });
   }
@@ -385,7 +501,7 @@
   // La red corre mientras tenga energía y se para al asentarse. Así se ve
   // colocarse al llegar, reacciona al arrastrarla, y el resto del tiempo
   // está quieta para que se pueda pulsar. Y de paso no gasta batería.
-  var corriendo = false, aLaVista = false;
+  var corriendo = false, aLaVista = false, fotogramas = 0;
 
   function energia() {
     var e = 0;
@@ -395,12 +511,79 @@
     return e;
   }
 
-  function bucle() {
+  /* Un tic de tiempo real: avanza la entrada y los pulsos por segundos, no
+     por fotogramas, asi que a 15 fps se ven igual de suaves que a 60. */
+  var ultimoTic = 0;
+  function tic(ahora) {
+    if (!ultimoTic) ultimoTic = ahora;
+    var dt = Math.min(0.05, (ahora - ultimoTic) / 1000);
+    ultimoTic = ahora;
+    if (entrada < 1) entrada = Math.min(1, entrada + dt / 0.9);
+    if (quieto) { entrada = 1; return; }
+    for (var i = 0; i < PULSOS.length; i++) {
+      var p = PULSOS[i];
+      p.t += p.v * dt;
+      if (p.t > 1) nuevoPulso(p);
+    }
+  }
+
+  function bucle(ahora) {
     if (!corriendo) return;
     paso();
+    tic(ahora || 0);
     pintar();
-    if (!arrastrando && energia() < 0.06) { corriendo = false; return; }
+    // Se para al asentarse, como siempre. La novedad es que al pararse cede
+    // el turno al ambiente en vez de dejar la red congelada del todo.
+    // El umbral de asentado es POR NODO, no absoluto. Escrito a pelo como
+    // 0,06 funcionaba con veintiun nodos; al pasar a veinticinco, la energia
+    // total nunca bajaba de ahi y la fisica no paraba jamas: medido, 58 fps
+    // constantes en vez de pararse. 0,0029 x 21 = 0,061, o sea que para la
+    // red de antes se comporta exactamente igual que antes.
+    // Dos formas de parar, y basta con una.
+    //
+    // La primera es la de siempre: la red se ha asentado. El umbral es POR
+    // NODO y no absoluto —escrito a pelo como 0,06 valia para veintiun nodos
+    // y con veinticinco no se alcanzaba nunca—; 0,0029 x 21 = 0,061, o sea
+    // que para la red anterior se comporta igual que antes.
+    //
+    // La segunda es un PRESUPUESTO de fotogramas, y es la que de verdad
+    // garantiza el gasto. Con veinticinco nodos en una caja de 460 px de alto
+    // los de fuera rebotan contra las paredes, cada rebote devuelve energia y
+    // la red se queda temblando para siempre: medido, 60 fps sostenidos a los
+    // nueve segundos. Un grafo que no se asienta solo no puede tener licencia
+    // para gastar CPU indefinidamente, asi que a los 360 fotogramas —unos seis
+    // segundos— se para igual. Colocado del todo o no, ahi se queda; y sigue
+    // reaccionando al arrastre, que es cuando el visitante pide movimiento.
+    if (!arrastrando && (energia() < 0.0029 * NODOS.length || ++fotogramas > 360)) {
+      corriendo = false; ambientar(); return;
+    }
     requestAnimationFrame(bucle);
+  }
+
+  /* ---- Ambiente ----------------------------------------------------
+     Esto es lo unico que sigue corriendo cuando la red ya se ha colocado, y
+     lo hace a QUINCE fotogramas por segundo de verdad: el siguiente se pide
+     con setTimeout, no encadenando requestAnimationFrame, que despertaria a
+     60 Hz para no hacer nada. Mueve seis puntos sobre veinticinco nodos.
+     Se apaga solo si el mapa sale de pantalla, si la pestana se oculta o si
+     se pulsa "parar movimiento", y no arranca nunca con movimiento reducido. */
+  var ambiente = false;
+  function ambientar() {
+    if (ambiente || corriendo || quieto || !aLaVista) return;
+    if (document.documentElement.classList.contains('sin-movimiento')) return;
+    ambiente = true;
+    requestAnimationFrame(bucleAmbiente);
+  }
+  function bucleAmbiente(ahora) {
+    if (!ambiente) return;
+    if (document.documentElement.classList.contains('sin-movimiento')) {
+      ambiente = false; return;
+    }
+    tic(ahora);
+    pintar();
+    setTimeout(function () {
+      if (ambiente) requestAnimationFrame(bucleAmbiente);
+    }, 66);
   }
 
   function despertar() {
@@ -410,6 +593,8 @@
     // despues de pulsar el boton, que era el unico animado que se lo saltaba.
     if (document.documentElement.classList.contains('sin-movimiento')) return;
     if (corriendo || quieto || !aLaVista) return;
+    ambiente = false;          // manda la fisica mientras se recoloca
+    fotogramas = 0;            // presupuesto nuevo: el visitante pide moverla
     corriendo = true;
     requestAnimationFrame(bucle);
   }
@@ -425,14 +610,16 @@
   } else if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (ent) {
       aLaVista = ent[0].isIntersecting;
-      if (aLaVista) despertar(); else corriendo = false;
+      if (aLaVista) { despertar(); ambientar(); }
+      else { corriendo = false; ambiente = false; }
     }, { threshold: 0.12 }).observe(lienzo);
   } else {
     aLaVista = true; despertar();
   }
 
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) corriendo = false; else despertar();
+    if (document.hidden) { corriendo = false; ambiente = false; }
+    else { despertar(); ambientar(); }
   });
 
   var temp;

@@ -399,7 +399,7 @@ def main():
 <!-- ================= MAPA DEL TRABAJO ================= -->
 <!-- El grafo es el mismo de index.html: ui/mapa.js, la misma física y los
      mismos catorce nodos. Aquí va entre la portada y los trabajos porque es
-     justo la transición que hace: enseña que los seis proyectos comparten
+     justo la transición que hace: enseña que los siete proyectos comparten
      herramientas, y cada nodo baja a la ficha de su proyecto. -->
 <section class="seccion mapa" id="mapa">
   <div class="marco">
@@ -410,7 +410,7 @@ def main():
     </div>
     <div class="mapa__caja" data-revelar>
       <canvas class="mapa__lienzo" id="mapa-portfolio"
-              role="img" aria-label="Grafo de los seis proyectos y las herramientas que comparten"></canvas>
+              role="img" aria-label="Grafo de los siete proyectos y las herramientas que comparten"></canvas>
     </div>
     <p class="mapa__aviso">{e(ma['aviso_movil'])}</p>
   </div>

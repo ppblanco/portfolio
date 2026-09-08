@@ -829,3 +829,218 @@
    de pantalla. Ojo al tocarlo: un carácter pasa de 16,3 unidades a 20,4 y
    las pastillas están medidas con ese número. */
 .g-pie--nodo{ font-size:calc(15px * var(--g)) }
+
+/* ---------- La nota de procedencia de la portada ------------------ */
+
+/* Solo aparece si el JSON del caso trae hero.nota_video, asi que las cinco
+   portadas animadas anteriores no la tienen y no cambian. Va deliberadamente
+   discreta —mono, pequena, gris— porque no es un titulo: es la letra pequena
+   que dice que el metraje es contexto y no resultado del trabajo. */
+.portada__nota{
+  position:relative; z-index:1;
+  margin:var(--e3) 0 0;
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.12em;
+  text-transform:uppercase; color:var(--bruma-tenue); line-height:1.6;
+  max-width:62ch;
+}
+
+/* ---------- Piezas de cabina ------------------------------------- */
+
+/* Dos colores de ESTADO, y solo dos. Verde y rojo aqui no decoran: dicen
+   "cumple" y "falla". Se declaran en .grafico, asi que los graficos de los
+   otros seis trabajos los heredan y no los usan: no cambia ni un pixel. */
+.grafico{ --ok:#4ADE80; --mal:#F87171 }
+
+/* Los testigos del panel se encienden en orden al entrar el apartado.
+   EL ESTADO POR DEFECTO ES EL ENCENDIDO. La regla que los apaga vive dentro
+   de .con-revelado, que la escribe el JavaScript, y dentro de la consulta de
+   movimiento: sin JS, con el movimiento reducido o si el observador fallara,
+   el panel se ve entero. Animar aqui solo ANADE; nunca esconde. */
+@media (prefers-reduced-motion: no-preference){
+  .con-revelado [data-revelar] .ck-fila,
+  .con-revelado [data-revelar] .ck-maestro{ opacity:0 }
+  .con-revelado [data-revelar].esta-visible .ck-fila,
+  .con-revelado [data-revelar].esta-visible .ck-maestro{
+    animation:ck-entra .34s cubic-bezier(.2,.7,.3,1) forwards;
+    /* 0,11 s por testigo, no 0,2. El retardo de esta animacion se SUMA al del
+       revelado del apartado, que ya trae el suyo: medido, con 0,2 el panel
+       tardaba tres segundos enteros en completarse y quien baja a ritmo normal
+       veia G4 y el NO-GO en blanco. Con 0,11 el ultimo entra a los 0,8 s. */
+    animation-delay:calc(var(--i,0) * .11s);
+  }
+}
+@keyframes ck-entra{
+  from{ opacity:0; transform:translateY(9px) }
+  to{ opacity:1; transform:none }
+}
+
+/* ---------- El ciclo del opponent pool ---------------------------- */
+
+/* El esquema esta COMPLETO sin una linea de esto: cajas, flechas, los cinco
+   nodos y el aro del elegido se dibujan en el SVG. Lo de aqui son cuatro
+   puntos que recorren sus tramos y un latido en los nodos, y va entero
+   dentro de la consulta de movimiento. Sin JS, con movimiento reducido o en
+   un navegador que no anime, se ve el mismo diagrama con todo en su sitio.
+
+   Los tiempos comparten un ciclo de 9 s y se escalonan con retardos, de modo
+   que el recorrido se lee en orden: snapshot, sorteo, duelo, actualizacion. */
+@media (prefers-reduced-motion: no-preference){
+  .pool-pulso{ animation:pool-viaje 9s linear infinite }
+  .pool-pulso--1{ animation-name:pool-p1 }
+  .pool-pulso--2{ animation-name:pool-p2; animation-delay:2.2s }
+  .pool-pulso--3{ animation-name:pool-p3; animation-delay:4.4s }
+  .pool-pulso--4{ animation-name:pool-p4; animation-delay:6.2s }
+
+  /* Los nodos del pool laten en orden, como si el sorteo los recorriera. */
+  .pool-nodo{ animation:pool-late 9s ease-in-out infinite;
+              animation-delay:calc(var(--i) * .16s + 1.4s) }
+  .pool-elegido{ animation:pool-aro 9s ease-out infinite; animation-delay:2.4s }
+  .pool-vuelta{ animation:pool-traza 9s linear infinite; animation-delay:6.2s }
+}
+
+/* Cada punto recorre su tramo y se apaga: aparecer y desaparecer de golpe se
+   lee como un parpadeo, no como algo que viaja. */
+@keyframes pool-p1{
+  0%{ opacity:0; transform:translateY(-6px) }
+  4%{ opacity:1 } 18%{ opacity:1; transform:translateY(34px) }
+  22%,100%{ opacity:0; transform:translateY(34px) }
+}
+@keyframes pool-p2{
+  0%{ opacity:0; transform:translateY(-6px) }
+  4%{ opacity:1 } 16%{ opacity:1; transform:translateY(34px) }
+  20%,100%{ opacity:0; transform:translateY(34px) }
+}
+@keyframes pool-p3{   /* el ida y vuelta del duelo */
+  0%,100%{ opacity:0 }
+  5%{ opacity:1; transform:translateX(0) }
+  12%{ opacity:1; transform:translateX(56px) }
+  19%{ opacity:1; transform:translateX(0) }
+  24%{ opacity:0; transform:translateX(0) }
+}
+@keyframes pool-p4{
+  0%{ opacity:0; transform:translate(0,0) }
+  5%{ opacity:1 } 20%{ opacity:1; transform:translate(0,36px) }
+  30%,100%{ opacity:0; transform:translate(0,36px) }
+}
+@keyframes pool-late{
+  0%,14%,100%{ opacity:.55 } 18%{ opacity:1 }
+}
+@keyframes pool-aro{
+  0%,24%{ opacity:0; transform-box:fill-box; transform-origin:center;
+          transform:scale(.5) }
+  30%{ opacity:.85; transform-box:fill-box; transform-origin:center;
+       transform:scale(1) }
+  70%{ opacity:.85 } 100%{ opacity:0 }
+}
+@keyframes pool-traza{
+  0%,60%{ stroke-dashoffset:0 } 100%{ stroke-dashoffset:-160 }
+}
+
+/* ---------- Las tres zonas de la arquitectura --------------------- */
+
+/* Al pasar el raton por una zona, las otras dos bajan. Son dos reglas y
+   ningun JavaScript: la primera apaga las tres cuando el puntero esta sobre
+   el dibujo, la segunda vuelve a encender la que se senala. Sin raton
+   —movil, teclado, lector de pantalla— no pasa nada y el esquema se lee
+   entero: el realce ayuda, no es la via de acceso a la informacion. */
+.grafico:hover .arq-zona{ opacity:.4; transition:opacity .25s ease }
+.grafico .arq-zona:hover{ opacity:1 }
+@media (prefers-reduced-motion: reduce){
+  .grafico:hover .arq-zona{ transition:none }
+}
+@media (hover: none){
+  /* En tactil no hay hover: la regla de arriba dejaria las tres apagadas al
+     tocar. Aqui no se apaga ninguna. */
+  .grafico:hover .arq-zona{ opacity:1 }
+}
+
+/* ---------- Los cortes de video entre apartados ------------------- */
+
+/* Una banda ancha que separa dos bloques densos. La regla que la gobierna:
+   NO puede parecer una grabacion del experimento. De ahi el tratamiento —poco
+   brillo, poca saturacion, velo y rejilla encima— y la nota, que va en el
+   documento y no en un tooltip.
+
+   Debajo del video hay SIEMPRE un <img> con el poster, y no se quita nunca:
+   sin JavaScript, con el movimiento parado o con movimiento reducido el
+   archivo no se pide y lo que se ve es esa imagen. Sin ella, la banda seria
+   un rectangulo negro. */
+.corte{ margin:var(--e7) 0 }
+.corte__figura{ margin:0 }
+.corte__caja{
+  position:relative; margin:0; overflow:hidden;
+  border-radius:calc(var(--canto) * 1.4);
+  border:1px solid var(--linea);
+  aspect-ratio:21/9;
+  background:#000;
+  box-shadow:0 0 70px -30px var(--senal);
+}
+.corte__quieta,
+.corte__video{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; object-position:center;
+  /* El mismo tratamiento que la portada: esto es textura, no contenido. Sin
+     bajarle el brillo se lleva por delante el rotulo y, peor, la identidad
+     violeta del caso desaparece en mitad de la pagina. */
+  filter:brightness(.42) saturate(.6);
+}
+.corte__video{ opacity:0; transition:opacity .6s ease }
+.corte__video.esta-encendido{ opacity:1 }
+
+/* Velo por arriba y por abajo: funde la banda con la pagina en vez de
+   dejar un rectangulo pegado, y da suelo al rotulo. */
+.corte__velo{
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(to bottom, var(--fondo) 0%, transparent 22%, transparent 62%,
+                    rgba(0,0,0,.72) 100%),
+    linear-gradient(to right, rgba(0,0,0,.55) 0%, transparent 42%);
+}
+/* Rejilla de telemetria, muy tenue. Son dos degradados repetidos, no una
+   imagen: cero peticiones y cero kilobytes. */
+.corte__rejilla{
+  position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background-image:
+    repeating-linear-gradient(to right, var(--senal-linea) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(to bottom, var(--senal-linea) 0 1px, transparent 1px 64px);
+  mask-image:radial-gradient(120% 90% at 50% 50%, #000 25%, transparent 78%);
+  -webkit-mask-image:radial-gradient(120% 90% at 50% 50%, #000 25%, transparent 78%);
+}
+.corte__hud{
+  position:absolute; top:var(--e3); left:var(--e4); right:var(--e4);
+  display:flex; gap:var(--e3); flex-wrap:wrap;
+}
+.corte__etiqueta{
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.18em;
+  text-transform:uppercase; color:var(--senal-viva);
+  border:1px solid var(--senal-linea); border-radius:999px;
+  padding:4px 12px; background:rgba(0,0,0,.42);
+}
+.corte__titular{
+  position:absolute; left:var(--e4); right:var(--e4); bottom:var(--e5);
+  margin:0; max-width:26ch;
+  font-family:var(--titulos); font-weight:600; line-height:1.05;
+  font-size:clamp(22px,3.4vw,40px); color:var(--tinta);
+  /* pre-line: los saltos de linea del JSON se respetan y los espacios de mas
+     se colapsan. Asi el titular se parte donde quiere quien escribe el texto
+     sin tener que meter <br> en el JSON, que abriria la puerta a HTML dentro
+     de un campo de contenido. */
+  white-space:pre-line;
+  text-shadow:0 2px 24px rgba(0,0,0,.75);
+}
+.corte__nota{
+  margin:var(--e2) 0 0;
+  font-family:var(--mono); font-size:var(--t-micro); letter-spacing:.12em;
+  text-transform:uppercase; color:var(--bruma-tenue); line-height:1.6;
+}
+
+@media (max-width:760px){
+  /* En movil una banda 21:9 es una rendija de 100 px: no se ve nada de lo
+     que pasa dentro. Se pasa a 16:9 y el rotulo baja de cuerpo. */
+  .corte__caja{ aspect-ratio:16/9; border-radius:var(--canto) }
+  .corte__titular{ max-width:none; bottom:var(--e4) }
+  .corte__rejilla{ opacity:.34 }
+}
+@media (prefers-reduced-motion: reduce){
+  .corte__video{ transition:none }
+}

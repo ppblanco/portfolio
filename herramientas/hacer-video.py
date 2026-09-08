@@ -66,6 +66,26 @@ VIDEOS = {
     # elemento, que es el ancho de salida.
     "originales/video/deep-learning.mp4": ("deep-learning", 0, 5.2, "recortar", 960),
     "originales/video/letterboxd.mp4": ("letterboxd", 0, 6.0, "recortar", 960),
+    # Self-play RL. La fuente es un vertical 720x1280 con el gameplay
+    # incrustado en 720x960 a partir de y=160 (medido con cropdetect, no a
+    # ojo). De esa ventana se saca la franja 16:9 y se sirve a 960 como los
+    # dos de arriba: subir 720 px de origen a 1440 solo multiplica los
+    # kilobytes. El trozo elegido, de 1,5 s a 6,5 s, es arena tranquila: deja
+    # fuera la explosion de gol del final, que detras de un titular es ruido.
+    # CONTEXTO VISUAL, no material del experimento.
+    "originales/video/rlgym-contexto.mp4": ("rlgym", 1.5, 5.0, "recortar", 960,
+                                            "crop=720:405:0:400"),
+    # Los DOS CORTES interiores del mismo caso, del mismo clip y de la misma
+    # ventana 16:9, pero de tramos distintos: 7,0-10,5 s y 10,5-13,5 s. Se
+    # deja fuera todo lo posterior a 13,5 s, que es la explosion de gol: en
+    # una banda estrecha detras de un rotulo es una mancha naranja y no se
+    # entiende que es. Van a 720 px y no a 960 porque son cintas decorativas
+    # que ademas se descargan en diferido: la mitad de pixeles, la mitad de
+    # kilobytes, y detras de un velo al 34% no se nota.
+    "originales/video/rlgym-contexto.mp4|corte1": ("rlgym-corte1", 7.0, 3.5, "recortar",
+                                                   720, "crop=720:405:0:400"),
+    "originales/video/rlgym-contexto.mp4|corte2": ("rlgym-corte2", 10.5, 3.0, "recortar",
+                                                   720, "crop=720:405:0:400"),
 }
 
 ANCHO, ALTO = 1440, 810
@@ -83,11 +103,20 @@ def ffmpeg():
     return None
 
 
-def filtro(desde, dura, modo, ancho=None, alto=None):
-    """El grafo de filtros. Los dos modos acaban en el mismo bucle."""
+def filtro(desde, dura, modo, ancho=None, alto=None, recorte=None):
+    """El grafo de filtros. Los dos modos acaban en el mismo bucle.
+
+    `recorte` es un "crop=W:H:X:Y" que se aplica ANTES que nada. Existe para
+    las fuentes que traen la imagen incrustada dentro de otro lienzo: un
+    gameplay 3:4 metido en un vertical 9:16, por ejemplo, donde recortar
+    despues de escalar deformaria o dejaria las bandas negras dentro.
+    Sin este argumento el filtro es exactamente el de siempre.
+    """
     ancho = ancho or ANCHO
     alto = alto or ALTO
     corte = f"trim={desde}:{desde + dura},setpts=PTS-STARTPTS"
+    if recorte:
+        corte += f",{recorte}"
 
     if modo == "rellenar":
         base = (
@@ -106,7 +135,10 @@ def filtro(desde, dura, modo, ancho=None, alto=None):
     return base + ",split[f][r];[r]reverse[rv];[f][rv]concat=n=2:v=1:a=0[v]"
 
 
-def preparar(exe, origen, salida, desde, dura, modo, ancho=None):
+def preparar(exe, origen, salida, desde, dura, modo, ancho=None, recorte=None):
+    # La clave del diccionario puede llevar un sufijo «|loquesea» para poder
+    # sacar DOS trozos distintos del mismo archivo sin duplicarlo en disco.
+    origen = origen.split("|")[0]
     o = RAIZ / origen
     if not o.exists():
         print(f"  falta {origen}")
@@ -116,7 +148,7 @@ def preparar(exe, origen, salida, desde, dura, modo, ancho=None):
     poster = DESTINO / f"{salida}-poster.jpg"
 
     subprocess.run([exe, "-v", "error", "-y", "-i", str(o),
-                    "-filter_complex", filtro(desde, dura, modo, ancho),
+                    "-filter_complex", filtro(desde, dura, modo, ancho, recorte=recorte),
                     "-map", "[v]", "-an",
                     "-c:v", "libx264", "-preset", "slow", "-crf", str(CALIDAD),
                     "-pix_fmt", "yuv420p", "-movflags", "+faststart",

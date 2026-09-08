@@ -779,8 +779,17 @@
      Y se para fuera de pantalla: la portada se queda arriba y el resto de la
      página es larga.
      ---------------------------------------------------------------- */
-  var video = document.getElementById('portada-video');
-  if (video) {
+  /* De UNO a VARIOS. Este bloque gobernaba solo la portada, por id. Ahora
+     recorre todo lo que lleve data-video-ambiental, que es la portada mas los
+     cortes que separan los apartados. Ni una regla cambia: cada video conserva
+     su carga en diferido, su parada fuera de pantalla, su obediencia al boton
+     de parar y su silencio con movimiento reducido. La portada sigue teniendo
+     su id, asi que lo que ya lo buscaba por id lo sigue encontrando.
+
+     La diferencia entre uno y otro es DONDE empiezan: la portada esta arriba
+     y ya se ve al cargar; un corte esta a media pagina y no debe pedir su
+     archivo hasta que alguien llegue. Eso lo dice data-arranca-visible. */
+  [].slice.call(document.querySelectorAll('[data-video-ambiental]')).forEach(function (video) {
     var cargado = false;
 
     /* Si el video esta a la vista. Empieza en true porque la portada esta
@@ -792,7 +801,7 @@
        tres pantallas mas arriba, y ahi se quedaba corriendo. El observador
        de interseccion no lo salvaba: solo avisa cuando la visibilidad
        CAMBIA, y desde el pie no cambiaba nada. */
-    var aLaVista = true;
+    var aLaVista = video.hasAttribute('data-arranca-visible');
 
     /* No se enseña hasta que de verdad esté pintando. Entre que el archivo
        llega y sale el primer fotograma hay un hueco en el que un <video> sin
@@ -834,7 +843,7 @@
         }, { threshold: 0 }).observe(video);
       }
     }
-  }
+  });
 
   /* ----------------------------------------------------------------
      13 quater · El visor de documento de una página de trabajo

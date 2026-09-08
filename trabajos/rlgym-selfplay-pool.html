@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es" data-caso="rlgym-selfplay-pool">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- GENERADO por herramientas/hacer-caso.py desde contenido-rlgym.json.
+     No lo edites a mano: se sobrescribe entero en cada ejecución. -->
+<title>Opponent Pool Self-Play · Pedro Pérez Blanco</title>
+<meta name="description" content="Un experimento de aprendizaje por refuerzo sobre self-play: criterio preregistrado, seis entrenamientos, 720 partidas y un resultado que no lo confirma.">
+<meta name="theme-color" content="#0B0C0F">
+
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Opponent Pool Self-Play · Pedro Pérez Blanco">
+<meta property="og:description" content="Un experimento de aprendizaje por refuerzo sobre self-play: criterio preregistrado, seis entrenamientos, 720 partidas y un resultado que no lo confirma.">
+<meta property="og:image" content="https://pedro-perez-data.netlify.app/medios/og.jpg">
+<meta property="og:image:alt" content="Tarjeta con el nombre de Pedro Pérez Blanco y el titular del portfolio.">
+<meta property="og:url" content="https://pedro-perez-data.netlify.app/trabajos/rlgym-selfplay-pool.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="stylesheet" href="../ui/tipos.css">
+<link rel="stylesheet" href="../ui/plantilla.css">
+<!-- Después de plantilla.css, porque se apoya en sus tokens y solo añade lo
+     que es propio de una página de caso. -->
+<link rel="stylesheet" href="../ui/trabajo.css">
+<style>
+  /* Paleta de este trabajo. violeta 256°. La figura de portada es azul 221° medido —el 77% de sus píxeles con color—, pero deep learning ya ocupa 214° y videojuegos 200°: tres azules seguidos no se distinguen en el carrusel. Se gira el tono lo justo para separarlo sin salir de la familia fría de la figura. Contraste 6,03:1 sobre #0B0C0F, dentro del rango de las otras cinco señales (6,11 a 11,38). */
+  :root{
+    --senal:#9A7DE8;
+    --senal-viva:#BBA8F0;
+    --senal-tenue:rgba(154,125,232,.14);
+    --senal-linea:rgba(154,125,232,.34);
+  }
+  /* El cursor NO cambia con el caso: es del sitio. Si cambiara,
+     al pasar de un trabajo a otro pareceria otro puntero. Hay
+     una prueba que lo compara con el del portfolio. */
+  .nodo-cursor{ border-color:rgba(224,164,88,.34) }
+  .nodo-cursor::after{ background:#E0A458 }
+  .nodo-cursor.esta-activo{ border-color:#E0A458;
+                            background:rgba(224,164,88,.07) }
+</style>
+</head>
+<body>
+
+<canvas class="fondo" id="fondo" aria-hidden="true"></canvas>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra" id="barra">
+  <nav class="barra__caja" aria-label="Secciones">
+    <a class="barra__marca" href="../index.html">
+      <span class="barra__iniciales" aria-hidden="true">PPB</span>
+      <span class="barra__nombre">Pedro Pérez Blanco</span>
+    </a>
+    <ul class="barra__lista" id="menu-lista"><li><a href="#s-pregunta" data-nav>La pregunta</a></li><li><a href="#s-arquitectura" data-nav>Qué construí</a></li><li><a href="#s-resultado" data-nav>El resultado</a></li><li><a href="#s-diagnostico" data-nav>El diagnóstico</a></li><li><a href="#s-puerta" data-nav>La puerta</a></li><li><a href="#s-recompensas" data-nav>La recompensa</a></li><li><a href="#s-falsacion" data-nav>La falsación</a></li></ul>
+    <button class="barra__pausa" id="reanudar" type="button">
+      <span class="barra__pausa__punto" aria-hidden="true"></span>Movimiento en pausa
+      <span class="oculto">, pulsa para reanudarlo</span>
+    </button>
+    <a class="barra__cta" href="../index.html#trabajo">Todos los trabajos</a>
+    <button class="barra__menu" id="menu" type="button"
+            aria-expanded="true" aria-controls="menu-lista">
+      <span aria-hidden="true"></span>
+      <span class="oculto">Abrir el menú</span>
+    </button>
+  </nav>
+  <div class="barra__avance" id="avance" aria-hidden="true"></div>
+</header>
+
+<main id="contenido">
+
+  <section class="caso-portada caso-portada--animada"><div class="relieve" aria-hidden="true"><img class="relieve__quieta" src="../medios/video/rlgym-poster.jpg" width="1440" height="810" alt="" decoding="async"><video id="portada-video" data-video-ambiental data-arranca-visible muted loop playsinline preload="none" poster="../medios/video/rlgym-poster.jpg" data-src="../medios/video/rlgym.mp4"></video><span class="relieve__velo"></span></div>
+    <div class="marco">
+      <a class="volver" href="../index.html#trabajo">
+        <span aria-hidden="true">&larr;</span> Todos los trabajos
+      </a>
+      <div class="cristal"><span class="cristal__fx" aria-hidden="true"><span class="cristal__cara"></span><span class="cristal__filo cristal__filo--t"></span><span class="cristal__filo cristal__filo--b"></span><span class="cristal__filo cristal__filo--i"></span><span class="cristal__filo cristal__filo--d"></span></span><div class="cristal__dentro">
+      <div class="caso-portada__panel" data-revelar>
+        <p class="rotulo eyebrow">Aprendizaje por refuerzo · Método experimental</p>
+        <h1 class="caso-portada__titulo" data-partir>Opponent Pool Self-Play</h1>
+        <p class="parrafo parrafo--lead">¿Ayuda entrenar contra versiones anteriores de uno mismo? Proyecto personal sobre el entorno de Rocket League de moanv2/rlgym, con licencia MIT. El criterio se escribió y se congeló antes de lanzar nada; después se ejecutaron seis entrenamientos y se evaluaron 720 partidas una sola vez. La respuesta es que no se puede afirmar. El bot original no es obra mía: lo mío es la infraestructura experimental.</p>
+        <div class="datos"><div class="dato"><span class="dato__k">Papel</span><span class="dato__v">Autor · proyecto personal</span></div><div class="dato"><span class="dato__k">Base</span><span class="dato__v">moanv2/rlgym (MIT) · el bot no es mío</span></div><div class="dato"><span class="dato__k">Método</span><span class="dato__v">Protocolo congelado por SHA256 antes de ejecutar</span></div><div class="dato"><span class="dato__k">Herramientas</span><span class="dato__v">Python · PPO · rlgym-sim · RocketSim</span></div></div>
+      </div>
+      </div></div>
+      <p class="portada__nota">Imágenes de Rocket League a modo de contexto visual: gameplay ilustrativo de terceros, NO son grabaciones del experimento ni de ningún agente entrenado aquí · Based on moanv2/rlgym (MIT) · Infraestructura experimental · opponent pools · reproducibilidad</p>
+      <div class="cifras" data-revelar><div class="cifra"><span class="cifra__n">ABIERTA</span><span class="cifra__pie">veredicto de H1: inconcluyente</span></div><div class="cifra"><span class="cifra__n">−0,83 pp</span><span class="cifra__pie">diferencia B − A · IC95 [−3,89, +2,22]</span></div><div class="cifra"><span class="cifra__n">NO-GO</span><span class="cifra__pie">H2, detenido antes de entrenar</span></div></div>
+    </div>
+  </section>
+  <!-- El raíl de apartados. Son anclas de verdad, así que funciona con el
+       JavaScript bloqueado; lo único que añade el script es marcar en cuál
+       estás. Es un índice, no unas pestañas: el caso entero está en la
+       página. -->
+  <nav class="rail" id="rail" aria-label="Apartados de este trabajo">
+    <div class="marco rail__caja"><a href="#s-pregunta" data-rail>La pregunta</a><a href="#s-arquitectura" data-rail>Qué construí</a><a href="#s-resultado" data-rail>El resultado</a><a href="#s-diagnostico" data-rail>El diagnóstico</a><a href="#s-puerta" data-rail>La puerta</a><a href="#s-recompensas" data-rail>La recompensa</a><a href="#s-falsacion" data-rail>La falsación</a></div>
+  </nav>
+
+  <section class="caso" id="s-pregunta" data-caso="01">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--centrado">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">La pregunta</p>
+          <h2 class="titulo-menor">Entrenar contra  <em class="acento">quien fuiste</em>, no contra quien eres.</h2>
+          <p class="parrafo parrafo--lead">En self-play un agente aprende jugando contra sí mismo. La versión de siempre lo enfrenta a su copia más reciente, y eso tiene un riesgo conocido: la estrategia puede dar vueltas en círculo y olvidar lo que ya sabía ganar.</p>
+          <p class="parrafo">La alternativa que se puso a prueba es un opponent pool: en vez de jugar siempre contra su yo de hoy, el agente sortea el rival entre todas las copias guardadas a lo largo del entrenamiento. La idea no es nueva —es fictitious self-play—; la pregunta era si aquí, en este entorno y con este presupuesto de cómputo, cambia algo.</p><p class="parrafo">El experimento se preregistró: dos brazos, tres semillas cada uno, el mismo número de partidas y un criterio de decisión escrito y congelado por SHA256 antes de lanzar nada. Los scripts se niegan a arrancar si el protocolo ha cambiado. Eso no hace el resultado mejor; hace que no se pueda mover la portería después de verlo.</p><p class="parrafo">El entorno y el agente de partida son de moanv2/rlgym, con licencia MIT: el bot original no es obra mía y no lo he mejorado. Lo mío son las 5.401 líneas del experimento —el adaptador de rival congelado, el pool, la ejecución en procesos aislados y el análisis—, sin tocar ni un archivo heredado.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Brazos comparados</span><span class="lectura__valor">2 · A y B</span></div><div class="lectura"><span class="lectura__clave">Semillas por brazo</span><span class="lectura__valor">3</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Partidas evaluadas</span><span class="lectura__valor">720</span></div><div class="lectura"><span class="lectura__clave">Protocolo</span><span class="lectura__valor">congelado por SHA256</span></div><div class="lectura"><span class="lectura__clave">Archivos heredados tocados</span><span class="lectura__valor">0</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 436" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="220" y="12" width="200" height="76" rx="9" fill="var(--senal-tenue)" stroke="var(--senal)" stroke-width="1.6"/><text x="320" y="37" class="g-rotulo" text-anchor="middle">POLÍTICA</text><text x="320" y="76" class="g-rotulo" text-anchor="middle">ACTUAL</text><path d="M 320 88 L 320 124" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><path d="M 315 118 l 5 6 l 5 -6" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><text x="332" y="112" class="g-pie">snapshot</text><rect x="56" y="128" width="528" height="106" rx="11" fill="var(--linea-fuerte)" opacity=".13"/><text x="70" y="150" class="g-pie">POOL HISTÓRICO</text><circle class="pool-nodo" style="--i:0" cx="110" cy="190" r="15" fill="none" fill-opacity="0" stroke="var(--senal)" stroke-width="1.6" opacity=".55"/><text x="110" y="224" class="g-pie" text-anchor="middle">C0</text><circle class="pool-nodo" style="--i:1" cx="202" cy="190" r="15" fill="none" fill-opacity="0" stroke="var(--senal)" stroke-width="1.6" opacity=".55"/><text x="202" y="224" class="g-pie" text-anchor="middle">t−4</text><circle class="pool-nodo" style="--i:2" cx="294" cy="190" r="15" fill="none" fill-opacity="0" stroke="var(--senal)" stroke-width="1.6" opacity=".55"/><text x="294" y="224" class="g-pie" text-anchor="middle">t−3</text><circle class="pool-nodo" style="--i:3" cx="386" cy="190" r="15" fill="var(--senal)" fill-opacity=".9" stroke="var(--senal)" stroke-width="1.6" opacity="1"/><text x="386" y="224" class="g-pie" text-anchor="middle">t−2</text><circle class="pool-nodo" style="--i:4" cx="478" cy="190" r="15" fill="none" fill-opacity="0" stroke="var(--senal)" stroke-width="1.6" opacity=".55"/><text x="478" y="224" class="g-pie" text-anchor="middle">t−1</text><circle class="pool-elegido" cx="386" cy="190" r="23" fill="none" stroke="var(--senal-viva)" stroke-width="1.6" opacity=".85"/><path d="M 320 234 L 320 272" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><path d="M 315 266 l 5 6 l 5 -6" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.5"/><text x="332" y="258" class="g-pie">se sortea</text><rect x="40" y="276" width="240" height="76" rx="9" fill="none" stroke="var(--linea-fuerte)" stroke-width="1.6"/><text x="160" y="301" class="g-rotulo" text-anchor="middle">RIVAL</text><text x="160" y="340" class="g-rotulo" text-anchor="middle">CONGELADO</text><rect x="360" y="276" width="240" height="76" rx="9" fill="var(--senal-tenue)" stroke="var(--senal)" stroke-width="1.6"/><text x="480" y="320" class="g-rotulo" text-anchor="middle">APRENDIZ</text><path d="M 284 314 L 356 314 M 290 309 l -6 5 l 6 5 M 350 309 l 6 5 l -6 5" fill="none" stroke="var(--senal)" stroke-width="1.5"/><text x="320" y="378" class="g-pie" text-anchor="middle">episodio 1v1</text><path class="pool-vuelta" d="M 480 352 L 480 398 L 20 398 L 20 50 L 216 50" fill="none" stroke="var(--senal)" stroke-width="1.5" opacity=".55" stroke-dasharray="5 5"/><path d="M 210 45 l 6 5 l -6 5" fill="none" stroke="var(--senal)" stroke-width="1.5" opacity=".55"/><text x="250" y="416" class="g-pie">actualización</text><circle class="pool-pulso pool-pulso--1" cx="320" cy="94" r="3.4" fill="var(--senal-viva)"/><circle class="pool-pulso pool-pulso--2" cx="320" cy="240" r="3.4" fill="var(--senal-viva)"/><circle class="pool-pulso pool-pulso--3" cx="300" cy="314" r="3.4" fill="var(--senal-viva)"/><circle class="pool-pulso pool-pulso--4" cx="470" cy="358" r="3.4" fill="var(--senal-viva)"/></svg>
+          <figcaption class="caso__pie">El ciclo completo. El brazo A es este mismo esquema con el pool reducido a una sola copia: la más reciente.</figcaption>
+          <p class="oculto">Ciclo del opponent pool. La política actual guarda un snapshot en un pool histórico de cinco copias —C0, t menos 4, t menos 3, t menos 2 y t menos 1—; de ahí se sortea una, que queda como rival congelado y juega un episodio 1v1 contra el aprendiz; la actualización vuelve a la política actual y el ciclo empieza otra vez. En el brazo A el pool guarda solo la copia más reciente.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-arquitectura" data-caso="02">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--ancho">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">Qué construí yo</p>
+          <h2 class="titulo-menor">Lo heredado,  <em class="acento">lo mío</em>  y lo que salió.</h2>
+          <p class="parrafo parrafo--lead">El entorno, el algoritmo y las políticas de partida son de moanv2/rlgym, con licencia MIT. Lo que añadí son 5.401 líneas de infraestructura experimental, sin tocar ni un archivo heredado.</p>
+          <p class="parrafo">La zona de arriba no es obra mía y por eso va en gris. El bot de Rocket League ya existía, funcionaba y no lo he mejorado: mi trabajo empieza donde termina el suyo.</p><p class="parrafo">La del medio es lo que construí: el adaptador que expone un solo agente para que a PPO solo le llegue la experiencia del aprendiz, el pool con su retención y su C0 protegido, el muestreo reproducible, los manifiestos con hashes, la ejecución en procesos aislados con reanudación, y el análisis.</p><p class="parrafo">La de abajo es lo que salió, que no es lo que esperaba: un resultado inconcluyente, una puerta que se cerró y una hipótesis falsada.</p>
+          <div class="lecturas"><div class="lectura lectura--destacada"><span class="lectura__clave">Líneas propias</span><span class="lectura__valor">5.401</span></div><div class="lectura"><span class="lectura__clave">Archivos heredados modificados</span><span class="lectura__valor">0</span></div><div class="lectura"><span class="lectura__clave">Licencia de la base</span><span class="lectura__valor">MIT · moanv2/rlgym</span></div><div class="lectura"><span class="lectura__clave">El bot original</span><span class="lectura__valor">no es obra mía</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 690" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g class="arq-zona"><rect x="16" y="12" width="608" height="170" rx="11" fill="var(--linea-fuerte)" opacity=".12"/><rect x="16" y="12" width="4" height="170" rx="2" fill="var(--linea-fuerte)" opacity=".8"/><text x="32" y="40" class="g-rotulo">HEREDADO</text><circle cx="40" cy="83" r="3" fill="var(--linea-fuerte)" opacity=".75"/><text x="54" y="88" class="g-pie">RLGym</text><circle cx="324" cy="83" r="3" fill="var(--linea-fuerte)" opacity=".75"/><text x="338" y="88" class="g-pie">PPO</text><circle cx="40" cy="123" r="3" fill="var(--linea-fuerte)" opacity=".75"/><text x="54" y="128" class="g-pie">simulación</text><circle cx="324" cy="123" r="3" fill="var(--linea-fuerte)" opacity=".75"/><text x="338" y="128" class="g-pie">políticas base</text></g><g class="arq-zona"><rect x="16" y="198" width="608" height="290" rx="11" fill="var(--linea-fuerte)" opacity=".12"/><rect x="16" y="198" width="4" height="290" rx="2" fill="var(--senal)" opacity=".8"/><text x="32" y="226" class="g-rotulo">MI APORTACIÓN</text><circle cx="40" cy="269" r="3" fill="var(--senal)" opacity=".75"/><text x="54" y="274" class="g-pie">init por proc.</text><circle cx="324" cy="269" r="3" fill="var(--senal)" opacity=".75"/><text x="338" y="274" class="g-pie">rival congelado</text><circle cx="40" cy="309" r="3" fill="var(--senal)" opacity=".75"/><text x="54" y="314" class="g-pie">opponent pool</text><circle cx="324" cy="309" r="3" fill="var(--senal)" opacity=".75"/><text x="338" y="314" class="g-pie">snapshots</text><circle cx="40" cy="349" r="3" fill="var(--senal)" opacity=".75"/><text x="54" y="354" class="g-pie">hashes</text><circle cx="324" cy="349" r="3" fill="var(--senal)" opacity=".75"/><text x="338" y="354" class="g-pie">recuperación</text><circle cx="40" cy="389" r="3" fill="var(--senal)" opacity=".75"/><text x="54" y="394" class="g-pie">evaluación</text><circle cx="324" cy="389" r="3" fill="var(--senal)" opacity=".75"/><text x="338" y="394" class="g-pie">protocolos</text><circle cx="40" cy="429" r="3" fill="var(--senal)" opacity=".75"/><text x="54" y="434" class="g-pie">análisis</text></g><g class="arq-zona"><rect x="16" y="504" width="608" height="170" rx="11" fill="var(--linea-fuerte)" opacity=".12"/><rect x="16" y="504" width="4" height="170" rx="2" fill="#FFFFFF" opacity=".8"/><text x="32" y="532" class="g-rotulo">RESULTADOS</text><circle cx="40" cy="575" r="3" fill="#FFFFFF" opacity=".75"/><text x="54" y="580" class="g-pie">H1</text><circle cx="324" cy="575" r="3" fill="#FFFFFF" opacity=".75"/><text x="338" y="580" class="g-pie">puerta H2</text><circle cx="40" cy="615" r="3" fill="#FFFFFF" opacity=".75"/><text x="54" y="620" class="g-pie">diagnóstico</text><circle cx="324" cy="615" r="3" fill="#FFFFFF" opacity=".75"/><text x="338" y="620" class="g-pie">falsación</text></g></svg>
+          <figcaption class="caso__pie">Gris lo heredado, violeta lo mío, blanco lo que salió. La zona del medio es la que construí yo.</figcaption>
+          <p class="oculto">Arquitectura en tres zonas. Heredado, de moanv2/rlgym: RLGym, PPO, simulación y políticas base. Mi aportación: inicialización por proceso, rival congelado, opponent pool, snapshots, hashes, recuperación, evaluación, protocolos y análisis. Resultados: H1, la puerta de H2, el diagnóstico de recompensa y la falsación.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <div class="corte" data-revelar>
+    <div class="marco">
+      <figure class="corte__figura">
+      <div class="corte__caja">
+        <img class="corte__quieta" src="../medios/video/rlgym-corte1-poster.jpg" width="1440" height="810"
+             alt="" decoding="async" loading="lazy">
+        <video class="corte__video" data-video-ambiental muted loop playsinline
+               preload="none" poster="../medios/video/rlgym-corte1-poster.jpg"
+               data-src="../medios/video/rlgym-corte1.mp4" aria-hidden="true"></video>
+        <span class="corte__velo" aria-hidden="true"></span>
+        <span class="corte__rejilla" aria-hidden="true"></span>
+        <div class="corte__hud" aria-hidden="true"><span class="corte__etiqueta">Contexto visual</span><span class="corte__etiqueta">1v1 · rlgym-sim</span></div>
+        <p class="corte__titular">Seis entrenamientos.
+720 partidas.
+Una sola evaluación.</p>
+      </div>
+      <!-- La nota va FUERA de la caja: dentro quedaba tapada por el video y
+           recortada por el overflow, y una nota de procedencia que no se ve no
+           sirve de nada. -->
+      <figcaption class="corte__nota">Gameplay de Rocket League como contexto visual · imágenes de terceros, no son grabaciones del experimento ni de ningún agente entrenado aquí</figcaption>
+      </figure>
+    </div>
+  </div>
+  <section class="caso" id="s-resultado" data-caso="03">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--ancho">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">El resultado</p>
+          <h2 class="titulo-menor">El intervalo  <em class="acento">cruza el cero</em>.</h2>
+          <p class="parrafo parrafo--lead">Las seis corridas terminaron y se evaluaron una sola vez: 720 partidas contra un rival fijo. La diferencia entre los dos brazos fue de −0,83 puntos porcentuales, con un intervalo de confianza del 95% que va de −3,89 a +2,22.</p>
+          <p class="parrafo">Ese intervalo cruza el cero por los dos lados. Con el criterio preregistrado eso es un resultado inconcluyente: no se puede afirmar que el opponent pool ayude, y tampoco que estorbe. No es un empate demostrado, es una medida demasiado imprecisa para separarlos.</p><p class="parrafo">La unidad experimental es la corrida, no la partida. Con tres semillas por brazo el intervalo sale ancho por construcción, y estrecharlo tratando las 720 partidas como si fueran independientes habría sido hacerse trampa a uno mismo.</p><p class="parrafo">Se evaluó una vez y se paró. No hubo una segunda tanda, ni un reajuste después de ver los números, ni una versión mejorada del experimento escrita a posteriori.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Brazo A · rival más reciente</span><span class="lectura__valor">5,00%</span></div><div class="lectura"><span class="lectura__clave">Brazo B · rival del pool</span><span class="lectura__valor">4,17%</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Diferencia B − A</span><span class="lectura__valor">−0,83 pp</span></div><div class="lectura"><span class="lectura__clave">IC 95%</span><span class="lectura__valor">[−3,89, +2,22]</span></div><div class="lectura"><span class="lectura__clave">Veredicto preregistrado</span><span class="lectura__valor">inconcluyente</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 486" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="M 98.0 128.0 A 74 74 0 0 1 246.0 128.0" fill="none" stroke="var(--linea-fuerte)" stroke-width="7" opacity=".34" stroke-linecap="round"/><line x1="109.0" y1="128.0" x2="102.0" y2="128.0" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="112.1" y1="108.5" x2="105.4" y2="106.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="121.0" y1="91.0" x2="115.4" y2="86.9" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="135.0" y1="77.0" x2="130.9" y2="71.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="152.5" y1="68.1" x2="150.4" y2="61.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="172.0" y1="65.0" x2="172.0" y2="58.0" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="191.5" y1="68.1" x2="193.6" y2="61.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="209.0" y1="77.0" x2="213.1" y2="71.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="223.0" y1="91.0" x2="228.6" y2="86.9" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="231.9" y1="108.5" x2="238.6" y2="106.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="235.0" y1="128.0" x2="242.0" y2="128.0" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><path d="M 98.0 128.0 A 74 74 0 0 1 172.0 54.0" fill="none" stroke="var(--senal)" stroke-width="7" opacity=".92" stroke-linecap="round"/><line x1="172" y1="128" x2="172.0" y2="70.0" stroke="var(--senal-viva)" stroke-width="2.4" stroke-linecap="round"/><circle cx="172" cy="128" r="4.5" fill="var(--senal-viva)"/><text x="172" y="170" class="g-num" text-anchor="middle">5,00%</text><text x="172" y="228" class="g-pie" text-anchor="middle">Brazo A</text><path d="M 394.0 128.0 A 74 74 0 0 1 542.0 128.0" fill="none" stroke="var(--linea-fuerte)" stroke-width="7" opacity=".34" stroke-linecap="round"/><line x1="405.0" y1="128.0" x2="398.0" y2="128.0" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="408.1" y1="108.5" x2="401.4" y2="106.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="417.0" y1="91.0" x2="411.4" y2="86.9" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="431.0" y1="77.0" x2="426.9" y2="71.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="448.5" y1="68.1" x2="446.4" y2="61.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="468.0" y1="65.0" x2="468.0" y2="58.0" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="487.5" y1="68.1" x2="489.6" y2="61.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="505.0" y1="77.0" x2="509.1" y2="71.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="519.0" y1="91.0" x2="524.6" y2="86.9" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="527.9" y1="108.5" x2="534.6" y2="106.4" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><line x1="531.0" y1="128.0" x2="538.0" y2="128.0" stroke="var(--linea)" stroke-width="1.4" opacity=".7"/><path d="M 394.0 128.0 A 74 74 0 0 1 448.9 56.5" fill="none" stroke="var(--senal)" stroke-width="7" opacity=".92" stroke-linecap="round"/><line x1="468" y1="128" x2="453.0" y2="72.0" stroke="var(--senal-viva)" stroke-width="2.4" stroke-linecap="round"/><circle cx="468" cy="128" r="4.5" fill="var(--senal-viva)"/><text x="468" y="170" class="g-num" text-anchor="middle">4,17%</text><text x="468" y="228" class="g-pie" text-anchor="middle">Brazo B</text><line x1="56" y1="296" x2="584" y2="296" stroke="var(--linea)" stroke-width="1.4"/><line x1="56.0" y1="291" x2="56.0" y2="301" stroke="var(--linea)" stroke-width="1.2" opacity=".8"/><line x1="122.0" y1="291" x2="122.0" y2="301" stroke="var(--linea)" stroke-width="1.2" opacity=".8"/><line x1="188.0" y1="291" x2="188.0" y2="301" stroke="var(--linea)" stroke-width="1.2" opacity=".8"/><line x1="254.0" y1="291" x2="254.0" y2="301" stroke="var(--linea)" stroke-width="1.2" opacity=".8"/><line x1="320.0" y1="291" x2="320.0" y2="301" stroke="var(--linea)" stroke-width="1.2" opacity=".8"/><line x1="386.0" y1="291" x2="386.0" y2="301" stroke="var(--linea)" stroke-width="1.2" opacity=".8"/><line x1="452.0" y1="291" x2="452.0" y2="301" stroke="var(--linea)" stroke-width="1.2" opacity=".8"/><line x1="518.0" y1="291" x2="518.0" y2="301" stroke="var(--linea)" stroke-width="1.2" opacity=".8"/><line x1="584.0" y1="291" x2="584.0" y2="301" stroke="var(--linea)" stroke-width="1.2" opacity=".8"/><rect x="129.3" y="277" width="403.3" height="38" rx="7" fill="var(--senal)" opacity=".26"/><line x1="129.3" y1="277" x2="129.3" y2="315" stroke="var(--senal-viva)" stroke-width="2.2"/><line x1="532.5" y1="277" x2="532.5" y2="315" stroke="var(--senal-viva)" stroke-width="2.2"/><line x1="386.0" y1="262" x2="386.0" y2="330" stroke="#FFFFFF" stroke-width="2" opacity=".9"/><text x="386.0" y="254" class="g-pie" text-anchor="middle">0</text><circle cx="331.2" cy="296" r="6" fill="var(--senal-viva)"/><text x="129.3" y="338" class="g-pie" text-anchor="middle">-3,89</text><text x="532.5" y="338" class="g-pie" text-anchor="middle">2,22</text><text x="331.2" y="214" class="g-pie" text-anchor="middle">-0,83 pp</text><line x1="331.2" y1="224" x2="331.2" y2="272" stroke="var(--senal-viva)" stroke-width="1" opacity=".55"/><text x="320" y="424" class="g-num" text-anchor="middle">INCONCLUYENTE</text><text x="320" y="460" class="g-pie" text-anchor="middle">el IC95 cruza el cero</text></svg>
+          <figcaption class="caso__pie">Las dos agujas dicen poco. Lo que decide es la banda de abajo: va de −3,89 a +2,22 y cruza el cero.</figcaption>
+          <p class="oculto">Cuadro de instrumentos. Dos diales sobre una escala de 0 a 10 por ciento: el brazo A marca 5,00 por ciento y el brazo B 4,17. Debajo, un eje con el cero marcado y la banda del intervalo de confianza del 95%, que va de −3,89 a +2,22 puntos porcentuales y cruza el cero; la diferencia observada, −0,83, cae dentro. El veredicto es INCONCLUYENTE.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-diagnostico" data-caso="04">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--ancho">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">El diagnóstico</p>
+          <h2 class="titulo-menor">Tres medidas, y  <em class="acento">ninguna causa</em>  demostrada.</h2>
+          <p class="parrafo parrafo--lead">Señales que limitaron la capacidad del experimento para distinguir los dos brazos. Son tres medidas del estado en que quedó, no tres causas: ninguna está demostrada como el motivo de nada.</p>
+          <p class="parrafo">La primera es el suelo. Los dos brazos ganan alrededor del 5% de las partidas contra el rival de referencia. Cuando las dos condiciones que se comparan están pegadas al suelo, la diferencia entre ellas tiene muy poco sitio donde aparecer.</p><p class="parrafo">La segunda es la deriva: al terminar, los pesos de la red se habían alejado un 1,55% de su punto de partida. Y crece como la raíz del número de muestras, no en línea recta —comprobado en cinco puntos—, así que extrapolarla linealmente, que fue mi primera estimación, da un número que después no se cumple.</p><p class="parrafo">La tercera es la diversidad medida dentro del pool: 0,0074. Un pool cuyas copias se parecen mucho entre sí ofrece, en la práctica, rivales parecidos. Eso es coherente con no ver diferencia, pero coherente no es demostrado: no se ha establecido cuál de las tres cosas, si es que alguna, produce el resultado.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Partidas ganadas, los dos brazos</span><span class="lectura__valor">≈ 5%</span></div><div class="lectura"><span class="lectura__clave">Deriva de los pesos al terminar</span><span class="lectura__valor">1,55%</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Diversidad dentro del pool</span><span class="lectura__valor">0,0074</span></div><div class="lectura"><span class="lectura__clave">Cómo crece la deriva</span><span class="lectura__valor">√muestras, no lineal</span></div><div class="lectura"><span class="lectura__clave">Causa establecida</span><span class="lectura__valor">ninguna</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 346" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><circle cx="107" cy="112" r="46" fill="none" stroke="var(--linea-fuerte)" stroke-width="6" opacity=".34"/><path d="M 74.1 144.5 A 46 46 0 0 1 67.4 136.0" fill="none" stroke="var(--senal)" stroke-width="6" stroke-linecap="round" opacity=".92"/><text x="107" y="121" class="g-num" text-anchor="middle">≈ 5 %</text><text x="107" y="48" class="g-rotulo" text-anchor="middle">SUELO</text><text x="107" y="188" class="g-pie" text-anchor="middle">partidas</text><text x="107" y="225" class="g-pie" text-anchor="middle">ganadas por</text><text x="107" y="262" class="g-pie" text-anchor="middle">los dos</text><text x="107" y="299" class="g-pie" text-anchor="middle">brazos</text><circle cx="320" cy="112" r="46" fill="none" stroke="var(--linea-fuerte)" stroke-width="6" opacity=".34"/><circle cx="320" cy="66" r="4" fill="var(--senal-viva)"/><text x="320" y="121" class="g-num" text-anchor="middle">1,55 %</text><text x="320" y="48" class="g-rotulo" text-anchor="middle">DERIVA</text><text x="320" y="188" class="g-pie" text-anchor="middle">de los pesos</text><text x="320" y="225" class="g-pie" text-anchor="middle">al terminar</text><circle cx="533" cy="112" r="46" fill="none" stroke="var(--linea-fuerte)" stroke-width="6" opacity=".34"/><circle cx="533" cy="66" r="4" fill="var(--senal-viva)"/><text x="533" y="121" class="g-num" text-anchor="middle">0,0074</text><text x="533" y="48" class="g-rotulo" text-anchor="middle">DIVERSIDAD</text><text x="533" y="188" class="g-pie" text-anchor="middle">dentro</text><text x="533" y="225" class="g-pie" text-anchor="middle">del pool</text></svg>
+          <figcaption class="caso__pie">Solo el primero lleva el aro lleno, porque solo el primero tiene una escala detrás: los otros dos son cifras, no proporciones.</figcaption>
+          <p class="oculto">Embudo con tres medidas: alrededor del 5% de partidas ganadas por los dos brazos, 1,55% de deriva de los pesos al terminar y 0,0074 de diversidad dentro del pool.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-puerta" data-caso="05">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--centrado">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">La puerta</p>
+          <h2 class="titulo-menor">Se cayeron dos, y  <em class="acento">no se entrenó</em>.</h2>
+          <p class="parrafo parrafo--lead">El segundo experimento, H2, estaba pensado para levantar ese suelo con diez corridas más largas. Antes de lanzarlas había cuatro puertas escritas de antemano, y la regla también estaba escrita: si alguna se cae, no se entrena.</p>
+          <p class="parrafo">Se cayeron dos. La deriva no llegó al umbral preinscrito y el pool no alcanzó la diversidad mínima. Las otras dos —que la fase corta terminara sin fallos y que el cómputo cupiera en el presupuesto— sí se cumplieron.</p><p class="parrafo">La decisión fue NO-GO y las diez corridas no se ejecutaron. Bajar un umbral después de verlo fallar habría convertido la puerta en un trámite, que es exactamente lo que la puerta existía para impedir.</p><p class="parrafo">Es el resultado que menos enseña un portfolio y del que más aprendí: la parte cara del método es respetarlo cuando dice que pares.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">G1 · la fase corta</span><span class="lectura__valor">cumple</span></div><div class="lectura"><span class="lectura__clave">G2 · deriva</span><span class="lectura__valor">0,0310 de 0,0465</span></div><div class="lectura"><span class="lectura__clave">G3 · diversidad</span><span class="lectura__valor">0,0135 de 0,0148</span></div><div class="lectura"><span class="lectura__clave">G4 · cómputo</span><span class="lectura__valor">cumple</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Decisión</span><span class="lectura__valor">NO-GO</span></div><div class="lectura"><span class="lectura__clave">Corridas ejecutadas</span><span class="lectura__valor">0 de 10</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 534" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g class="ck-fila" style="--i:0"><rect x="16" y="22" width="608" height="60" rx="9" fill="var(--linea-fuerte)" opacity=".16"/><circle cx="44" cy="52" r="15" fill="none" stroke="var(--ok)" stroke-width="2"/><path d="M 36 52 l 6 6 l 11 -13" fill="none" stroke="var(--ok)" stroke-width="2.6" stroke-linecap="round"/><text x="72" y="46" class="g-rotulo">G1 · fase corta</text><text x="72" y="83" class="g-pie">termina sin fallos</text><text x="614" y="58" class="g-rotulo" text-anchor="end">CUMPLE</text></g><g class="ck-fila" style="--i:1"><rect x="16" y="96" width="608" height="60" rx="9" fill="var(--linea-fuerte)" opacity=".16"/><circle cx="44" cy="126" r="15" fill="none" stroke="var(--mal)" stroke-width="2"/><path d="M 37 119 l 14 14 m 0 -14 l -14 14" fill="none" stroke="var(--mal)" stroke-width="2.6" stroke-linecap="round"/><text x="72" y="120" class="g-rotulo">G2 · deriva</text><text x="72" y="157" class="g-pie">0,0310 de 0,0465</text><text x="614" y="132" class="g-rotulo" text-anchor="end">FALLA</text></g><g class="ck-fila" style="--i:2"><rect x="16" y="170" width="608" height="60" rx="9" fill="var(--linea-fuerte)" opacity=".16"/><circle cx="44" cy="200" r="15" fill="none" stroke="var(--mal)" stroke-width="2"/><path d="M 37 193 l 14 14 m 0 -14 l -14 14" fill="none" stroke="var(--mal)" stroke-width="2.6" stroke-linecap="round"/><text x="72" y="194" class="g-rotulo">G3 · diversidad</text><text x="72" y="231" class="g-pie">0,0135 de 0,0148</text><text x="614" y="206" class="g-rotulo" text-anchor="end">FALLA</text></g><g class="ck-fila" style="--i:3"><rect x="16" y="244" width="608" height="60" rx="9" fill="var(--linea-fuerte)" opacity=".16"/><circle cx="44" cy="274" r="15" fill="none" stroke="var(--ok)" stroke-width="2"/><path d="M 36 274 l 6 6 l 11 -13" fill="none" stroke="var(--ok)" stroke-width="2.6" stroke-linecap="round"/><text x="72" y="268" class="g-rotulo">G4 · cómputo</text><text x="72" y="305" class="g-pie">cabe en presupuesto</text><text x="614" y="280" class="g-rotulo" text-anchor="end">CUMPLE</text></g><g class="ck-maestro" style="--i:4"><rect x="110" y="332" width="420" height="184" rx="12" fill="var(--mal)" opacity=".14"/><rect x="110" y="332" width="420" height="184" rx="12" fill="none" stroke="var(--mal)" stroke-width="1.6" opacity=".7"/><text x="320" y="390" class="g-num" text-anchor="middle">NO-GO</text><text x="320" y="428" class="g-pie" text-anchor="middle">detenido antes</text><text x="320" y="465" class="g-pie" text-anchor="middle">de entrenar</text></g></svg>
+          <figcaption class="caso__pie">Panel de sistemas. Las dos que fallan lo hacen por poco, y por poco también cuenta: el umbral estaba escrito antes.</figcaption>
+          <p class="oculto">Panel de cuatro testigos. G1, la fase corta se completa sin fallos: cumple. G2, deriva de los pesos, 0,0310 medido frente a 0,0465 requerido: falla. G3, diversidad del pool, 0,0135 frente a 0,0148 requerido: falla. G4, coste de cómputo: cumple. Indicador maestro: NO-GO, detenido antes del entrenamiento completo.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <div class="corte" data-revelar>
+    <div class="marco">
+      <figure class="corte__figura">
+      <div class="corte__caja">
+        <img class="corte__quieta" src="../medios/video/rlgym-corte2-poster.jpg" width="1440" height="810"
+             alt="" decoding="async" loading="lazy">
+        <video class="corte__video" data-video-ambiental muted loop playsinline
+               preload="none" poster="../medios/video/rlgym-corte2-poster.jpg"
+               data-src="../medios/video/rlgym-corte2.mp4" aria-hidden="true"></video>
+        <span class="corte__velo" aria-hidden="true"></span>
+        <span class="corte__rejilla" aria-hidden="true"></span>
+        <div class="corte__hud" aria-hidden="true"><span class="corte__etiqueta">Contexto visual</span><span class="corte__etiqueta">La puerta se cerró</span></div>
+        <p class="corte__titular">Y entonces hubo que
+mirar la recompensa.</p>
+      </div>
+      <!-- La nota va FUERA de la caja: dentro quedaba tapada por el video y
+           recortada por el overflow, y una nota de procedencia que no se ve no
+           sirve de nada. -->
+      <figcaption class="corte__nota">Gameplay de Rocket League como contexto visual · imágenes de terceros, no son grabaciones del experimento ni de ningún agente entrenado aquí</figcaption>
+      </figure>
+    </div>
+  </div>
+  <section class="caso" id="s-recompensas" data-caso="06">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--ancho">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">El diagnóstico de la recompensa</p>
+          <h2 class="titulo-menor">Tres canales,  <em class="acento">ninguna mejora</em>  sostenida.</h2>
+          <p class="parrafo parrafo--lead">Si el opponent pool no separaba nada, quedaba mirar la recompensa. Tres configuraciones, medidas a 100k, 250k y 500k muestras contra el mismo rival fijo.</p>
+          <p class="parrafo">Los tres canales comparten eje vertical a propósito. Escalar cada uno a su propio máximo habría hecho que tres curvas de aspecto idéntico dijeran cosas distintas, que es la forma más fácil de mentir con una gráfica sin tocar un solo número.</p><p class="parrafo">D_A empieza arriba y baja sin parar. D_B sube en el tramo central y vuelve a caer. D_C aguanta y se hunde al final. Ninguna de las tres sube y se queda arriba.</p><p class="parrafo">Es un diagnóstico de la recompensa, no una explicación. Dice que ninguna de las tres produjo una mejora sostenida; no dice por qué.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">D_A · 100k · 250k · 500k</span><span class="lectura__valor">72,0 · 67,5 · 61,5</span></div><div class="lectura"><span class="lectura__clave">D_B · 100k · 250k · 500k</span><span class="lectura__valor">14,0 · 37,5 · 22,5</span></div><div class="lectura"><span class="lectura__clave">D_C · 100k · 250k · 500k</span><span class="lectura__valor">56,5 · 52,5 · 16,0</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Mejora sostenida</span><span class="lectura__valor">ninguna</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 406" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="16" y="28" width="608" height="100" rx="9" fill="var(--linea-fuerte)" opacity=".13"/><text x="28" y="52" class="g-rotulo">D_A</text><polyline points="180.0,61.0 370.0,64.8 560.0,69.9" fill="none" stroke="var(--senal)" stroke-width="2.2" opacity=".85"/><circle cx="180.0" cy="61.0" r="4.6" fill="var(--senal-viva)"/><text x="180.0" y="48.0" class="g-pie" text-anchor="middle">72</text><circle cx="370.0" cy="64.8" r="4.6" fill="var(--senal-viva)"/><text x="370.0" y="51.8" class="g-pie" text-anchor="middle">67,5</text><circle cx="560.0" cy="69.9" r="4.6" fill="var(--senal-viva)"/><text x="560.0" y="56.9" class="g-pie" text-anchor="middle">61,5</text><rect x="16" y="146" width="608" height="100" rx="9" fill="var(--linea-fuerte)" opacity=".13"/><text x="28" y="170" class="g-rotulo">D_B</text><polyline points="180.0,228.1 370.0,208.2 560.0,220.9" fill="none" stroke="var(--senal)" stroke-width="2.2" opacity=".85"/><circle cx="180.0" cy="228.1" r="4.6" fill="var(--senal-viva)"/><text x="180.0" y="215.1" class="g-pie" text-anchor="middle">14</text><circle cx="370.0" cy="208.2" r="4.6" fill="var(--senal-viva)"/><text x="370.0" y="195.2" class="g-pie" text-anchor="middle">37,5</text><circle cx="560.0" cy="220.9" r="4.6" fill="var(--senal-viva)"/><text x="560.0" y="207.9" class="g-pie" text-anchor="middle">22,5</text><rect x="16" y="264" width="608" height="100" rx="9" fill="var(--linea-fuerte)" opacity=".13"/><text x="28" y="288" class="g-rotulo">D_C</text><polyline points="180.0,310.1 370.0,313.5 560.0,344.4" fill="none" stroke="var(--senal)" stroke-width="2.2" opacity=".85"/><circle cx="180.0" cy="310.1" r="4.6" fill="var(--senal-viva)"/><text x="180.0" y="297.1" class="g-pie" text-anchor="middle">56,5</text><circle cx="370.0" cy="313.5" r="4.6" fill="var(--senal-viva)"/><text x="370.0" y="300.5" class="g-pie" text-anchor="middle">52,5</text><circle cx="560.0" cy="344.4" r="4.6" fill="var(--senal-viva)"/><text x="560.0" y="331.4" class="g-pie" text-anchor="middle">16</text><text x="180.0" y="388" class="g-pie" text-anchor="middle">100k</text><text x="370.0" y="388" class="g-pie" text-anchor="middle">250k</text><text x="560.0" y="388" class="g-pie" text-anchor="middle">500k</text></svg>
+          <figcaption class="caso__pie">Tres canales sobre la misma escala. Ninguno sube y se queda arriba.</figcaption>
+          <p class="oculto">Tres canales de telemetría sobre la misma escala vertical, medidos a 100k, 250k y 500k muestras. D_A: 72,0, luego 67,5, luego 61,5. D_B: 14,0, luego 37,5, luego 22,5. D_C: 56,5, luego 52,5, luego 16,0. Ninguna de las tres mejora de forma sostenida.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="caso" id="s-falsacion" data-caso="07">
+    <div class="marco">
+      <div class="caso__reparto caso__reparto--invertido">
+        <div class="caso__texto" data-revelar>
+          <p class="rotulo eyebrow">La falsación</p>
+          <h2 class="titulo-menor">La predicción era subir.  <em class="acento">Bajaron</em>.</h2>
+          <p class="parrafo parrafo--lead">Quedaba una hipótesis por poner a prueba. Si el problema era que la recompensa moldeada empujaba al agente hacia comportamientos que no ganan partidas, reducir ese moldeado debería mejorar el resultado. Se escribió esa predicción y se probó.</p>
+          <p class="parrafo">Dos configuraciones nuevas, contra el mismo rival fijo y con la misma semilla: R1 con el moldeado dividido entre diez y R2 sólo con eventos. Sobre 200 partidas ganaron el 2,0% y el 2,5%. La predicción no sólo no se cumplió: el resultado fue el contrario del anunciado.</p><p class="parrafo">Reducir el moldeado no resolvió el problema. Y eso no convierte a ninguna de las otras configuraciones en la buena: ninguna de las cinco produjo una mejora sostenida al avanzar el entrenamiento, y la causa de lo observado sigue sin identificarse.</p><p class="parrafo">Con eso se cerró la línea experimental. Sin una R3, sin una H3 y sin volver a tocar los hiperparámetros después de haber visto los resultados.</p>
+          <div class="lecturas"><div class="lectura"><span class="lectura__clave">Predicción escrita antes</span><span class="lectura__valor">menos moldeado, mejor</span></div><div class="lectura"><span class="lectura__clave">stage_1_basics</span><span class="lectura__valor">61,5%</span></div><div class="lectura"><span class="lectura__clave">stage_2_offense</span><span class="lectura__valor">22,5%</span></div><div class="lectura"><span class="lectura__clave">sin ZeroSum</span><span class="lectura__valor">16,0%</span></div><div class="lectura"><span class="lectura__clave">R1 · moldeado ÷10</span><span class="lectura__valor">2,0%</span></div><div class="lectura"><span class="lectura__clave">R2 · sólo eventos</span><span class="lectura__valor">2,5%</span></div><div class="lectura lectura--destacada"><span class="lectura__clave">Resultado</span><span class="lectura__valor">predicción falsada</span></div><div class="lectura"><span class="lectura__clave">Causa de lo observado</span><span class="lectura__valor">sin identificar</span></div></div>
+        </div>
+        <figure class="caso__figura" data-revelar>
+          <svg class="grafico" viewBox="0 0 640 419" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><circle cx="64" cy="76" r="40" fill="none" stroke="var(--linea-fuerte)" stroke-width="5" opacity=".3"/><path d="M 35.7 104.3 A 40 40 0 1 1 92.3 104.3" fill="none" stroke="var(--senal)" stroke-width="5" stroke-linecap="round" opacity=".7"/><text x="64" y="84" class="g-num" text-anchor="middle">61,5</text><text x="64" y="142" class="g-pie" text-anchor="middle">stage_1</text><text x="64" y="179" class="g-pie" text-anchor="middle">basics</text><circle cx="192" cy="76" r="40" fill="none" stroke="var(--linea-fuerte)" stroke-width="5" opacity=".3"/><path d="M 163.7 104.3 A 40 40 0 0 1 168.4 43.7" fill="none" stroke="var(--senal)" stroke-width="5" stroke-linecap="round" opacity=".7"/><text x="192" y="84" class="g-num" text-anchor="middle">22,5</text><text x="192" y="142" class="g-pie" text-anchor="middle">stage_2</text><text x="192" y="179" class="g-pie" text-anchor="middle">offense</text><circle cx="320" cy="76" r="40" fill="none" stroke="var(--linea-fuerte)" stroke-width="5" opacity=".3"/><path d="M 291.7 104.3 A 40 40 0 0 1 283.8 58.9" fill="none" stroke="var(--senal)" stroke-width="5" stroke-linecap="round" opacity=".7"/><text x="320" y="84" class="g-num" text-anchor="middle">16,0</text><text x="320" y="142" class="g-pie" text-anchor="middle">sin</text><text x="320" y="179" class="g-pie" text-anchor="middle">ZeroSum</text><circle cx="448" cy="76" r="40" fill="none" stroke="var(--linea-fuerte)" stroke-width="5" opacity=".3"/><path d="M 419.7 104.3 A 40 40 0 0 1 415.7 99.6" fill="none" stroke="var(--mal)" stroke-width="5" stroke-linecap="round" opacity=".95"/><text x="448" y="84" class="g-num" text-anchor="middle">2,0</text><text x="448" y="142" class="g-pie" text-anchor="middle">R1 ÷10</text><text x="448" y="179" class="g-pie" text-anchor="middle">shaping</text><circle cx="576" cy="76" r="40" fill="none" stroke="var(--linea-fuerte)" stroke-width="5" opacity=".3"/><path d="M 547.7 104.3 A 40 40 0 0 1 542.8 98.4" fill="none" stroke="var(--mal)" stroke-width="5" stroke-linecap="round" opacity=".95"/><text x="576" y="84" class="g-num" text-anchor="middle">2,5</text><text x="576" y="142" class="g-pie" text-anchor="middle">R2</text><text x="576" y="179" class="g-pie" text-anchor="middle">eventos</text><text x="320" y="266" class="g-num" text-anchor="middle">La predicción falló</text><text x="320" y="335" class="g-num" text-anchor="middle">en la dirección contraria</text><text x="320" y="397" class="g-pie" text-anchor="middle">hipótesis falsada</text></svg>
+          <figcaption class="caso__pie">Los dos medidores en rojo son los que la predicción decía que subirían. Son los dos más bajos de los cinco.</figcaption>
+          <p class="oculto">Cinco medidores en anillo, de mayor a menor: stage_1_basics 61,5, stage_2_offense 22,5, sin ZeroSum 16,0, R1 con el moldeado dividido entre diez 2,0 y R2 sólo con eventos 2,5. Los dos últimos, marcados, son los que la predicción decía que subirían. La predicción falló en la dirección contraria: hipótesis falsada.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="caso caso--cierre" id="s-cierre">
+    <div class="marco">
+      <div class="cierre" data-revelar>
+        <p class="rotulo eyebrow">El trabajo</p>
+        <h2 class="titulo-menor">Un experimento que  <em class="acento">no salió</em>.</h2>
+        <p class="parrafo">No hay aquí un bot mejor. La hipótesis quedó sin confirmar, el segundo experimento se detuvo en su propia puerta y la hipótesis de recambio quedó falsada. La causa de lo que se observó sigue sin identificarse, y darla por conocida sería inventarse el final.</p><p class="parrafo">Lo que sí hay es el método entero y auditable: el criterio escrito antes de mirar, protocolos congelados por SHA256 que los propios scripts verifican al arrancar, una sola evaluación, intervalos de confianza con la corrida como unidad experimental, y los errores propios anotados donde se cometieron en vez de barridos. El informe completo incluye las decisiones que salieron mal.</p><p class="parrafo">Construido sobre moanv2/rlgym, con licencia MIT. El bot de Rocket League no es obra mía; el experimento sobre él, sí.</p>
+        <div class="botones"><a class="boton boton--solido" href="rlgym-presentacion.pdf" target="_blank" rel="noopener">Ver la presentación <span class="flecha" aria-hidden="true">↗</span></a><a class="boton " href="https://github.com/ppblanco/rlgym-selfplay-pool" target="_blank" rel="noopener">Ver el código en GitHub <span class="flecha" aria-hidden="true">↗</span></a><a class="boton " href="https://github.com/ppblanco/rlgym-selfplay-pool/blob/main/deliverables/RLGym_SelfPlay_Project_Report.pdf" target="_blank" rel="noopener">Leer el informe completo <span class="flecha" aria-hidden="true">↗</span></a></div>
+      </div>
+      
+        <figure class="visor" data-revelar>
+          <figcaption class="visor__barra visor__barra--alta">
+            <span class="visor__rotulo">Self-play con opponent pool · Presentación</span>
+            <span class="visor__meta">PDF · 12 páginas · 1,2 MB</span>
+          </figcaption>
+
+          <div class="visor__lienzo">
+            <a class="visor__fachada" href="rlgym-presentacion.pdf"
+               target="_blank" rel="noopener"
+               data-visor="Self-play con opponent pool · Presentación, 12 páginas">
+              <img class="visor__portada" src="../medios/informes/rlgym-portada.jpg"
+                   width="1001" height="563"
+                   loading="lazy" decoding="async"
+                   alt="Primera página de la presentación del experimento: «Can self-play remember its past?», con la atribución a moanv2/rlgym bajo licencia MIT.">
+              <span class="visor__cta">Ver la presentación
+                <span class="visor__peso">1,2 MB</span>
+                <span class="oculto" data-visor-nota>, se abre en otra pestaña</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="visor__barra visor__barra--baja">
+            <a class="visor__accion" href="rlgym-presentacion.pdf"
+               download="rlgym-presentacion.pdf">
+              <span class="visor__icono" aria-hidden="true">&#8595;</span>Descargar presentación
+              <span class="visor__peso">1,2 MB</span>
+            </a>
+            <a class="visor__accion visor__accion--fin" href="rlgym-presentacion.pdf"
+               target="_blank" rel="noopener">
+              Abrir en pantalla completa <span class="flecha" aria-hidden="true">↗</span>
+              <span class="oculto">, se abre en otra pestaña</span>
+            </a>
+          </div>
+        </figure>
+    </div>
+  </section>
+
+  <section class="caso caso--siguiente">
+    <div class="marco">
+      <a class="siguiente" href="videojuegos.html">
+        <span class="siguiente__rotulo">Siguiente trabajo</span>
+        <span class="siguiente__titulo">Predicción de ventas de videojuegos</span>
+        <span class="siguiente__flecha" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- Las dos piezas que faltaban aquí y sí estaban en el portfolio, y por eso
+     el ratón no se comportaba igual al abrir un trabajo. El anillo lo dibuja
+     plantilla.js, que ya venía cargado; sin este div no tenía dónde. -->
+<div class="nodo-cursor" id="nodo-cursor" aria-hidden="true"></div>
+
+<a class="flotante" id="flotante" href="mailto:pedro.perez.blanco@outlook.es" aria-label="Escribir a Pedro Pérez Blanco por correo">
+  <span class="flotante__texto">
+    <b>Ponte en contacto</b>
+    <span>Escríbeme cuando quieras</span>
+  </span>
+  <span class="flotante__icono" aria-hidden="true">&#9993;</span>
+</a>
+
+<footer class="pie">
+  <div class="marco">
+    <div class="pie__reparto">
+      <div>
+        <p class="pie__nombre">Pedro Pérez Blanco</p>
+        <p class="pie__nota">Analista de marketing y datos · Madrid</p>
+        <button class="pie__quieto" id="quieto" type="button" aria-pressed="false">
+          <span class="pie__punto" aria-hidden="true"></span><span data-texto>Parar movimiento</span>
+        </button>
+      </div>
+      <div class="pie__enlaces">
+        <a class="pie__enlace" href="../index.html">Volver al portfolio <span class="flecha" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../ui/fondo.js" defer></script>
+<script src="../ui/plantilla.js" defer></script>
+</body>
+</html>

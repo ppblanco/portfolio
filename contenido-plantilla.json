@@ -40,7 +40,7 @@
     "lema_antes": "El 96% de las entregas trabajando el",
     "lema_acento": "30%",
     "lema_despues": "de los leads.",
-    "entradilla": "Analista de marketing y datos. Construí el sistema de lead scoring del CRM de admisiones de la Universidad Pontificia Comillas como trabajo de fin de máster. Vengo de marketing, y por eso el modelo devuelve A, B o C en vez de una probabilidad con cuatro decimales: un comercial no llama a un 0,7413.",
+    "entradilla": "Perfil de marketing y business analytics, hoy Business Data Analyst en DIZA Consultores Inmobiliarios. Mi TFM fue el lead scoring del CRM de admisiones de Comillas. Vengo de marketing, y por eso el modelo devuelve A, B o C en vez de una probabilidad con cuatro decimales: un comercial no llama a un 0,7413.",
     "cta_principal": {
       "texto": "Ver mi trabajo",
       "ancla": "trabajo"
@@ -586,7 +586,7 @@
         "alt": "Logotipo de Anthropic.",
         "puntos": [
           "Inglés C1 Advanced, Cambridge (2021). Español nativo.",
-          "Claude Academy — Anthropic (2026): Claude Code in Action, Claude API, MCP y Human-Agent Teams.",
+          "Claude Academy — Anthropic: Claude Code in Action, Claude API, MCP y Human-Agent Teams (2026).",
           "Usos de la IA Generativa (MOOC013), Universidad Pontificia Comillas (2025).",
           "Introducción al Business Analytics (MOOC011), Universidad Pontificia Comillas (2025).",
           "Inbound Marketing, HubSpot Academy (2024)."

@@ -2052,10 +2052,38 @@ def portada(d):
   </section>"""
 
 
+def siguiente(nombre_salida, d):
+    """El «siguiente trabajo», derivado del orden del carrusel de la home.
+
+    Antes se escribía a mano en cada contenido-*.json, y cerrar el anillo
+    —el último vuelve al primero— dependía de acordarse de tocar dos archivos
+    al añadir un proyecto. Ahora la única fuente es contenido-plantilla.json →
+    trabajo.proyectos, que ya decide el orden de las fichas: el siguiente de
+    una página es la ficha que va detrás de la suya, y el de la última es la
+    primera. Un proyecto nuevo entra en el anillo con solo ponerlo en esa lista.
+
+    El rótulo («Siguiente trabajo») sigue saliendo del JSON del caso. Si la
+    página no aparece en el carrusel, se usa lo que diga su JSON, como antes.
+    """
+    propio = d.get("siguiente", {})
+    try:
+        pr = json.loads((RAIZ / "contenido-plantilla.json").read_text(encoding="utf-8"))
+        pr = pr["trabajo"]["proyectos"]
+        paginas = [p["enlaces"][0]["href"].rsplit("/", 1)[-1] for p in pr]
+        i = paginas.index(nombre_salida)
+    except (OSError, KeyError, IndexError, ValueError):
+        return propio
+    otro = pr[(i + 1) % len(pr)]
+    return {"rotulo": propio.get("rotulo", "Siguiente trabajo"),
+            "titulo": otro["titulo"],
+            "href": paginas[(i + 1) % len(pr)]}
+
+
 def hacer(nombre_json, nombre_salida):
     datos_f = RAIZ / nombre_json
     salida = RAIZ / "trabajos" / nombre_salida
     d = json.loads(datos_f.read_text(encoding="utf-8"))
+    d["siguiente"] = siguiente(nombre_salida, d)
     m, h, c = d["meta"], d["hero"], d["cierre"]
 
     rail = "".join(f'<a href="#{e(r["ancla"])}" data-rail>{e(r["texto"])}</a>'

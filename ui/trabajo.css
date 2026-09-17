@@ -188,7 +188,13 @@
 .rail{
   position:sticky; top:var(--alto-barra,64px); z-index:40;
   border-top:1px solid var(--linea); border-bottom:1px solid var(--linea);
+  /* El rgba va DELANTE como respaldo: un navegador sin color-mix() —Safari
+     anterior a 16.2— descarta la segunda declaración y se queda con esta, en
+     vez de dejar el raíl transparente con el texto encima del contenido. Es
+     el mismo color: --fondo (#0B0C0F) al 88 %. */
+  background:rgba(11,12,15,.88);
   background:color-mix(in srgb, var(--fondo) 88%, transparent);
+  -webkit-backdrop-filter:blur(10px);
   backdrop-filter:blur(10px);
 }
 .rail__caja{
@@ -206,7 +212,22 @@
   border-bottom:2px solid transparent;
   transition:color var(--rapido) var(--sale), border-color var(--rapido) var(--sale);
 }
-.rail a:hover{ color:var(--tinta) }
+/* Solo con ratón. En una pantalla táctil :hover se queda pegado a la última
+   etiqueta tocada, para siempre: el raíl enseñaba dos marcas a la vez —la
+   activa en color y la tocada en blanco— y no se sabía cuál era la buena. */
+@media (hover:hover){
+  .rail a:hover{ color:var(--tinta) }
+}
+
+/* Cuando la barra de arriba se aparta al bajar, el raíl sube con ella. Sin
+   esto se quedaba pegado a la altura de la barra ya escondida y flotaba en
+   mitad de la pantalla, con contenido pasando por encima y por debajo.
+   Regla aparte, no dentro de una lista: un navegador que no entienda :has()
+   la descarta entera y se queda como estaba, que es un respaldo aceptable.
+   :not(:focus-within) porque con el foco dentro la barra NO se esconde
+   (plantilla.css) y el raíl tiene que seguir debajo de ella. */
+body:has(.barra.esta-oculta:not(:focus-within)) .rail{ top:0 }
+.rail{ transition:top var(--medio) var(--sale) }
 .rail a[aria-current="true"]{ color:var(--senal); border-bottom-color:var(--senal) }
 
 /* ---------- Los capítulos ---------------------------------------- */
@@ -354,7 +375,7 @@
 }
 
 @media (prefers-reduced-motion:reduce){
-  .volver,.siguiente,.siguiente__titulo,.siguiente__flecha,.rail a{ transition:none }
+  .volver,.siguiente,.siguiente__titulo,.siguiente__flecha,.rail,.rail a{ transition:none }
   .siguiente:hover .siguiente__flecha{ transform:none }
 }
 
@@ -1064,4 +1085,18 @@
   @media (max-width:760px){
     .corte__caja{ padding-bottom:56.25% }           /* 9/16 */
   }
+}
+
+/* ---------- La figura estrecha de la composición editorial --------
+
+   --g se ajusta por ANCHO DE VENTANA, suponiendo la columna de figura de las
+   composiciones normales. La editorial deja la figura en 370 px (309 a 1024):
+   el dibujo se escala a 0,58 y los rótulos acababan en 8,9 px en cinco
+   páginas —una sección de cada una—. Aquí esa figura usa --g:2, que es
+   exactamente G_MAX: el tope para el que hacer-caso.py calcula TODA la
+   geometría y que las pruebas ya verifican a 399 px. Por eso no puede abrir
+   solapes nuevos: en unidades del lienzo es la misma letra que en móvil.
+   Solo con dos columnas; apilada, la figura es ancha y manda la escalera. */
+@media (min-width:900px){
+  .caso__reparto--editorial .grafico{ --g:2 }
 }

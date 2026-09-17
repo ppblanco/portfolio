@@ -330,3 +330,27 @@ test.describe('Rectificaciones', () => {
     expect(sr).toContain('supuesto');
   });
 });
+
+// =============================================================
+// EL ANILLO «SIGUIENTE» SALE DEL ORDEN DEL CARRUSEL
+// =============================================================
+//
+// Una sola fuente: contenido-plantilla.json → trabajo.proyectos. Si alguien
+// vuelve a escribir un «siguiente» a mano, o añade un proyecto y el anillo no
+// se cierra, esto falla con la página exacta.
+test.describe('Anillo «siguiente»', () => {
+  test('cada página apunta a la ficha que va detrás en el carrusel, y la última a la primera',
+    async ({ page }) => {
+      const plantilla = JSON.parse(fs.readFileSync(path.join(RAIZ, 'contenido-plantilla.json'), 'utf8'));
+      const orden = plantilla.trabajo.proyectos.map((p) => p.enlaces[0].href.split('/').pop());
+      expect(orden.length).toBeGreaterThan(1);
+      const fallos = [];
+      for (let i = 0; i < orden.length; i++) {
+        await page.goto('/trabajos/' + orden[i]);
+        const href = await page.getAttribute('a.siguiente', 'href');
+        const esperado = orden[(i + 1) % orden.length];
+        if (href !== esperado) fallos.push(`${orden[i]} -> ${href} (esperado ${esperado})`);
+      }
+      expect(fallos, fallos.join(' | ')).toEqual([]);
+    });
+});

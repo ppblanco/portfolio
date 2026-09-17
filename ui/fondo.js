@@ -59,6 +59,18 @@
   var arA = null, arB = null, arAlfa = null, nAristas = 0;
 
   var cuadro = null, antes = 0;
+
+  /* 30 fotogramas por segundo, no 60. Es una red que deriva muy despacio:
+     a 60 cada nodo avanza menos de un píxel por fotograma y la mitad de esos
+     repintados no cambian nada que se vea. El bucle sigue colgado de
+     requestAnimationFrame —así se sigue parando solo con la pestaña oculta y
+     se sincroniza con la pantalla—, pero solo TRABAJA cuando ha pasado un
+     intervalo. El margen de 2 ms hace que a 60 Hz caiga exactamente uno de
+     cada dos, y a 120 Hz uno de cada cuatro, sin tirones.
+     Medido: ver NOTAS.md. */
+  var INTERVALO = 1000 / 30 - 2;
+  // Suavizado por segundo, no por fotograma: se recalcula en cada paso.
+  var suave08 = 0.08;
   var ratonX = -9999, ratonY = -9999;
 
   // Atenuación global. Baja cuando se llega a la sección del mapa: dos redes
@@ -180,9 +192,9 @@
           ey = (ddy / d) * cerca * RATON_EMPUJE;
         }
       }
-      n.dx += (ex - n.dx) * 0.08;
-      n.dy += (ey - n.dy) * 0.08;
-      n.brillo += (cerca - n.brillo) * 0.08;
+      n.dx += (ex - n.dx) * suave08;
+      n.dy += (ey - n.dy) * suave08;
+      n.brillo += (cerca - n.brillo) * suave08;
     }
   }
 
@@ -310,10 +322,19 @@
 
     // Un salto de pestaña puede devolver un dt enorme; se recorta o los nodos
     // aparecen al otro lado de la pantalla de golpe.
+    // Aún no toca: se vuelve a pedir fotograma sin mover ni pintar nada.
+    if (ahora - antes < INTERVALO) { cuadro = window.requestAnimationFrame(paso); return; }
+
     var dt = Math.min(0.05, (ahora - antes) / 1000) || 0.016;
     antes = ahora;
 
-    velo += (veloMeta - velo) * 0.06;
+    /* Los suavizados eran «un 6 % / un 8 % por fotograma», pensados para 60.
+       A 30 fotogramas irían a la mitad de velocidad y el brillo del ratón y el
+       velo del mapa responderían lentos. Se convierten a tiempo real: a 60 fps
+       dan exactamente lo mismo que antes. */
+    var k = dt * 60;
+    suave08 = 1 - Math.pow(0.92, k);
+    velo += (veloMeta - velo) * (1 - Math.pow(0.94, k));
 
     mover(dt);
     buscarAristas();

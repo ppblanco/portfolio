@@ -739,12 +739,34 @@
     var porAncla = {};
     enlaces.forEach(function (a) { porAncla[a.getAttribute('href').slice(1)] = a; });
 
+    var caja = rail.querySelector('.rail__caja') || rail;
+    var actual = null;
+
     var marcar = function (id) {
+      if (id === actual) return;
+      actual = id;
+      var activo = null;
       enlaces.forEach(function (a) {
         var suyo = a.getAttribute('href').slice(1) === id;
-        if (suyo) a.setAttribute('aria-current', 'true');
+        if (suyo) { a.setAttribute('aria-current', 'true'); activo = a; }
         else a.removeAttribute('aria-current');
       });
+      /* En móvil el raíl no cabe y se desplaza en horizontal. Marcar una
+         etiqueta que está fuera de la caja es marcar nada: a media página el
+         activo quedaba en x 410-486 dentro de una caja de 390 y no se veía
+         ningún indicador. Se lleva la caja hasta él.
+
+         Con scrollTo SOBRE LA CAJA, nunca scrollIntoView: ese desplaza también
+         la página en vertical y pelearía con el propio desplazamiento que ha
+         disparado el cambio. Y solo si la caja desborda: en escritorio caben
+         todas y esto no hace nada. */
+      if (activo && caja.scrollWidth > caja.clientWidth + 1) {
+        var cb = caja.getBoundingClientRect();
+        var ab = activo.getBoundingClientRect();
+        var delta = (ab.left + ab.width / 2) - (cb.left + cb.width / 2);
+        var quieto = QUIETO || raiz.classList.contains('sin-movimiento');
+        caja.scrollTo({ left: caja.scrollLeft + delta, behavior: quieto ? 'auto' : 'smooth' });
+      }
     };
 
     var vigia = new IntersectionObserver(function (entradas) {

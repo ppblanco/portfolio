@@ -95,7 +95,7 @@ test.describe('Estructura', () => {
     await page.goto('/index.html');
     await expect(page.locator('.obra')).toHaveCount(7);
     await expect(page.locator('.fila-destreza')).toHaveCount(5);
-    await expect(page.locator('.puesto')).toHaveCount(4);
+    await expect(page.locator('.puesto')).toHaveCount(5);
     await expect(page.locator('.hito')).toHaveCount(4);
   });
 });
@@ -303,7 +303,7 @@ test.describe('Acordeones', () => {
   test('el primer puesto nace abierto y los demás cerrados', async ({ page }) => {
     await page.goto('/index.html');
     const abiertos = await page.locator('.puesto').evaluateAll((els) => els.map((e) => e.open));
-    expect(abiertos).toEqual([true, false, false, false]);
+    expect(abiertos).toEqual([true, false, false, false, false]);
   });
 
   test('pulsar un puesto cerrado lo abre y enseña su texto', async ({ page }) => {

@@ -51,7 +51,7 @@
     },
     "meta_fuerte": "Máster en Business Analytics",
     "meta_resto": "Universidad Pontificia Comillas · ICADE, Madrid ’26",
-    "disponibilidad": "Madrid · disponible desde ya",
+    "disponibilidad": "Madrid · abierto a oportunidades",
     "imagen": "medios/retrato.jpg",
     "imagen_alt": "Retrato de Pedro Pérez Blanco.",
     "saludo_cola": ", soy",
@@ -475,12 +475,20 @@
     "imagen_alt": "Pedro Pérez Blanco, de traje, en el campus de la Universidad Pontificia Comillas el día de la graduación del máster.",
     "puestos": [
       {
+        "puesto": "Business Data Analyst",
+        "empresa": "DIZA Consultores Inmobiliarios",
+        "ciudad": "Madrid",
+        "cuando": "sep 2026 – actualidad",
+        "descripcion": "Analítica de negocio para una consultora inmobiliaria de lujo: seguimiento de métricas de marketing, comerciales y financieras, elaboración de dashboards e informes para dirección y análisis del embudo comercial para apoyar la toma de decisiones.",
+        "abierto": true
+      },
+      {
         "puesto": "Proyecto de datos",
         "empresa": "Universidad Pontificia Comillas",
         "ciudad": "Madrid",
         "cuando": "jul 2026",
         "descripcion": "Colaboración para llevar a producción el sistema de lead scoring y el asistente RAG del trabajo de fin de máster, esta vez con los datos oficiales del CRM de admisiones. Trabajo con datos reales y confidenciales, con las restricciones que eso impone.",
-        "abierto": true
+        "abierto": false
       },
       {
         "puesto": "Becario de marketing",
@@ -578,7 +586,7 @@
         "alt": "Logotipo de Anthropic.",
         "puntos": [
           "Inglés C1 Advanced, Cambridge (2021). Español nativo.",
-          "Claude Code in Action, Claude Academy — Anthropic (2026).",
+          "Claude Academy — Anthropic (2026): Claude Code in Action, Claude API, MCP y Human-Agent Teams.",
           "Usos de la IA Generativa (MOOC013), Universidad Pontificia Comillas (2025).",
           "Introducción al Business Analytics (MOOC011), Universidad Pontificia Comillas (2025).",
           "Inbound Marketing, HubSpot Academy (2024)."
@@ -604,14 +612,14 @@
       "Vengo de marketing. Estudié el grado en ESIC, me fui de Erasmus a Países Bajos y allí cofundé una agencia con la que llevamos una campaña entera para un cliente real. Sé lo que cuesta traer a alguien, y sé lo que se siente cuando la lista de contactos es larga y el tiempo corto.",
       "El máster en Business Analytics vino después, y por eso lo uso de otra forma. Cuando construí el sistema de lead scoring para Comillas, la decisión importante no fue qué modelo entrenar: fue que la salida tenía que ser A, B o C, y no una probabilidad con cuatro decimales. Un comercial no llama a un 0,7413. Llama a los de la lista A.",
       "Los problemas que más disfruto son los que terminan en una decisión concreta: a quién llamar, qué campaña parar, dónde no merece la pena insistir. Por eso trabajo con SHAP y no solo con métricas: si quien tiene que usar el modelo no entiende por qué prioriza un contacto, no lo va a usar.",
-      "Busco un sitio donde esas dos cosas cuenten a la vez: entender el embudo antes de modelarlo, y saber explicar el modelo a quien tiene que tomar la decisión."
+      "Hoy lo hago como Business Data Analyst en DIZA Consultores Inmobiliarios, y sigo abierto a oportunidades que supongan un siguiente paso claro: sitios donde cuenten a la vez esas dos cosas, entender el embudo antes de modelarlo y saber explicar el modelo a quien tiene que tomar la decisión."
     ]
   },
   "contacto": {
     "titular_antes": "Si le encaja,",
     "titular_acento": "hablamos",
     "titular_despues": ".",
-    "entradilla": "Estoy en Madrid y disponible desde ya. Escríbame o llámeme y le cuento el proyecto con calma.",
+    "entradilla": "Estoy en Madrid y abierto a oportunidades que encajen con mi perfil. Escríbame o llámeme y le cuento el proyecto con calma.",
     "cta": {
       "texto": "Escribirme",
       "href": "mailto:pedro.perez.blanco@outlook.es"
